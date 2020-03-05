@@ -2,7 +2,7 @@
 Make mistletoe easier to import.
 """
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 __all__ = [
     "html_renderer",
     "ast_renderer",
