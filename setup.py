@@ -5,6 +5,8 @@ setup(
     name="mistletoe-ebp",
     version=mistletoe.__version__,
     description="A fast, extensible Markdown parser in pure Python.",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     url="https://github.com/ExecutableBookProject/mistletoe-ebp",
     author="Chris Sewell",
     author_email="chrisj_sewell@hotmail.com",
