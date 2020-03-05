@@ -8,6 +8,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/ExecutableBookProject/mistletoe-ebp",
+    project_urls={"Documentation": "https://mistletoe-ebp.readthedocs.io"},
     author="Chris Sewell",
     author_email="chrisj_sewell@hotmail.com",
     license="MIT",

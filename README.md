@@ -2,6 +2,7 @@
 
 [![CI Status][travis-badge]][travis-link]
 [![Coverage][coveralls-badge]][coveralls-link]
+[![Documentation Status][rtd-badge]][rtd-link]
 [![Code style: black][black-badge]][black-link]
 [![PyPI][pypi-badge]][pypi-link]
 [![Conda][conda-badge]][conda-link]
@@ -40,6 +41,8 @@ deployed release that can be utilised by EBP. Here is a working list of 'up-stre
 [travis-link]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp
 [coveralls-badge]: https://coveralls.io/repos/github/ExecutableBookProject/mistletoe-ebp/badge.svg?branch=master
 [coveralls-link]: https://coveralls.io/github/ExecutableBookProject/mistletoe-ebp?branch=master
+[rtd-badge]: https://readthedocs.org/projects/mistletoe-ebp/badge/?version=latest
+[rtd-link]: https://mistletoe-ebp.readthedocs.io/en/latest/?badge=latest
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-badge]: https://img.shields.io/pypi/v/mistletoe-ebp.svg
 [pypi-link]: https://pypi.org/project/mistletoe-ebp
