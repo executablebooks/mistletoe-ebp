@@ -6,7 +6,7 @@
 [![PyPI][pypi-badge]][pypi-link]
 [![Conda][conda-badge]][conda-link]
 
-This is a version of [mistletoe] maintained by the Excutable Book Project (EBP). It tracks the `myst` branch of [ExecutableBookProject/mistletoe](https://github.com/ExecutableBookProject/mistletoe)
+This is a version of [mistletoe] maintained by the [Excutable Book Project (EBP)][ebp-link]. It tracks the `myst` branch of [ExecutableBookProject/mistletoe](https://github.com/ExecutableBookProject/mistletoe)
 which eventually, it is hoped, will be merged into mistletoe itself.
 
 mistletoe is a Markdown parser in pure Python,
@@ -35,9 +35,10 @@ deployed release that can be utilised by EBP. Here is a working list of 'up-stre
 - Improve rendering logic: Currently, there is no concept of recursive walk-throughs or 'visitor' patterns in the Misteltoe `BaseRenderer`, which is a better method for rendering tree like structures (as used by docutils/panflute). Also, the current token instantiating (within context managers) needs improvement (see [miyuchina/mistletoe#56](https://github.com/miyuchina/mistletoe/issues/56)).
 
 [mistletoe]: https://github.com/miyuchina/mistletoe
+[ebp-link]: https://github.com/ExecutableBookProject
 [travis-badge]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp.svg?branch=master
 [travis-link]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp
-[coveralls-badge]: https://coveralls.io/repos/github/ExecutableBookProject/mistletoe-ebp/badge.svg?branch=develop
+[coveralls-badge]: https://coveralls.io/repos/github/ExecutableBookProject/mistletoe-ebp/badge.svg?branch=master
 [coveralls-link]: https://coveralls.io/github/ExecutableBookProject/mistletoe-ebp?branch=master
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-badge]: https://img.shields.io/pypi/v/mistletoe-ebp.svg

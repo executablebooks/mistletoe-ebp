@@ -32,6 +32,7 @@ setup(
     extras_require={
         "code_style": ["flake8<3.8.0,>=3.7.0", "black==19.10b0", "pre-commit==1.17.0"],
         "testing": ["coverage", "pytest>=3.6,<4", "pytest-cov"],
+        "rtd": ["sphinx>=2,<3", "myst-parser", "pyyaml"],
     },
     zip_safe=False,
 )
