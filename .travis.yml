@@ -7,7 +7,7 @@ matrix:
       - python: 3.6
         env: TEST_TYPE="pytest"
       - python: 3.7
-        env: TEST_TYPE="pytest"
+        env: TEST_TYPE="pytest" PYPI_DEPLOY=true
       - python: 3.8
         env: TEST_TYPE="pytest"
       - python: 3.7
@@ -38,3 +38,14 @@ after_success:
   if [[ "$TEST_TYPE" == "pytest" ]]; then
       coveralls
   fi
+
+deploy:
+  - provider: pypi
+    distributions: "sdist bdist_wheel"
+    user: cjsewell
+    password:
+      secure: oT9RqcTiyDKRhRk0sFOfGw6bsSyfxWX2xLPoL5p7Eo3X7Y7KQrOq1H4CdAGTi3XBnD2zvuXgEPp2RCxXz6qAFf2bzvKB1pCEZ6TlaYBtUg2d/3zuw9k3VPSUJYzv7LrJ2DNiBQBRs5M2z2g9SFL/qBqrnRprhicthoWv3d5Fdp+z0RRpJA3LzRcifPQ5RvaBzl5svegDF2Zf3MgDPumY/pv6HmnRtvkgAAIGefsdD46i3Dn6XnkEsoJL63QbIa64LtIZCjytHv4VOq8FoLWyJY3ehgVuh0sjQ292aJxofW4u1UPnpplPeMTZa7ml/3KQhBQh64DC4wN+hwlxNd98SnwxFc3qGvLElARciPkJNFZP+/KsPd4xC67KPLb3PmgEUgIUByTb53sujWq0R5Q4ruJ2b23eXpimyxY8Gxv7wFN8iA6wjBuYXylhHnliAMZrv7ZO4cx/ZvbIXCjsaEOw8AVuaznZo0sO31dxHGqx9MtppHXcAmprVkM/ALRbnGL3goDSXxqGXtJOZBD6thWOH0HRCXcJkEIEFy0q/sioAf86f9ucL5KtzkXGZ+PkfNHBAAy0Y2/d8zi04dP9LzeY06YjWL1nfwSHSafyYbQX8RWakRu9oeUAWnghZdPDFDuxzLl5kK2LR6wNmkDKx31WPOwc3rsEGKq+btHibrt06jA=
+    on:
+      branch: master
+      tags: true
+      condition: $PYPI_DEPLOY = true
