@@ -6,7 +6,7 @@ mistletoe-ebp is tested for Python 3.5 and above. Install mistletoe within a
 [Conda Environment][conda-env] (recommended):
 
 ```sh
-conda create --name myenv mistletoe-ebp
+conda install -c conda-forge mistletoe-ebp
 ```
 
 or *via* pip:
