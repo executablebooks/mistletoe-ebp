@@ -6,9 +6,9 @@ import re
 import sys
 from itertools import chain
 from urllib.parse import quote
-from mistletoe.block_token import HTMLBlock
-from mistletoe.span_token import HTMLSpan
-from mistletoe.base_renderer import BaseRenderer
+from mistletoe.block_tokens import HTMLBlock
+from mistletoe.span_tokens import HTMLSpan
+from mistletoe.renderers.base import BaseRenderer
 
 if sys.version_info < (3, 4):
     from mistletoe import _html as html
@@ -17,11 +17,7 @@ else:
 
 
 class HTMLRenderer(BaseRenderer):
-    """
-    HTML renderer class.
-
-    See mistletoe.base_renderer module for more info.
-    """
+    """HTML renderer class."""
 
     def __init__(self, *extras):
         """
@@ -43,7 +39,7 @@ class HTMLRenderer(BaseRenderer):
         html._charref = self._stdlib_charref
 
     def render_to_plain(self, token):
-        if hasattr(token, "children"):
+        if token.children is not None:
             inner = [self.render_to_plain(child) for child in token.children]
             return "".join(inner)
         return self.escape_html(token.content)
@@ -133,9 +129,9 @@ class HTMLRenderer(BaseRenderer):
 
     def render_list(self, token):
         template = "<{tag}{attr}>\n{inner}\n</{tag}>"
-        if token.start is not None:
+        if token.start_at is not None:
             tag = "ol"
-            attr = ' start="{}"'.format(token.start) if token.start != 1 else ""
+            attr = ' start="{}"'.format(token.start_at) if token.start_at != 1 else ""
         else:
             tag = "ul"
             attr = ""
@@ -206,7 +202,7 @@ class HTMLRenderer(BaseRenderer):
         return token.content
 
     def render_document(self, token):
-        self.footnotes.update(token.footnotes)
+        self.link_definitions.update(token.link_definitions)
         inner = "\n".join([self.render(child) for child in token.children])
         return "{}\n".format(inner) if inner else ""
 

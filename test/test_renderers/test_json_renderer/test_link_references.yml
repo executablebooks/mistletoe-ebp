@@ -1,0 +1,22 @@
+children:
+- children:
+  - children:
+    - content: bar
+      type: RawText
+    target: spam
+    title: ''
+    type: Link
+  position:
+  - 1
+  - 1
+  type: Paragraph
+- position:
+  - 3
+  - 3
+  type: LinkDefinition
+front_matter: null
+link_definitions:
+  baz:
+  - spam
+  - ''
+type: Document

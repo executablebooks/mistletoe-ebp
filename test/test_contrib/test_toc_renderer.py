@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
-from mistletoe.block_token import Document, Heading
+from mistletoe.block_tokens import Document, Heading
+from mistletoe.block_tokenizer import FileWrapper
 from contrib.toc_renderer import TOCRenderer
 
 
@@ -12,19 +13,19 @@ class TestTOCRenderer(TestCase):
     def test_render_heading(self):
         renderer = TOCRenderer()
         Heading.start("### some *text*\n")
-        token = Heading(Heading.read(iter(["foo"])))
+        token = Heading.read(FileWrapper(["foo"]), expand_spans=True)
         renderer.render_heading(token)
         self.assertEqual(renderer._headings[0], (3, "some text"))
 
     def test_depth(self):
         renderer = TOCRenderer(depth=3)
-        token = Document(["# title\n", "## heading\n", "#### heading\n"])
+        token = Document.read(["# title\n", "## heading\n", "#### heading\n"])
         renderer.render(token)
         self.assertEqual(renderer._headings, [(2, "heading")])
 
     def test_omit_title(self):
         renderer = TOCRenderer(omit_title=True)
-        token = Document(["# title\n", "\n", "## heading\n"])
+        token = Document.read(["# title\n", "\n", "## heading\n"])
         renderer.render(token)
         self.assertEqual(renderer._headings, [(2, "heading")])
 
@@ -36,13 +37,13 @@ class TestTOCRenderer(TestCase):
             lambda x: re.match(r"foo", x),
         ]
         renderer = TOCRenderer(filter_conds=filter_conds)
-        token = Document(
+        token = Document.read(
             ["# title\n", "\n", "## heading\n", "\n", "#### not heading\n"]
         )
         renderer.render(token)
         self.assertEqual(renderer._headings, [(4, "not heading")])
 
-    @mock.patch("mistletoe.block_token.List")
+    @mock.patch("mistletoe.block_tokens.List")
     def test_get_toc(self, MockList):
         headings = [
             (1, "heading 1"),

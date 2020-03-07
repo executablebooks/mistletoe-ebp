@@ -1,11 +1,11 @@
 import re
-import mistletoe.span_token as span_token
+from mistletoe.base_elements import SpanToken
 
 
 __all__ = ["Math"]
 
 
-class Math(span_token.SpanToken):
+class Math(SpanToken):
     pattern = re.compile(r"(\${1,2})([^$]+?)\1")
     parse_inner = False
     parse_group = 0

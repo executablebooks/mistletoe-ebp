@@ -29,11 +29,13 @@ setup(
         "Topic :: Text Processing :: Markup",
     ],
     keywords="markdown lexer parser development",
-    python_requires="~=3.5",
+    python_requires="~=3.6",
+    install_requires=["attrs~=19.3"],
     extras_require={
         "code_style": ["flake8<3.8.0,>=3.7.0", "black==19.10b0", "pre-commit==1.17.0"],
         "testing": ["coverage", "pytest>=3.6,<4", "pytest-cov"],
         "rtd": ["sphinx>=2,<3", "myst-parser", "pyyaml"],
+        "benchmark": ["commonmark~=0.9.1", "markdown~=3.2", "mistune~=0.8.4"],
     },
     zip_safe=False,
 )

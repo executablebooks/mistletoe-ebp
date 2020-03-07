@@ -2,19 +2,19 @@
 Make mistletoe easier to import.
 """
 
-__version__ = "0.8.2"
+__version__ = "0.9.0"
 __all__ = [
-    "html_renderer",
-    "ast_renderer",
-    "block_token",
+    "renderers",
+    "base_elements",
+    "block_tokens",
     "block_tokenizer",
-    "span_token",
+    "span_tokens",
     "span_tokenizer",
 ]
 
-from mistletoe.block_token import Document
-from mistletoe.base_renderer import BaseRenderer  # noqa: F401
-from mistletoe.html_renderer import HTMLRenderer
+from mistletoe.block_tokens import Document
+from mistletoe.renderers.base import BaseRenderer  # noqa: F401
+from mistletoe.renderers.html import HTMLRenderer
 
 
 def markdown(iterable, renderer=HTMLRenderer):
@@ -23,4 +23,4 @@ def markdown(iterable, renderer=HTMLRenderer):
     Enables inline and block-level HTML tags.
     """
     with renderer() as renderer:
-        return renderer.render(Document(iterable))
+        return renderer.render(Document.read(iterable))

@@ -1,9 +1,12 @@
 """
 Inline tokenizer for mistletoe.
 """
+from mistletoe.parse_context import get_parse_context
 
 
-def tokenize(string, token_types):
+def tokenize_span(string, token_types=None):
+    if token_types is None:
+        token_types = get_parse_context().span_tokens
     *token_types, fallback_token = token_types
     tokens = find_tokens(string, token_types, fallback_token)
     token_buffer = []

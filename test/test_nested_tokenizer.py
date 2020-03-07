@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mistletoe.core_tokens import (
+from mistletoe.nested_tokenizer import (
     MatchObj,
     Delimiter,
     follows,
@@ -11,7 +11,7 @@ from mistletoe.core_tokens import (
 )
 
 
-class TestCoreTokens(TestCase):
+class TestNestedTokenizer(TestCase):
     def test_match_obj(self):
         match = MatchObj(0, 2, (0, 1, "a"), (1, 2, "b"))
         self.assertEqual(match.start(), 0)

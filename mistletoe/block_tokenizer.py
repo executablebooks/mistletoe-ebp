@@ -1,6 +1,8 @@
 """
 Block-level tokenizer for mistletoe.
 """
+from mistletoe.base_elements import SpanContainer
+from mistletoe.parse_context import get_parse_context
 
 
 class FileWrapper:
@@ -42,9 +44,10 @@ class FileWrapper:
             self._index -= 1
 
 
-def tokenize(iterable, token_types, start_line=0):
-    """
-    Searches for token_types in iterable.
+def tokenize_main(
+    iterable, token_types=None, start_line=0, expand_spans=True, store_definitions=False
+):
+    """Searches for token_types in iterable.
 
     Args:
         iterable (list): user input lines to be parsed.
@@ -53,47 +56,42 @@ def tokenize(iterable, token_types, start_line=0):
     Returns:
         block-level token instances.
     """
-    return make_tokens(tokenize_block(iterable, token_types, start_line))
+    if token_types is None:
+        token_types = get_parse_context().block_tokens
+    tokens = tokenize_block(
+        iterable,
+        token_types=token_types,
+        start_line=start_line,
+        store_definitions=store_definitions,
+    )
+    if expand_spans:
+        for token in tokens:
+            for result in list(token.walk(include_self=True)):
+                if isinstance(result.node.children, SpanContainer):
+                    result.node.children = result.node.children.expand()
+    return tokens
 
 
-def tokenize_block(iterable, token_types, start_line=0):
-    """
-    Returns a list of pairs (token_type, read_result).
-
-    Footnotes are parsed here, but span-level parsing has not
-    started yet.
-    """
+def tokenize_block(iterable, token_types=None, start_line=0, store_definitions=False):
+    """Returns a list of parsed tokens."""
+    if token_types is None:
+        token_types = get_parse_context().block_tokens
     lines = FileWrapper(iterable, start_line)
-    parse_buffer = ParseBuffer()
+    parsed_tokens = ParseBuffer()
     line = lines.peek()
     while line is not None:
         for token_type in token_types:
             if token_type.start(line):
-                result = token_type.read(lines)
-                if result is not None:
-                    parse_buffer.append((token_type, result))
+                token = token_type.read(lines)
+                if token is not None:
+                    if store_definitions or token.name != "LinkDefinition":
+                        parsed_tokens.append(token)
                     break
         else:  # unmatched newlines
             next(lines)
-            parse_buffer.loose = True
+            parsed_tokens.loose = True
         line = lines.peek()
-    return parse_buffer
-
-
-def make_tokens(parse_buffer):
-    """
-    Takes a list of pairs (token_type, read_result) and
-    applies token_type(read_result).
-
-    Footnotes are already parsed before this point,
-    and span-level parsing is started here.
-    """
-    tokens = []
-    for token_type, result in parse_buffer:
-        token = token_type(result)
-        if token is not None:
-            tokens.append(token)
-    return tokens
+    return parsed_tokens
 
 
 class ParseBuffer(list):

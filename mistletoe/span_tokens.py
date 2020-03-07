@@ -1,13 +1,10 @@
 """
 Built-in span-level token classes.
 """
-
 import re
-from threading import local
 
-import mistletoe.span_tokenizer as tokenizer
-from mistletoe import core_tokens
-
+from mistletoe import nested_tokenizer
+from mistletoe.base_elements import SpanToken
 
 """
 Tokens to be included in the parsing process, in the order specified.
@@ -23,83 +20,16 @@ __all__ = [
 ]
 
 
-_root_node = None
-
-
-def tokenize_inner(content):
-    """
-    A wrapper around span_tokenizer.tokenize. Pass in all span-level token
-    constructors as arguments to span_tokenizer.tokenize.
-
-    Doing so (instead of importing span_token module in span_tokenizer)
-    avoids cyclic dependency issues, and allows for future injections of
-    custom token classes.
-
-    _token_types variable is at the bottom of this module.
-
-    See also: span_tokenizer.tokenize, block_token.tokenize.
-    """
-    return tokenizer.tokenize(content, _token_types.value)
-
-
-def add_token(token_cls, position=1):
-    """
-    Allows external manipulation of the parsing process.
-    This function is called in BaseRenderer.__enter__.
-
-    Arguments:
-        token_cls (SpanToken): token to be included in the parsing process.
-    """
-    _token_types.value.insert(position, token_cls)
-
-
-def remove_token(token_cls):
-    """
-    Allows external manipulation of the parsing process.
-    This function is called in BaseRenderer.__exit__.
-
-    Arguments:
-        token_cls (SpanToken): token to be removed from the parsing process.
-    """
-    _token_types.value.remove(token_cls)
-
-
-def reset_tokens():
-    """
-    Resets global _token_types to all token classes in __all__.
-    """
-    global _token_types
-    _token_types.value = [globals()[cls_name] for cls_name in __all__]
-
-
-class SpanToken:
-    parse_inner = True
-    parse_group = 1
-    precedence = 5
-
-    def __init__(self, match):
-        if not self.parse_inner:
-            self.content = match.group(self.parse_group)
-
-    def __contains__(self, text):
-        if hasattr(self, "children"):
-            return any(text in child for child in self.children)
-        return text in self.content
-
-    @classmethod
-    def find(cls, string):
-        return cls.pattern.finditer(string)
-
-
 class CoreTokens(SpanToken):
     precedence = 3
 
     def __new__(self, match):
+        # TODO this needs to be made more general (so tokens can be in diffent modules)
         return globals()[match.type](match)
 
     @classmethod
     def find(cls, string):
-        return core_tokens.find_core_tokens(string, _root_node)
+        return nested_tokenizer.find_nested_tokenizer(string)
 
 
 class Strong(SpanToken):
@@ -129,8 +59,8 @@ class InlineCode(SpanToken):
 
     @classmethod
     def find(cls, string):
-        matches = core_tokens._code_matches
-        core_tokens._code_matches = []
+        matches = nested_tokenizer._code_matches.value
+        nested_tokenizer._code_matches.value = []
         return matches
 
 
@@ -144,7 +74,7 @@ class Strikethrough(SpanToken):
 
 class Image(SpanToken):
     """
-    Image tokens. ("![alt](src "title")")
+    Image tokens, with inline targets: "![alt](src "title")".
 
     Attributes:
         src (str): image source.
@@ -158,7 +88,7 @@ class Image(SpanToken):
 
 class Link(SpanToken):
     """
-    Link tokens. ("[name](target)")
+    Link tokens, with inline targets: "[name](target)"
 
     Attributes:
         target (str): link target.
@@ -330,8 +260,3 @@ class HTMLSpan(SpanToken):
     )
     parse_inner = False
     parse_group = 0
-
-
-_token_types = local()
-_token_types.value = []
-reset_tokens()

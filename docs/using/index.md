@@ -44,7 +44,7 @@ and rendering to HTML. The function also accepts an additional argument
 
 ```python
 import mistletoe
-from mistletoe.latex_renderer import LaTeXRenderer
+from mistletoe.renderers.latex import LaTeXRenderer
 
 with open('foo.md', 'r') as fin:
     rendered = mistletoe.markdown(fin, LaTeXRenderer)
@@ -60,7 +60,7 @@ from mistletoe import Document, HTMLRenderer
 
 with open('foo.md', 'r') as fin:
     with HTMLRenderer() as renderer:
-        rendered = renderer.render(Document(fin))
+        rendered = renderer.render(Document.read(fin))
 ```
 
 ### From the command-line
@@ -125,15 +125,15 @@ mistletoe is the fastest CommonMark compliant implementation in Python.
 Try the benchmarks yourself by running:
 
 ```sh
-$ python3 test/benchmark.py  # all results in seconds
-Test document: test/samples/syntax.md
+$ python3 test/test_samples/benchmark.py  # all results in seconds
+Test document: syntax.md
 Test iterations: 1000
 Running tests with markdown, mistune, commonmark, mistletoe...
 ==============================================================
-markdown: 33.28557115700096
-mistune: 8.533771439999327
-commonmark: 84.54588776299897
-mistletoe: 23.5405140980001
+markdown: 40.270715949
+mistune: 11.054077996000004
+commonmark: 44.426582849
+mistletoe: 34.47910147500001
 ```
 
 We notice that Mistune is the fastest Markdown parser,
@@ -331,7 +331,7 @@ of most of them for you. Simply pass your custom token class to
 `super().__init__()` does the trick:
 
 ```python
-from mistletoe.html_renderer import HTMLRenderer
+from mistletoe.renderers.html import HTMLRenderer
 
 class GithubWikiRenderer(HTMLRenderer):
     def __init__(self):
@@ -350,7 +350,7 @@ def render_github_wiki(self, token):
 Cleaning up, we have our new renderer class:
 
 ```python
-from mistletoe.html_renderer import HTMLRenderer, escape_url
+from mistletoe.renderers.html import HTMLRenderer, escape_url
 
 class GithubWikiRenderer(HTMLRenderer):
     def __init__(self):
@@ -376,7 +376,7 @@ from contrib.github_wiki import GithubWikiRenderer
 
 with open('foo.md', 'r') as fin:
     with GithubWikiRenderer() as renderer:
-        rendered = renderer.render(Document(fin))
+        rendered = renderer.render(Document.read(fin))
 ```
 
 For more info, take a look at the `base_renderer` module in mistletoe.

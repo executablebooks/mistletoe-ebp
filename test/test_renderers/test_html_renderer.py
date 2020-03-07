@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
-from mistletoe.html_renderer import HTMLRenderer
+from mistletoe.renderers.html import HTMLRenderer
+from mistletoe import Document
 
 
 class TestRenderer(TestCase):
@@ -29,9 +30,9 @@ class TestHTMLRenderer(TestRenderer):
         self._test_token("Emphasis", "<em>inner</em>")
 
     def test_inline_code(self):
-        from mistletoe.span_token import tokenize_inner
+        from mistletoe.span_tokenizer import tokenize_span
 
-        rendered = self.renderer.render(tokenize_inner("`foo`")[0])
+        rendered = self.renderer.render(tokenize_span("`foo`")[0])
         self.assertEqual(rendered, "<code>foo</code>")
 
     def test_strikethrough(self):
@@ -74,29 +75,29 @@ class TestHTMLRenderer(TestRenderer):
         self._test_token("Paragraph", "<p>inner</p>")
 
     def test_block_code(self):
-        from mistletoe.block_token import tokenize
+        from mistletoe.block_tokenizer import tokenize_main
 
-        rendered = self.renderer.render(tokenize(["```sh\n", "foo\n", "```\n"])[0])
+        rendered = self.renderer.render(tokenize_main(["```sh\n", "foo\n", "```\n"])[0])
         output = '<pre><code class="language-sh">foo\n</code></pre>'
         self.assertEqual(rendered, output)
 
     def test_block_code_no_language(self):
-        from mistletoe.block_token import tokenize
+        from mistletoe.block_tokenizer import tokenize_main
 
-        rendered = self.renderer.render(tokenize(["```\n", "foo\n", "```\n"])[0])
+        rendered = self.renderer.render(tokenize_main(["```\n", "foo\n", "```\n"])[0])
         output = "<pre><code>foo\n</code></pre>"
         self.assertEqual(rendered, output)
 
     def test_list(self):
         output = "<ul>\n\n</ul>"
-        self._test_token("List", output, start=None)
+        self._test_token("List", output, start_at=None)
 
     def test_list_item(self):
         output = "<li></li>"
         self._test_token("ListItem", output)
 
     def test_table_with_header(self):
-        func_path = "mistletoe.html_renderer.HTMLRenderer.render_table_row"
+        func_path = "mistletoe.renderers.html.HTMLRenderer.render_table_row"
         with mock.patch(func_path, autospec=True) as mock_func:
             mock_func.return_value = "row"
             output = (
@@ -108,7 +109,7 @@ class TestHTMLRenderer(TestRenderer):
             self._test_token("Table", output)
 
     def test_table_without_header(self):
-        func_path = "mistletoe.html_renderer.HTMLRenderer.render_table_row"
+        func_path = "mistletoe.renderers.html.HTMLRenderer.render_table_row"
         with mock.patch(func_path, autospec=True) as mock_func:
             mock_func.return_value = "row"
             output = "<table>\n<tbody>\ninner</tbody>\n</table>"
@@ -140,25 +141,35 @@ class TestHTMLRenderer(TestRenderer):
         self._test_token("LineBreak", "<br />\n", children=False, soft=False)
 
     def test_document(self):
-        self._test_token("Document", "", footnotes={})
+        self._test_token("Document", "", link_definitions={})
 
 
-class TestHTMLRendererFootnotes(TestCase):
+class TestHTMLRendererLinkDefinitions(TestCase):
     def setUp(self):
         self.renderer = HTMLRenderer()
         self.renderer.__enter__()
         self.addCleanup(self.renderer.__exit__, None, None, None)
 
-    def test_footnote_image(self):
+    def test_link_definition_image(self):
         from mistletoe import Document
 
-        token = Document(["![alt][foo]\n", "\n", '[foo]: bar "title"\n'])
+        token = Document.read(["![alt][foo]\n", "\n", '[foo]: bar "title"\n'])
         output = '<p><img src="bar" alt="alt" title="title" /></p>\n'
         self.assertEqual(self.renderer.render(token), output)
 
-    def test_footnote_link(self):
-        from mistletoe import Document
-
-        token = Document(["[name][foo]\n", "\n", "[foo]: target\n"])
+    def test_link_definition(self):
+        token = Document.read(["[name][foo]\n", "\n", "[foo]: target\n"])
         output = '<p><a href="target">name</a></p>\n'
+        self.assertEqual(self.renderer.render(token), output)
+
+    def test_link_definition_1st(self):
+        token = Document.read(["[foo]: target\n", "\n", "[name][foo]\n"])
+        output = '<p><a href="target">name</a></p>\n'
+        self.assertEqual(self.renderer.render(token), output)
+
+    def test_link_definition_2reads(self):
+        """The link definitions should not persist between parses."""
+        token = Document.read(["[name][foo]\n", "\n", "[foo]: target\n"])
+        token = Document.read(["[name][foo]\n", "\n"])
+        output = "<p>[name][foo]</p>\n"
         self.assertEqual(self.renderer.render(token), output)

@@ -5,7 +5,7 @@ See `if __name__ == '__main__'` section for sample usage.
 """
 
 import re
-from mistletoe.html_renderer import HTMLRenderer
+from mistletoe.renderers.html import HTMLRenderer
 
 
 class TOCRenderer(HTMLRenderer):
@@ -30,9 +30,9 @@ class TOCRenderer(HTMLRenderer):
     @property
     def toc(self):
         """
-        Returns table of contents as a block_token.List instance.
+        Returns table of contents as a block_tokens.List instance.
         """
-        from mistletoe.block_token import List
+        from mistletoe.block_tokens import List
 
         def get_indent(level):
             if self.omit_title:

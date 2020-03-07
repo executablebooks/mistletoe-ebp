@@ -1,4 +1,7 @@
+"""Tokenize nested span tokens."""
 import re
+from threading import local
+from mistletoe.parse_context import get_parse_context
 
 
 whitespace = {" ", "\t", "\n", "\x0b", "\x0c", "\r"}
@@ -70,10 +73,11 @@ punctuation = {
 code_pattern = re.compile(r"(?<!\\|`)(?:\\\\)*(`+)(?!`)(.+?)(?<!`)\1(?!`)", re.DOTALL)
 
 
-_code_matches = []
+_code_matches = local()
+_code_matches.value = []
 
 
-def find_core_tokens(string, root):
+def find_nested_tokenizer(string):
     delimiters = []
     matches = []
     escaped = False
@@ -84,7 +88,7 @@ def find_core_tokens(string, root):
     code_match = code_pattern.search(string)
     while i < len(string):
         if code_match is not None and i == code_match.start():
-            _code_matches.append(code_match)
+            _code_matches.value.append(code_match)
             i = code_match.end()
             code_match = code_pattern.search(string, i)
             continue
@@ -109,7 +113,7 @@ def find_core_tokens(string, root):
             elif c == "!":
                 in_image = True
             elif c == "]":
-                i = find_link_image(string, i, delimiters, matches, root)
+                i = find_link_image(string, i, delimiters, matches)
                 code_match = code_pattern.search(string, i)
             elif in_image:
                 in_image = False
@@ -122,7 +126,7 @@ def find_core_tokens(string, root):
     return matches
 
 
-def find_link_image(string, offset, delimiters, matches, root=None):
+def find_link_image(string, offset, delimiters, matches):
     i = len(delimiters) - 1
     for delimiter in delimiters[::-1]:
         # found a link/image delimiter
@@ -131,7 +135,7 @@ def find_link_image(string, offset, delimiters, matches, root=None):
             if not delimiter.active:
                 delimiters.remove(delimiter)
                 return offset
-            match = match_link_image(string, offset, delimiter, root)
+            match = match_link_image(string, offset, delimiter)
             # found match
             if match:
                 # parse for emphasis
@@ -195,7 +199,7 @@ def process_emphasis(string, stack_bottom, delimiters, matches):
     del delimiters[stack_bottom:]
 
 
-def match_link_image(string, offset, delimiter, root=None):
+def match_link_image(string, offset, delimiter):
     image = delimiter.type == "!["
     start = delimiter.start
     text_start = start + delimiter.number
@@ -224,10 +228,10 @@ def match_link_image(string, offset, delimiter, root=None):
                     )
                     match.type = "Link" if not image else "Image"
                     return match
-    # footnote link
+    # link definition reference
     if follows(string, offset, "["):
-        # full footnote link
-        result = match_link_label(string, offset + 1, root)
+        # full link definition reference
+        result = match_link_label(string, offset + 1)
         if result:
             match_info, (dest, title) = result
             end = match_info[1]
@@ -240,9 +244,9 @@ def match_link_image(string, offset, delimiter, root=None):
             )
             match.type = "Link" if not image else "Image"
             return match
-        ref = is_link_label(text, root)
+        ref = is_link_label(text)
         if ref:
-            # compact footnote link
+            # compact link definition reference
             if follows(string, offset + 1, "]"):
                 dest, title = ref
                 end = offset + 3
@@ -256,8 +260,8 @@ def match_link_image(string, offset, delimiter, root=None):
                 match.type = "Link" if not image else "Image"
                 return match
         return None
-    # shortcut footnote link
-    ref = is_link_label(text, root)
+    # shortcut link definition reference
+    ref = is_link_label(text)
     if ref:
         dest, title = ref
         end = offset + 1
@@ -328,7 +332,7 @@ def match_link_title(string, offset):
     return None
 
 
-def match_link_label(string, offset, root=None):
+def match_link_label(string, offset):
     start = -1
     end = -1
     escaped = False
@@ -345,7 +349,8 @@ def match_link_label(string, offset, root=None):
             label = string[start + 1 : end]
             match_info = start, end + 1, label
             if label.strip() != "":
-                ref = root.footnotes.get(normalize_label(label), None)
+                link_definitions = get_parse_context().link_definitions
+                ref = link_definitions.get(normalize_label(label), None)
                 if ref is not None:
                     return match_info, ref
                 return None
@@ -355,7 +360,7 @@ def match_link_label(string, offset, root=None):
     return None
 
 
-def is_link_label(text, root):
+def is_link_label(text):
     escaped = False
     for c in text:
         if c == "\\" and not escaped:
@@ -365,9 +370,8 @@ def is_link_label(text, root):
         elif escaped:
             escaped = False
     if text.strip() != "":
-        if not root:
-            return True
-        return root.footnotes.get(normalize_label(text), None)
+        link_definitions = get_parse_context().link_definitions
+        return link_definitions.get(normalize_label(text), None)
     return None
 
 

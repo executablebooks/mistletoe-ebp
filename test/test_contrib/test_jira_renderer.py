@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from unittest import TestCase
-from mistletoe.span_token import tokenize_inner
+from mistletoe.span_tokenizer import tokenize_span
 from contrib.jira_renderer import JIRARenderer
 import random
 import string
@@ -43,7 +43,7 @@ class TestJIRARenderer(TestCase):
 
     def textFormatTest(self, inputTemplate, outputTemplate):
         input = self.genRandomString(80, False)
-        token = next(iter(tokenize_inner(inputTemplate.format(input))))
+        token = next(iter(tokenize_span(inputTemplate.format(input))))
         expected = outputTemplate.format(input)
         actual = self.renderer.render(token)
         self.assertEqual(expected, actual)
@@ -61,13 +61,13 @@ class TestJIRARenderer(TestCase):
         self.textFormatTest("-{}-", "-{}-")
 
     def test_render_image(self):
-        token = next(iter(tokenize_inner("![image](foo.jpg)")))
+        token = next(iter(tokenize_span("![image](foo.jpg)")))
         expected = "!foo.jpg!"
         actual = self.renderer.render(token)
         self.assertEqual(expected, actual)
 
-    def test_render_footnote_image(self):
-        # token = next(tokenize_inner('![image]\n\n[image]: foo.jpg'))
+    def test_render_link_definition_image(self):
+        # token = next(tokenize_span('![image]\n\n[image]: foo.jpg'))
         # expected = '!foo.jpg!'
         # actual = self.renderer.render(token)
         # self.assertEqual(expected, actual)
@@ -78,19 +78,19 @@ class TestJIRARenderer(TestCase):
             self.genRandomString(5), self.genRandomString(5), self.genRandomString(3)
         )
         body = self.genRandomString(80, True)
-        token = next(iter(tokenize_inner("[{body}]({url})".format(url=url, body=body))))
+        token = next(iter(tokenize_span("[{body}]({url})".format(url=url, body=body))))
         expected = "[{body}|{url}]".format(url=url, body=body)
         actual = self.renderer.render(token)
         self.assertEqual(expected, actual)
 
-    def test_render_footnote_link(self):
+    def test_render_link_definition(self):
         pass
 
     def test_render_auto_link(self):
         url = "http://{0}.{1}.{2}".format(
             self.genRandomString(5), self.genRandomString(5), self.genRandomString(3)
         )
-        token = next(iter(tokenize_inner("<{url}>".format(url=url))))
+        token = next(iter(tokenize_span("<{url}>".format(url=url))))
         expected = "[{url}]".format(url=url)
         actual = self.renderer.render(token)
         self.assertEqual(expected, actual)

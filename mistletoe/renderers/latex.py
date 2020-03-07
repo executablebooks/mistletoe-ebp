@@ -4,7 +4,7 @@ LaTeX renderer for mistletoe.
 
 from itertools import chain
 import mistletoe.latex_token as latex_token
-from mistletoe.base_renderer import BaseRenderer
+from mistletoe.renderers.base import BaseRenderer
 
 
 class LaTeXRenderer(BaseRenderer):
@@ -89,7 +89,7 @@ class LaTeXRenderer(BaseRenderer):
     def render_list(self, token):
         self.packages["listings"] = []
         template = "\\begin{{{tag}}}\n{inner}\\end{{{tag}}}\n"
-        tag = "enumerate" if token.start is not None else "itemize"
+        tag = "enumerate" if token.start_at is not None else "itemize"
         inner = self.render_inner(token)
         return template.format(tag=tag, inner=inner)
 
@@ -155,7 +155,7 @@ class LaTeXRenderer(BaseRenderer):
             "{inner}"
             "\\end{{document}}\n"
         )
-        self.footnotes.update(token.footnotes)
+        self.link_definitions.update(token.link_definitions)
         return template.format(
             inner=self.render_inner(token), packages=self.render_packages()
         )

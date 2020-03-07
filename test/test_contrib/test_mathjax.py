@@ -11,7 +11,7 @@ class TestMathJaxRenderer(unittest.TestCase):
 
     def test_render_html(self):
         with MathJaxRenderer() as renderer:
-            token = Document(["# heading 1\n", "paragraph\n"])
+            token = Document.read(["# heading 1\n", "paragraph\n"])
             output = renderer.render(token)
             target = "<h1>heading 1</h1>\n<p>paragraph</p>\n"
             target += self.mathjax_src
@@ -20,7 +20,7 @@ class TestMathJaxRenderer(unittest.TestCase):
     def test_render_math(self):
         with MathJaxRenderer() as renderer:
             raw = ["# heading 1\n", "$$paragraph$$\n", "with $ math $\n"]
-            token = Document(raw)
+            token = Document.read(raw)
             output = renderer.render(token)
             target = "<h1>heading 1</h1>\n<p>$$paragraph$$\nwith $$ math $$</p>\n"
             target += self.mathjax_src

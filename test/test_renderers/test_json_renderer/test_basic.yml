@@ -1,0 +1,207 @@
+children:
+- children:
+  - content: Setext Header
+    type: RawText
+  level: 1
+  position:
+  - 5
+  - 6
+  type: SetextHeading
+- children:
+  - content: Atx Header
+    type: RawText
+  level: 1
+  position:
+  - 8
+  - 8
+  type: Heading
+- children:
+  - children:
+    - children:
+      - content: nested strong emphasis
+        type: RawText
+      type: Emphasis
+    type: Strong
+  - content: ''
+    soft: true
+    type: LineBreak
+  - content: <www.google.com>
+    type: RawText
+  position:
+  - 10
+  - 11
+  type: Paragraph
+- children:
+  - children:
+    - children:
+      - content: unordered list
+        type: RawText
+      position:
+      - 13
+      - 13
+      type: Paragraph
+    leader: '-'
+    loose: false
+    next_marker:
+    - 3
+    - '1.'
+    position:
+    - 12
+    - 14
+    prepend: 2
+    type: ListItem
+  loose: false
+  position:
+  - 12
+  - 14
+  start_at: null
+  type: List
+- children:
+  - children:
+    - children:
+      - content: ordered list
+        type: RawText
+      position:
+      - 15
+      - 15
+      type: Paragraph
+    leader: '1.'
+    loose: false
+    next_marker: null
+    position:
+    - 14
+    - 15
+    prepend: 3
+    type: ListItem
+  loose: false
+  position:
+  - 14
+  - 15
+  start_at: 1
+  type: List
+- children:
+  - children:
+    - content: 'quote '
+      type: RawText
+    - children:
+      - content: emphasis
+        type: RawText
+      type: Emphasis
+    position:
+    - 18
+    - 18
+    type: Paragraph
+  position:
+  - 17
+  - 17
+  type: Quote
+- children:
+  - children:
+    - content: link
+      type: RawText
+    target: abc
+    title: xyz
+    type: Link
+  position:
+  - 19
+  - 19
+  type: Paragraph
+- position:
+  - 21
+  - 21
+  type: LinkDefinition
+- children:
+  - content: 'code = 1
+
+      '
+    type: RawText
+  language: python
+  position:
+  - 23
+  - 25
+  type: CodeFence
+- children:
+  - content: 'block
+
+      quote
+
+      '
+    type: RawText
+  language: ''
+  position:
+  - 27
+  - 28
+  type: BlockCode
+- position:
+  - 30
+  - 30
+  type: ThematicBreak
+- children:
+  - children:
+    - align: null
+      children:
+      - content: '1'
+        type: RawText
+      position:
+      - 33
+      - 33
+      type: TableCell
+    - align: 1
+      children:
+      - content: '2'
+        type: RawText
+      position:
+      - 33
+      - 33
+      type: TableCell
+    position:
+    - 33
+    - 33
+    row_align:
+    - null
+    - 1
+    type: TableRow
+  column_align:
+  - null
+  - 1
+  header:
+    children:
+    - align: null
+      children:
+      - content: a
+        type: RawText
+      position:
+      - 31
+      - 31
+      type: TableCell
+    - align: 1
+      children:
+      - content: b
+        type: RawText
+      position:
+      - 31
+      - 31
+      type: TableCell
+    position:
+    - 31
+    - 31
+    row_align:
+    - null
+    - 1
+    type: TableRow
+  position:
+  - 31
+  - 34
+  type: Table
+front_matter:
+  content: 'a: 1
+
+    '
+  position:
+  - 0
+  - 3
+link_definitions:
+  ref:
+  - abc
+  - xyz
+type: Document

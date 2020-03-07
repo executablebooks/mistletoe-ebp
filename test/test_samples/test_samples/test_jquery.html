@@ -1,0 +1,228 @@
+<h1><a href="https://jquery.com/">jQuery</a> — New Wave JavaScript</h1>
+<h2>Contribution Guides</h2>
+<p>In the spirit of open source software development, jQuery always encourages community code contribution. To help you get started and before you jump into writing code, be sure to read these important contribution guidelines thoroughly:</p>
+<ol>
+<li><a href="https://contribute.jquery.org/">Getting Involved</a></li>
+<li><a href="https://contribute.jquery.org/style-guide/js/">Core Style Guide</a></li>
+<li><a href="https://contribute.jquery.org/code/">Writing Code for jQuery Foundation Projects</a></li>
+</ol>
+<h2>Environments in which to use jQuery</h2>
+<ul>
+<li><a href="https://jquery.com/browser-support/">Browser support</a></li>
+<li>jQuery also supports Node, browser extensions, and other non-browser environments.</li>
+</ul>
+<h2>What you need to build your own jQuery</h2>
+<p>In order to build jQuery, you need to have the latest Node.js/npm and git 1.7 or later. Earlier versions might work, but are not supported.</p>
+<p>For Windows, you have to download and install <a href="https://git-scm.com/downloads">git</a> and <a href="https://nodejs.org/en/download/">Node.js</a>.</p>
+<p>OS X users should install <a href="http://brew.sh/">Homebrew</a>. Once Homebrew is installed, run <code>brew install git</code> to install git,
+and <code>brew install node</code> to install Node.js.</p>
+<p>Linux/BSD users should use their appropriate package managers to install git and Node.js, or build from source
+if you swing that way. Easy-peasy.</p>
+<h2>How to build your own jQuery</h2>
+<p>Clone a copy of the main jQuery git repo by running:</p>
+<pre><code class="language-bash">git clone git://github.com/jquery/jquery.git
+</code></pre>
+<p>Enter the jquery directory and run the build script:</p>
+<pre><code class="language-bash">cd jquery &amp;&amp; npm run build
+</code></pre>
+<p>The built version of jQuery will be put in the <code>dist/</code> subdirectory, along with the minified copy and associated map file.</p>
+<p>If you want to create custom build or help with jQuery development, it would be better to install <a href="https://github.com/gruntjs/grunt-cli">grunt command line interface</a> as a global package:</p>
+<pre><code>npm install -g grunt-cli
+</code></pre>
+<p>Make sure you have <code>grunt</code> installed by testing:</p>
+<pre><code>grunt -V
+</code></pre>
+<p>Now by running the <code>grunt</code> command, in the jquery directory, you can build a full version of jQuery, just like with an <code>npm run build</code> command:</p>
+<pre><code>grunt
+</code></pre>
+<p>There are many other tasks available for jQuery Core:</p>
+<pre><code>grunt -help
+</code></pre>
+<h3>Modules</h3>
+<p>Special builds can be created that exclude subsets of jQuery functionality.
+This allows for smaller custom builds when the builder is certain that those parts of jQuery are not being used.
+For example, an app that only used JSONP for <code>$.ajax()</code> and did not need to calculate offsets or positions of elements could exclude the offset and ajax/xhr modules.</p>
+<p>Any module may be excluded except for <code>core</code>, and <code>selector</code>. To exclude a module, pass its path relative to the <code>src</code> folder (without the <code>.js</code> extension).</p>
+<p>Some example modules that can be excluded are:</p>
+<ul>
+<li><strong>ajax</strong>: All AJAX functionality: <code>$.ajax()</code>, <code>$.get()</code>, <code>$.post()</code>, <code>$.ajaxSetup()</code>, <code>.load()</code>, transports, and ajax event shorthands such as <code>.ajaxStart()</code>.</li>
+<li><strong>ajax/xhr</strong>: The XMLHTTPRequest AJAX transport only.</li>
+<li><strong>ajax/script</strong>: The <code>&lt;script&gt;</code> AJAX transport only; used to retrieve scripts.</li>
+<li><strong>ajax/jsonp</strong>: The JSONP AJAX transport only; depends on the ajax/script transport.</li>
+<li><strong>css</strong>: The <code>.css()</code> method. Also removes <strong>all</strong> modules depending on css (including <strong>effects</strong>, <strong>dimensions</strong>, and <strong>offset</strong>).</li>
+<li><strong>css/showHide</strong>:  Non-animated <code>.show()</code>, <code>.hide()</code> and <code>.toggle()</code>; can be excluded if you use classes or explicit <code>.css()</code> calls to set the <code>display</code> property. Also removes the <strong>effects</strong> module.</li>
+<li><strong>deprecated</strong>: Methods documented as deprecated but not yet removed.</li>
+<li><strong>dimensions</strong>: The <code>.width()</code> and <code>.height()</code> methods, including <code>inner-</code> and <code>outer-</code> variations.</li>
+<li><strong>effects</strong>: The <code>.animate()</code> method and its shorthands such as <code>.slideUp()</code> or <code>.hide(&quot;slow&quot;)</code>.</li>
+<li><strong>event</strong>: The <code>.on()</code> and <code>.off()</code> methods and all event functionality. Also removes <code>event/alias</code>.</li>
+<li><strong>event/alias</strong>: All event attaching/triggering shorthands like <code>.click()</code> or <code>.mouseover()</code>.</li>
+<li><strong>event/focusin</strong>: Cross-browser support for the focusin and focusout events.</li>
+<li><strong>event/trigger</strong>: The <code>.trigger()</code> and <code>.triggerHandler()</code> methods. Used by <strong>alias</strong> and <strong>focusin</strong> modules.</li>
+<li><strong>offset</strong>: The <code>.offset()</code>, <code>.position()</code>, <code>.offsetParent()</code>, <code>.scrollLeft()</code>, and <code>.scrollTop()</code> methods.</li>
+<li><strong>wrap</strong>: The <code>.wrap()</code>, <code>.wrapAll()</code>, <code>.wrapInner()</code>, and <code>.unwrap()</code> methods.</li>
+<li><strong>core/ready</strong>: Exclude the ready module if you place your scripts at the end of the body. Any ready callbacks bound with <code>jQuery()</code> will simply be called immediately. However, <code>jQuery(document).ready()</code> will not be a function and <code>.on(&quot;ready&quot;, ...)</code> or similar will not be triggered.</li>
+<li><strong>deferred</strong>: Exclude jQuery.Deferred. This also removes jQuery.Callbacks. <em>Note</em> that modules that depend on jQuery.Deferred(AJAX, effects, core/ready) will not be removed and will still expect jQuery.Deferred to be there. Include your own jQuery.Deferred implementation or exclude those modules as well (<code>grunt custom:-deferred,-ajax,-effects,-core/ready</code>).</li>
+<li><strong>exports/global</strong>: Exclude the attachment of global jQuery variables ($ and jQuery) to the window.</li>
+<li><strong>exports/amd</strong>: Exclude the AMD definition.</li>
+</ul>
+<p>As a special case, you may also replace Sizzle by using a special flag <code>grunt custom:-sizzle</code>.</p>
+<ul>
+<li><strong>sizzle</strong>: The Sizzle selector engine. When this module is excluded, it is replaced by a rudimentary selector engine based on the browser's <code>querySelectorAll</code> method that does not support jQuery selector extensions or enhanced semantics. See the <a href="https://github.com/jquery/jquery/blob/master/src/selector-native.js">selector-native.js</a> file for details.</li>
+</ul>
+<p><em>Note</em>: Excluding Sizzle will also exclude all jQuery selector extensions (such as <code>effects/animatedSelector</code> and <code>css/hiddenVisibleSelectors</code>).</p>
+<p>The build process shows a message for each dependent module it excludes or includes.</p>
+<h5>AMD name</h5>
+<p>As an option, you can set the module name for jQuery's AMD definition. By default, it is set to &quot;jquery&quot;, which plays nicely with plugins and third-party libraries, but there may be cases where you'd like to change this. Simply set the <code>&quot;amd&quot;</code> option:</p>
+<pre><code class="language-bash">grunt custom --amd=&quot;custom-name&quot;
+</code></pre>
+<p>Or, to define anonymously, set the name to an empty string.</p>
+<pre><code class="language-bash">grunt custom --amd=&quot;&quot;
+</code></pre>
+<h4>Custom Build Examples</h4>
+<p>To create a custom build, first check out the version:</p>
+<pre><code class="language-bash">git pull; git checkout VERSION
+</code></pre>
+<p>Where VERSION is the version you want to customize. Then, make sure all Node dependencies are installed:</p>
+<pre><code class="language-bash">npm install
+</code></pre>
+<p>Create the custom build using the <code>grunt custom</code> option, listing the modules to be excluded.</p>
+<p>Exclude all <strong>ajax</strong> functionality:</p>
+<pre><code class="language-bash">grunt custom:-ajax
+</code></pre>
+<p>Excluding <strong>css</strong> removes modules depending on CSS: <strong>effects</strong>, <strong>offset</strong>, <strong>dimensions</strong>.</p>
+<pre><code class="language-bash">grunt custom:-css
+</code></pre>
+<p>Exclude a bunch of modules:</p>
+<pre><code class="language-bash">grunt custom:-ajax,-css,-deprecated,-dimensions,-effects,-event/alias,-offset,-wrap
+</code></pre>
+<p>For questions or requests regarding custom builds, please start a thread on the <a href="https://forum.jquery.com/developing-jquery-core">Developing jQuery Core</a> section of the forum. Due to the combinatorics and custom nature of these builds, they are not regularly tested in jQuery's unit test process. The non-Sizzle selector engine currently does not pass unit tests because it is missing too much essential functionality.</p>
+<h2>Running the Unit Tests</h2>
+<p>Make sure you have the necessary dependencies:</p>
+<pre><code class="language-bash">npm install
+</code></pre>
+<p>Start <code>grunt watch</code> or <code>npm start</code> to auto-build jQuery as you work:</p>
+<pre><code class="language-bash">grunt watch
+</code></pre>
+<p>Run the unit tests with a local server that supports PHP. Ensure that you run the site from the root directory, not the &quot;test&quot; directory. No database is required. Pre-configured php local servers are available for Windows and Mac. Here are some options:</p>
+<ul>
+<li>Windows: <a href="http://www.wampserver.com/en/">WAMP download</a></li>
+<li>Mac: <a href="https://www.mamp.info/en/downloads/">MAMP download</a></li>
+<li>Linux: <a href="https://www.linux.com/learn/tutorials/288158-easy-lamp-server-installation">Setting up LAMP</a></li>
+<li><a href="https://code.google.com/p/mongoose/">Mongoose (most platforms)</a></li>
+</ul>
+<h2>Building to a different directory</h2>
+<p>To copy the built jQuery files from <code>/dist</code> to another directory:</p>
+<pre><code class="language-bash">grunt &amp;&amp; grunt dist:/path/to/special/location/
+</code></pre>
+<p>With this example, the output files would be:</p>
+<pre><code class="language-bash">/path/to/special/location/jquery.js
+/path/to/special/location/jquery.min.js
+</code></pre>
+<p>To add a permanent copy destination, create a file in <code>dist/</code> called &quot;.destination.json&quot;. Inside the file, paste and customize the following:</p>
+<pre><code class="language-json">
+{
+  &quot;/Absolute/path/to/other/destination&quot;: true
+}
+</code></pre>
+<p>Additionally, both methods can be combined.</p>
+<h2>Essential Git</h2>
+<p>As the source code is handled by the Git version control system, it's useful to know some features used.</p>
+<h3>Cleaning</h3>
+<p>If you want to purge your working directory back to the status of upstream, the following commands can be used (remember everything you've worked on is gone after these):</p>
+<pre><code class="language-bash">git reset --hard upstream/master
+git clean -fdx
+</code></pre>
+<h3>Rebasing</h3>
+<p>For feature/topic branches, you should always use the <code>--rebase</code> flag to <code>git pull</code>, or if you are usually handling many temporary &quot;to be in a github pull request&quot; branches, run the following to automate this:</p>
+<pre><code class="language-bash">git config branch.autosetuprebase local
+</code></pre>
+<p>(see <code>man git-config</code> for more information)</p>
+<h3>Handling merge conflicts</h3>
+<p>If you're getting merge conflicts when merging, instead of editing the conflicted files manually, you can use the feature
+<code>git mergetool</code>. Even though the default tool <code>xxdiff</code> looks awful/old, it's rather useful.</p>
+<p>The following are some commands that can be used there:</p>
+<ul>
+<li><code>Ctrl + Alt + M</code> - automerge as much as possible</li>
+<li><code>b</code> - jump to next merge conflict</li>
+<li><code>s</code> - change the order of the conflicted lines</li>
+<li><code>u</code> - undo a merge</li>
+<li><code>left mouse button</code> - mark a block to be the winner</li>
+<li><code>middle mouse button</code> - mark a line to be the winner</li>
+<li><code>Ctrl + S</code> - save</li>
+<li><code>Ctrl + Q</code> - quit</li>
+</ul>
+<h2><a href="https://api.qunitjs.com">QUnit</a> Reference</h2>
+<h3>Test methods</h3>
+<pre><code class="language-js">expect( numAssertions );
+stop();
+start();
+</code></pre>
+<p><em>Note</em>: QUnit's eventual addition of an argument to stop/start is ignored in this test suite so that start and stop can be passed as callbacks without worrying about their parameters.</p>
+<h3>Test assertions</h3>
+<pre><code class="language-js">ok( value, [message] );
+equal( actual, expected, [message] );
+notEqual( actual, expected, [message] );
+deepEqual( actual, expected, [message] );
+notDeepEqual( actual, expected, [message] );
+strictEqual( actual, expected, [message] );
+notStrictEqual( actual, expected, [message] );
+throws( block, [expected], [message] );
+</code></pre>
+<h2>Test Suite Convenience Methods Reference (See <a href="https://github.com/jquery/jquery/blob/master/test/data/testinit.js">test/data/testinit.js</a>)</h2>
+<h3>Returns an array of elements with the given IDs</h3>
+<pre><code class="language-js">q( ... );
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-js">q(&quot;main&quot;, &quot;foo&quot;, &quot;bar&quot;);
+
+=&gt; [ div#main, span#foo, input#bar ]
+</code></pre>
+<h3>Asserts that a selection matches the given IDs</h3>
+<pre><code class="language-js">t( testName, selector, [ &quot;array&quot;, &quot;of&quot;, &quot;ids&quot; ] );
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-js">t(&quot;Check for something&quot;, &quot;//[a]&quot;, [&quot;foo&quot;, &quot;bar&quot;]);
+</code></pre>
+<h3>Fires a native DOM event without going through jQuery</h3>
+<pre><code class="language-js">fireNative( node, eventType )
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-js">fireNative( jQuery(&quot;#elem&quot;)[0], &quot;click&quot; );
+</code></pre>
+<h3>Add random number to url to stop caching</h3>
+<pre><code class="language-js">url( &quot;some/url.php&quot; );
+</code></pre>
+<p>Example:</p>
+<pre><code class="language-js">url(&quot;data/test.html&quot;);
+
+=&gt; &quot;data/test.html?10538358428943&quot;
+
+
+url(&quot;data/test.php?foo=bar&quot;);
+
+=&gt; &quot;data/test.php?foo=bar&amp;10538358345554&quot;
+</code></pre>
+<h3>Run tests in an iframe</h3>
+<p>Some tests may require a document other than the standard test fixture, and
+these can be run in a separate iframe. The actual test code and assertions
+remain in jQuery's main test files; only the minimal test fixture markup
+and setup code should be placed in the iframe file.</p>
+<pre><code class="language-js">testIframe( testName, fileName,
+  function testCallback(
+      assert, jQuery, window, document,
+	  [ additional args ] ) {
+	...
+  } );
+</code></pre>
+<p>This loads a page, constructing a url with fileName <code>&quot;./data/&quot; + fileName</code>.
+The iframed page determines when the callback occurs in the test by
+including the &quot;/test/data/iframeTest.js&quot; script and calling
+<code>startIframeTest( [ additional args ] )</code> when appropriate. Often this
+will be after either document ready or <code>window.onload</code> fires.</p>
+<p>The <code>testCallback</code> receives the QUnit <code>assert</code> object created by <code>testIframe</code>
+for this test, followed by the global <code>jQuery</code>, <code>window</code>, and <code>document</code> from
+the iframe. If the iframe code passes any arguments to <code>startIframeTest</code>,
+they follow the <code>document</code> argument.</p>
+<h2>Questions?</h2>
+<p>If you have any questions, please feel free to ask on the
+<a href="https://forum.jquery.com/developing-jquery-core">Developing jQuery Core forum</a> or in #jquery on irc.freenode.net.</p>

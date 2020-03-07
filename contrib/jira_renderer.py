@@ -23,8 +23,8 @@
 
 import html
 from itertools import chain
-from mistletoe import block_token, span_token
-from mistletoe.base_renderer import BaseRenderer
+from mistletoe import block_tokens, span_tokens
+from mistletoe.renderers.base import BaseRenderer
 
 
 class JIRARenderer(BaseRenderer):
@@ -40,7 +40,7 @@ class JIRARenderer(BaseRenderer):
             extras (list): allows subclasses to add even more custom tokens.
         """
         self.listTokens = []
-        super().__init__(*chain([block_token.HTMLBlock, span_token.HTMLSpan], extras))
+        super().__init__(*chain([block_tokens.HTMLBlock, span_tokens.HTMLSpan], extras))
 
     def render_strong(self, token):
         template = "*{}*"
@@ -125,15 +125,15 @@ class JIRARenderer(BaseRenderer):
         return result
 
     def render_inner(self, token):
-        if isinstance(token, block_token.List):
-            if token.start:
+        if isinstance(token, block_tokens.List):
+            if token.start_at:
                 self.listTokens.append("#")
             else:
                 self.listTokens.append("*")
 
         rendered = [self.render(child) for child in token.children]
 
-        if isinstance(token, block_token.List):
+        if isinstance(token, block_tokens.List):
             del self.listTokens[-1]
 
         return "".join(rendered)
@@ -192,7 +192,7 @@ class JIRARenderer(BaseRenderer):
         return token.content
 
     def render_document(self, token):
-        self.footnotes.update(token.footnotes)
+        self.link_definitions.update(token.link_definitions)
         return self.render_inner(token)
 
 

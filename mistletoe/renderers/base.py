@@ -4,7 +4,8 @@ Base class for renderers.
 
 import re
 import sys
-from mistletoe import block_token, span_token
+from mistletoe import base_elements
+from mistletoe.parse_context import get_parse_context, set_parse_context
 
 
 class BaseRenderer(object):
@@ -27,9 +28,9 @@ class BaseRenderer(object):
             >>> from mistletoe import Document
             >>> from some_renderer import SomeRenderer
             >>> with SomeRenderer() as renderer:
-            ...     rendered = renderer.render(Document(fin))
+            ...     rendered = renderer.render(Document.read(fin))
 
-        See mistletoe.html_renderer for an implementation example.
+        See mistletoe.renderers.html for an implementation example.
 
     Naming conventions:
         *   The keys of self.render_map should exactly match the class
@@ -70,19 +71,21 @@ class BaseRenderer(object):
             "ThematicBreak": self.render_thematic_break,
             "LineBreak": self.render_line_break,
             "Document": self.render_document,
+            "LinkDefinition": self.render_link_definition,
         }
         self._extras = extras
-
+        parse_context = get_parse_context(reset=True)
         for token in extras:
-            if issubclass(token, span_token.SpanToken):
-                token_module = span_token
+            if issubclass(token, base_elements.SpanToken):
+                # insert at position 1 (since backslash escape should also be 1st)
+                parse_context.span_tokens.insert(1, token)
             else:
-                token_module = block_token
-            token_module.add_token(token)
+                parse_context.block_tokens.insert(0, token)
             render_func = getattr(self, self._cls_to_func(token.__name__))
             self.render_map[token.__name__] = render_func
 
-        self.footnotes = {}
+        self.parse_context = parse_context.copy()
+        self.link_definitions = {}
 
     def render(self, token):
         """
@@ -109,22 +112,20 @@ class BaseRenderer(object):
         Arguments:
             token: a branch node who has children attribute.
         """
-        return "".join(map(self.render, token.children))
+        return "".join(map(self.render, token.children or []))
 
     def __enter__(self):
         """
         Make renderer classes into context managers.
         """
+        set_parse_context(self.parse_context)
         return self
 
     def __exit__(self, exception_type, exception_val, traceback):
         """
         Make renderer classes into context managers.
-
-        Reset block_token._token_types and span_token._token_types.
         """
-        block_token.reset_tokens()
-        span_token.reset_tokens()
+        get_parse_context(reset=True)
 
     @classmethod
     def _cls_to_func(cls, cls_name):
