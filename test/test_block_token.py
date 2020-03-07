@@ -236,7 +236,7 @@ class TestTable(unittest.TestCase):
             token.children
             calls = [
                 call.read(line, [None, None, None], lineno=l)
-                for line, l in zip(lines[:1] + lines[2:], [0, 2, 3])
+                for line, l in zip(lines[:1] + lines[2:], [1, 3, 4])
             ]
             mock.assert_has_calls(calls)
 
@@ -250,7 +250,7 @@ class TestTable(unittest.TestCase):
             token.children
             calls = [
                 call.read(line, [1, None], lineno=l)
-                for line, l in zip(lines[:1] + lines[2:], [0, 2])
+                for line, l in zip(lines[:1] + lines[2:], [1, 3])
             ]
             mock.assert_has_calls(calls)
 

@@ -120,6 +120,10 @@ class FrontMatter(BlockToken):
     )
 
     @classmethod
+    def start(cls, line: str) -> bool:
+        return False
+
+    @classmethod
     def read(cls, lines):
         assert lines and lines[0].startswith("---")
         end_line = None
@@ -393,7 +397,7 @@ class BlockCode(BlockToken):
 
     @classmethod
     def read(cls, lines):
-        start_line = lines.lineno + 1
+        start_line = lines.lineno
         line_buffer = []
         for line in lines:
             if line.strip() == "":
@@ -406,9 +410,7 @@ class BlockCode(BlockToken):
 
         children = (span_tokens.RawText("".join(line_buffer).strip("\n") + "\n"),)
 
-        return cls(
-            children=children, language="", position=(start_line, lines.lineno - 1)
-        )
+        return cls(children=children, language="", position=(start_line, lines.lineno))
 
     @staticmethod
     def strip(string):
@@ -438,11 +440,14 @@ class CodeFence(BlockToken):
     language: str = attr.ib(
         default="", metadata={"doc": "The code language (for sytax highlighting)"}
     )
+    arguments: str = attr.ib(
+        default="", metadata={"doc": "Any string occuring after the language"}
+    )
     position: Tuple[int, int] = attr.ib(
         metadata={"doc": "Line position in source text (start, end)"}
     )
 
-    pattern = re.compile(r"( {0,3})((?:`|~){3,}) *(\S*)")
+    pattern = re.compile(r"^( {0,3})((?:`|~){3,}) *([^`~\s]*) *([^`~]*)$")
     _open_info = None
 
     @classmethod
@@ -450,10 +455,10 @@ class CodeFence(BlockToken):
         match_obj = cls.pattern.match(line)
         if not match_obj:
             return False
-        prepend, leader, lang = match_obj.groups()
+        prepend, leader, lang, arguments = match_obj.groups()
         if leader[0] in lang or leader[0] in line[match_obj.end() :]:
             return False
-        cls._open_info = len(prepend), leader, lang
+        cls._open_info = len(prepend), leader, lang, arguments
         return True
 
     @classmethod
@@ -475,10 +480,15 @@ class CodeFence(BlockToken):
             line_buffer.append(stripped_line)
 
         language = span_tokens.EscapeSequence.strip(cls._open_info[2])
+        arg_lines = cls._open_info[3].splitlines() or [""]
+        arguments = span_tokens.EscapeSequence.strip(arg_lines[0])
         children = (span_tokens.RawText("".join(line_buffer)),)
 
         return cls(
-            children=children, language=language, position=(start_line, lines.lineno)
+            children=children,
+            language=language,
+            arguments=arguments,
+            position=(start_line, lines.lineno),
         )
 
 
@@ -745,7 +755,7 @@ class Table(BlockToken):
 
     @classmethod
     def read(cls, lines):
-        start_line = lines.lineno
+        start_line = lines.lineno + 1
         lines.anchor()
         line_buffer = [next(lines)]
         while lines.peek() is not None and "|" in lines.peek():
