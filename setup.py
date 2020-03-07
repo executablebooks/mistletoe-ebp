@@ -1,9 +1,11 @@
-from setuptools import setup
-import mistletoe
+from importlib import import_module
+
+from setuptools import find_packages, setup
+
 
 setup(
     name="mistletoe-ebp",
-    version=mistletoe.__version__,
+    version=import_module("mistletoe").__version__,
     description="A fast, extensible Markdown parser in pure Python.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -12,7 +14,7 @@ setup(
     author="Chris Sewell",
     author_email="chrisj_sewell@hotmail.com",
     license="MIT",
-    packages=["mistletoe"],
+    packages=find_packages(),
     entry_points={"console_scripts": ["mistletoe = mistletoe.__main__:main"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
