@@ -1,3 +1,5 @@
+(intro/top-level)=
+
 # mistletoe-ebp
 
 [![CI Status][travis-badge]][travis-link]
@@ -71,7 +73,8 @@ Here are the site contents:
 maxdepth: 2
 caption: Contents
 ---
-using/index.md
+using/intro.md
+using/devlop.md
 api/index.rst
 ```
 

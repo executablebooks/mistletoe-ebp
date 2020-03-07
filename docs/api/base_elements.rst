@@ -1,3 +1,5 @@
+.. _tokens/base:
+
 Base Elements
 -------------
 

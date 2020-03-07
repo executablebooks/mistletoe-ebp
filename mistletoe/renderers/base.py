@@ -8,40 +8,44 @@ from mistletoe import base_elements
 from mistletoe.parse_context import get_parse_context, set_parse_context
 
 
-class BaseRenderer(object):
+class BaseRenderer:
     """
     Base class for renderers.
 
     All renderers should ...
-    *   ... define all render functions specified in self.render_map;
-    *   ... be a context manager (by inheriting __enter__ and __exit__);
+
+    * define all render functions specified in `self.render_map`;
+    * be a context manager (by inheriting `__enter__` and `__exit__`);
 
     Custom renderers could ...
-    *   ... add additional tokens into the parsing process by passing custom
-        tokens to super().__init__();
-    *   ... add additional render functions by appending to self.render_map;
+
+    * add additional tokens into the parsing process by passing custom
+      tokens to `super().__init__()`;
+    * add additional render functions by appending to self.render_map;
 
     Usage:
-        Suppose SomeRenderer inherits BaseRenderer, and fin is the input file.
-        The syntax looks something like this:
 
-            >>> from mistletoe import Document
-            >>> from some_renderer import SomeRenderer
-            >>> with SomeRenderer() as renderer:
-            ...     rendered = renderer.render(Document.read(fin))
+    Suppose SomeRenderer inherits BaseRenderer, and fin is the input file.
+    The syntax looks something like this::
 
-        See mistletoe.renderers.html for an implementation example.
+        >>> from mistletoe import Document
+        >>> from some_renderer import SomeRenderer
+        >>> with SomeRenderer() as renderer:
+        ...     rendered = renderer.render(Document.read(fin))
+
+    See mistletoe.renderers.html for an implementation example.
 
     Naming conventions:
-        *   The keys of self.render_map should exactly match the class
-            name of tokens;
-        *   Render function names should be of form: "render_" + the
-            "snake-case" form of token's class name.
 
-    Attributes:
-        render_map (dict): maps tokens to their corresponding render functions.
-        _extras (list): a list of custom tokens to be added to the
-                        parsing process.
+    * The keys of `self.render_map` should exactly match the class
+      name of tokens;
+    * Render function names should be of form: `render_` + the
+      "snake-case" form of token's class name.
+
+    :param render_map: maps tokens to their corresponding render functions.
+    :type render_map: dict
+    :param extras: a list of custom tokens to be added to the parsing process.
+    :type extras: list
     """
 
     _parse_name = re.compile(r"([A-Z][a-z]+|[A-Z]+(?![a-z]))")
@@ -109,8 +113,7 @@ class BaseRenderer(object):
         in the renderer subclass, so that whitespace won't seem to
         appear magically for anyone reading your program.
 
-        Arguments:
-            token: a branch node who has children attribute.
+        :param token: a branch node who has children attribute.
         """
         return "".join(map(self.render, token.children or []))
 
@@ -136,7 +139,7 @@ class BaseRenderer(object):
     def _tokens_from_module(module):
         """
         Helper method; takes a module and returns a list of all token classes
-        specified in module.__all__. Useful when custom tokens are defined in a
+        specified in `module.__all__`. Useful when custom tokens are defined in a
         separate module.
         """
         return [getattr(module, name) for name in module.__all__]

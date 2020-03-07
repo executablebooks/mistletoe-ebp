@@ -1,3 +1,5 @@
+.. _tokens/block:
+
 Core Block Tokens
 -----------------
 

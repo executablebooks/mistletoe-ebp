@@ -1,3 +1,5 @@
+.. _tokens/span:
+
 Core Span Tokens
 ----------------
 
