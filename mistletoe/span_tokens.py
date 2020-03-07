@@ -76,9 +76,8 @@ class Image(SpanToken):
     """
     Image tokens, with inline targets: "![alt](src "title")".
 
-    Attributes:
-        src (str): image source.
-        title (str): image title (default to empty).
+    :param src: image source.
+    :param title: image title (default to empty).
     """
 
     def __init__(self, match):
@@ -90,8 +89,8 @@ class Link(SpanToken):
     """
     Link tokens, with inline targets: "[name](target)"
 
-    Attributes:
-        target (str): link target.
+    :param target: link target.
+    :param title: image title (default to empty).
     """
 
     def __init__(self, match):
@@ -103,9 +102,8 @@ class AutoLink(SpanToken):
     """
     Autolink tokens. ("<http://www.google.com>")
 
-    Attributes:
-        children (iterator): a single RawText node for alternative text.
-        target (str): link target.
+    ;param children: a single RawText node for alternative text.
+    :param target: link target.
     """
 
     pattern = re.compile(
@@ -124,8 +122,7 @@ class EscapeSequence(SpanToken):
     """
     Escape sequences. ("\\*")
 
-    Attributes:
-        children (iterator): a single RawText node for alternative text.
+    :param children: a single RawText node for alternative text.
     """
 
     pattern = re.compile(r"\\([!\"#$%&'()*+,-./:;<=>?@\[\\\]^_`{|}~])")
@@ -248,8 +245,7 @@ class HTMLSpan(SpanToken):
     """
     Span-level HTML tokens.
 
-    Attributes:
-        content (str): literal strings rendered as-is.
+    :param content: literal strings rendered as-is.
     """
 
     pattern = re.compile(

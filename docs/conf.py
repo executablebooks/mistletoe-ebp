@@ -67,7 +67,7 @@ def run_apidoc(app):
     logger.info("running apidoc")
     # get correct paths
     this_folder = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-    api_folder = os.path.join(this_folder, "api")
+    api_folder = os.path.join(this_folder, "_api")
     module_path = os.path.normpath(os.path.join(this_folder, "../"))
     ignore_paths = ["../setup.py", "../test", "../contrib"]
     ignore_paths = [
@@ -99,7 +99,12 @@ autodoc_default_options = {
 }
 autodoc_member_order = "bysource"
 
-nitpick_ignore = []
+nitpick_ignore = [
+    ("py:class", "Tuple"),
+    ("py:class", "ForwardRef"),
+    ("py:class", "NoneType"),
+    ("py:class", "Any"),
+]
 
 
 def setup(app):

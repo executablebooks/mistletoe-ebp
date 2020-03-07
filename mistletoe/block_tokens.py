@@ -19,6 +19,7 @@ from mistletoe.nested_tokenizer import (
 )
 from mistletoe.parse_context import get_parse_context
 from mistletoe.base_elements import Token, BlockToken, SpanContainer
+from mistletoe.attr_doc import autodoc
 
 
 """
@@ -37,61 +38,7 @@ __all__ = [
 ]
 
 
-@attr.s(slots=True, kw_only=True)
-class Document(BlockToken):
-    """Document container."""
-
-    children: ListType[Token] = attr.ib(
-        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
-    )
-    link_definitions: dict = attr.ib(
-        repr=lambda d: str(len(d)), metadata={"doc": "Mapping of keys to (url, title)"}
-    )
-    front_matter: Optional["FrontMatter"] = attr.ib(
-        default=None, metadata={"doc": "Front matter YAML block"}
-    )
-
-    @classmethod
-    def read(
-        cls,
-        lines,
-        start_line: int = 0,
-        reset_definitions=True,
-        store_definitions=False,
-        front_matter=False,
-    ):
-        """Read a document
-
-        :param lines:  Lines or string to parse
-        :param start_line: The initial line (used for nested parsing)
-        :param reset_definitions: remove any previously stored link_definitions
-        :param store_definitions: store LinkDefinitions or ignore them
-        :param front_matter: search for an initial YAML block front matter block
-            (note this is not strictly CommonMark compliant)
-        """
-        if isinstance(lines, str):
-            lines = lines.splitlines(keepends=True)
-        lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
-        # reset link definitions
-        if reset_definitions:
-            get_parse_context().link_definitions = {}
-
-        front_matter_token = None
-        if front_matter and lines and lines[0].startswith("---"):
-            front_matter_token = FrontMatter.read(lines)
-            start_line += front_matter_token.position[1]
-            lines = lines[front_matter_token.position[1] :]
-
-        children = tokenizer.tokenize_main(
-            lines, start_line=start_line, store_definitions=store_definitions
-        )
-        return cls(
-            children=children,
-            front_matter=front_matter_token,
-            link_definitions=get_parse_context().link_definitions,
-        )
-
-
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class FrontMatter(BlockToken):
     """Front matter YAML block.
@@ -138,6 +85,63 @@ class FrontMatter(BlockToken):
         return cls(content="".join(lines[1 : end_line - 1]), position=(0, end_line))
 
 
+@autodoc
+@attr.s(slots=True, kw_only=True)
+class Document(BlockToken):
+    """Document container."""
+
+    children: ListType[Token] = attr.ib(
+        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
+    )
+    link_definitions: dict = attr.ib(
+        repr=lambda d: str(len(d)), metadata={"doc": "Mapping of keys to (url, title)"}
+    )
+    front_matter: Optional[FrontMatter] = attr.ib(
+        default=None, metadata={"doc": "Front matter YAML block"}
+    )
+
+    @classmethod
+    def read(
+        cls,
+        lines,
+        start_line: int = 0,
+        reset_definitions=True,
+        store_definitions=False,
+        front_matter=False,
+    ):
+        """Read a document
+
+        :param lines:  Lines or string to parse
+        :param start_line: The initial line (used for nested parsing)
+        :param reset_definitions: remove any previously stored link_definitions
+        :param store_definitions: store LinkDefinitions or ignore them
+        :param front_matter: search for an initial YAML block front matter block
+            (note this is not strictly CommonMark compliant)
+        """
+        if isinstance(lines, str):
+            lines = lines.splitlines(keepends=True)
+        lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
+        # reset link definitions
+        if reset_definitions:
+            get_parse_context().link_definitions = {}
+
+        front_matter_token = None
+        if front_matter and lines and lines[0].startswith("---"):
+            front_matter_token = FrontMatter.read(lines)
+            start_line += front_matter_token.position[1]
+            lines = lines[front_matter_token.position[1] :]
+
+        children = tokenizer.tokenize_main(
+            lines, start_line=start_line, store_definitions=store_definitions
+        )
+        return cls(
+            children=children,
+            front_matter=front_matter_token,
+            link_definitions=get_parse_context().link_definitions,
+        )
+
+
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class Heading(BlockToken):
     """Heading token. (["### some heading ###\\n"])
@@ -177,6 +181,7 @@ class Heading(BlockToken):
         )
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class SetextHeading(BlockToken):
     """Setext headings.
@@ -201,6 +206,7 @@ class SetextHeading(BlockToken):
         raise NotImplementedError()
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class Quote(BlockToken):
     """Quote token. (`["> # heading\\n", "> paragraph\\n"]`)."""
@@ -293,6 +299,7 @@ class Quote(BlockToken):
         return ">" + " " * count + string[i:]
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class Paragraph(BlockToken):
     """Paragraph token. (`["some\\n", "continuous\\n", "lines\\n"]`)
@@ -377,6 +384,7 @@ class Paragraph(BlockToken):
         return cls(children=children, position=(start_line, lines.lineno))
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class BlockCode(BlockToken):
     """Indented code."""
@@ -427,6 +435,7 @@ class BlockCode(BlockToken):
         return string
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class CodeFence(BlockToken):
     """Code fence. (["```sh\\n", "rm -rf /", ..., "```"])
@@ -492,6 +501,7 @@ class CodeFence(BlockToken):
         )
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class List(BlockToken):
     """List token (unordered or ordered)"""
@@ -562,6 +572,7 @@ class List(BlockToken):
         )
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class ListItem(BlockToken):
     """List items.
@@ -707,14 +718,71 @@ class ListItem(BlockToken):
         )
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
-class Table(BlockToken):
-    """Table token."""
+class TableCell(BlockToken):
+    """Table cell token.
+
+    Boundary between span-level and block-level tokens.
+    """
 
     children: ListType[Token] = attr.ib(
         repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
     )
-    header: Optional["TableRow"] = attr.ib(metadata={"doc": "The header row"})
+    align: Optional[int] = attr.ib(
+        metadata={
+            "doc": "align options for the cell (left=None (default), center=0, right=1)"
+        }
+    )
+    position: Tuple[int, int] = attr.ib(
+        metadata={"doc": "Line position in source text (start, end)"}
+    )
+
+    @classmethod
+    def read(cls, content, align=None, expand_spans=False, lineno=0):
+        children = SpanContainer(content)
+        if expand_spans:
+            children = children.expand()
+        return cls(children=children, align=align, position=(lineno, lineno))
+
+
+@autodoc
+@attr.s(slots=True, kw_only=True)
+class TableRow(BlockToken):
+    """Table row token."""
+
+    children: ListType[TableCell] = attr.ib(
+        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
+    )
+    row_align: list = attr.ib(
+        metadata={
+            "doc": "align options for columns (left=None (default), center=0, right=1)"
+        }
+    )
+    position: Tuple[int, int] = attr.ib(
+        metadata={"doc": "Line position in source text (start, end)"}
+    )
+
+    @classmethod
+    def read(cls, line, row_align=None, lineno=0):
+        row_align = row_align or [None]
+        cells = filter(None, line.strip().split("|"))
+        children = [
+            TableCell.read(cell.strip() if cell else "", align, lineno=lineno)
+            for cell, align in zip_longest(cells, row_align)
+        ]
+        return cls(children=children, row_align=row_align, position=(lineno, lineno))
+
+
+@autodoc
+@attr.s(slots=True, kw_only=True)
+class Table(BlockToken):
+    """Table token."""
+
+    children: ListType[TableRow] = attr.ib(
+        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
+    )
+    header: Optional[TableRow] = attr.ib(metadata={"doc": "The header row"})
     column_align: list = attr.ib(
         metadata={
             "doc": "align options for columns (left=None (default), center=0, right=1)"
@@ -725,24 +793,19 @@ class Table(BlockToken):
     )
 
     @staticmethod
-    def split_delimiter(delimiter):
-        """
-        Helper function; returns a list of align options.
+    def split_delimiter(delimiter: str):
+        """Helper function; returns a list of align options.
 
-        Args:
-            delimiter (str): e.g.: "| :--- | :---: | ---: |\n"
-
-        Returns:
-            a list of align options (None, 0 or 1).
+        :param delimiter: e.g.: `| :--- | :---: | ---: |`
+        :return: a list of align options (None, 0 or 1).
         """
         return re.findall(r":?---+:?", delimiter)
 
     @staticmethod
     def parse_align(column):
-        """
-        Helper function; returns align option from cell content.
+        """Helper function; returns align option from cell content.
 
-        Returns:
+        :return:
             None if align = left;
             0    if align = center;
             1    if align = right.
@@ -789,64 +852,7 @@ class Table(BlockToken):
         )
 
 
-@attr.s(slots=True, kw_only=True)
-class TableRow(BlockToken):
-    """Table row token."""
-
-    children: ListType[Token] = attr.ib(
-        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
-    )
-    row_align: list = attr.ib(
-        metadata={
-            "doc": "align options for columns (left=None (default), center=0, right=1)"
-        }
-    )
-    position: Tuple[int, int] = attr.ib(
-        metadata={"doc": "Line position in source text (start, end)"}
-    )
-
-    @classmethod
-    def read(cls, line, row_align=None, lineno=0):
-        row_align = row_align or [None]
-        cells = filter(None, line.strip().split("|"))
-        children = [
-            TableCell.read(cell.strip() if cell else "", align, lineno=lineno)
-            for cell, align in zip_longest(cells, row_align)
-        ]
-        return cls(children=children, row_align=row_align, position=(lineno, lineno))
-
-
-@attr.s(slots=True, kw_only=True)
-class TableCell(BlockToken):
-    """Table cell token.
-
-    Boundary between span-level and block-level tokens.
-
-    Attributes:
-        align (bool): align option for current cell (default to None).
-        children (list): inner (span-)tokens.
-    """
-
-    children: ListType[Token] = attr.ib(
-        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
-    )
-    align: Optional[int] = attr.ib(
-        metadata={
-            "doc": "align options for the cell (left=None (default), center=0, right=1)"
-        }
-    )
-    position: Tuple[int, int] = attr.ib(
-        metadata={"doc": "Line position in source text (start, end)"}
-    )
-
-    @classmethod
-    def read(cls, content, align=None, expand_spans=False, lineno=0):
-        children = SpanContainer(content)
-        if expand_spans:
-            children = children.expand()
-        return cls(children=children, align=align, position=(lineno, lineno))
-
-
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class LinkDefinition(BlockToken):
     """LinkDefinition token: `[ref]: url "title"`"""
@@ -1016,6 +1022,7 @@ class LinkDefinition(BlockToken):
         lines._index -= string[offset + 1 :].count("\n")
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class ThematicBreak(BlockToken):
     """Thematic break token (a.k.a. horizontal rule.)"""
@@ -1036,6 +1043,7 @@ class ThematicBreak(BlockToken):
         return cls(position=(lines.lineno, lines.lineno))
 
 
+@autodoc
 @attr.s(slots=True, kw_only=True)
 class HTMLBlock(BlockToken):
     """Block-level HTML token."""

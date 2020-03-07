@@ -1,1 +1,4 @@
 git+https://github.com/pandas-dev/pandas-sphinx-theme.git@master
+attrs
+myst-parser
+pyyaml

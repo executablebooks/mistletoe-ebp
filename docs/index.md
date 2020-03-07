@@ -72,6 +72,7 @@ maxdepth: 2
 caption: Contents
 ---
 using/index.md
+api/index.rst
 ```
 
 [ebp-link]: https://github.com/ExecutableBookProject

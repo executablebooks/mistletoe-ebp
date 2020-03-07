@@ -110,31 +110,31 @@ class BlockToken(Token):
 
     Naming conventions:
 
-    * lines denotes a list of (possibly unparsed) input lines, and is
-        commonly used as the argument name for constructors.
+    * lines denotes a list of (possibly unparsed) input lines,
+      and is commonly used as the argument name for constructors.
 
-    * BlockToken.children is a list with all the inner tokens (thus if
-        a token has children attribute, it is not a leaf node; if a token
-        calls tokenize_span, it is the boundary between
-        span-level tokens and block-level tokens);
+    * BlockToken.children is a list with all the inner tokens
+      (thus if a token has children attribute, it is not a leaf node; if a token
+      calls tokenize_span, it is the boundary between
+      span-level tokens and block-level tokens);
 
-    * BlockToken.start takes a line from the document as argument, and
-        returns a boolean representing whether that line marks the start
-        of the current token. Every subclass of BlockToken must define a
-        start function (see block_tokenizer.tokenize).
+    * BlockToken.start takes a line from the document as argument,
+      and returns a boolean representing whether that line marks the start
+      of the current token. Every subclass of BlockToken must define a
+      start function (see block_tokenizer.tokenize).
 
     * BlockToken.read takes the rest of the lines in the document as an
-        iterator (including the start line), and consumes all the lines
-        that should be read into this token.
+      iterator (including the start line), and consumes all the lines
+      that should be read into this token.
 
-        Default to stop at an empty line.
+      Default to stop at an empty line.
 
-        Note that BlockToken.read returns a token (or None).
+      Note that `BlockToken.read` returns a token (or None).
 
-        If BlockToken.read returns None, the read result is ignored,
-        but the token class is responsible for resetting the iterator
-        to a previous state. See block_tokenizer.FileWrapper.anchor,
-        block_tokenizer.FileWrapper.reset.
+      If BlockToken.read returns None, the read result is ignored,
+      but the token class is responsible for resetting the iterator
+      to a previous state. See `block_tokenizer.FileWrapper.anchor`,
+      `block_tokenizer.FileWrapper.reset`.
 
     """
 
