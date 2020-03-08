@@ -2,9 +2,12 @@
     children:
     - RawText:
         content: one
+        position: null
 - RawText:
     content: ' '
+    position: null
 - Emphasis:
     children:
     - RawText:
         content: two
+        position: null

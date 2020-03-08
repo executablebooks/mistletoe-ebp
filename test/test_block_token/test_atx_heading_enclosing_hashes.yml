@@ -2,6 +2,7 @@
     children:
     - RawText:
         content: heading 3
+        position: null
     level: 1
     position:
     - 1

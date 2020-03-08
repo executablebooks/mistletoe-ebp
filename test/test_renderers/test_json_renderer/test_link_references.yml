@@ -2,7 +2,9 @@ children:
 - children:
   - children:
     - content: bar
+      position: null
       type: RawText
+    position: null
     target: spam
     title: ''
     type: Link

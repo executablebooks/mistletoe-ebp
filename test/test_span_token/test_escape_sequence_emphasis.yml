@@ -1,8 +1,12 @@
 - RawText:
     content: 'some '
+    position: null
 - EscapeSequence:
     children:
     - RawText:
         content: '*'
+        position: null
+    position: null
 - RawText:
     content: text*
+    position: null

@@ -4,11 +4,14 @@
         children:
         - RawText:
             content: line 1
+            position: null
         - LineBreak:
             content: ''
+            position: null
             soft: true
         - RawText:
             content: line 2
+            position: null
         position:
         - 2
         - 3

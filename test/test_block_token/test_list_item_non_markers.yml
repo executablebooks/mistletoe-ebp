@@ -4,21 +4,28 @@
         children:
         - RawText:
             content: foo
+            position: null
         - LineBreak:
             content: ''
+            position: null
             soft: true
         - RawText:
             content: 1item 1
+            position: null
         - LineBreak:
             content: ''
+            position: null
             soft: true
         - RawText:
             content: 2| item 2
+            position: null
         - LineBreak:
             content: ''
+            position: null
             soft: true
         - RawText:
             content: 1234567890. item x
+            position: null
         position:
         - 2
         - 5

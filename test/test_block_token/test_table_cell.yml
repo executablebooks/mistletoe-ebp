@@ -3,6 +3,7 @@ TableCell:
   children:
   - RawText:
       content: cell 2
+      position: null
   position:
   - 0
   - 0

@@ -2,7 +2,10 @@
     children:
     - RawText:
         content: $
+        position: null
+    position: null
 - RawText:
     content: 'a '
+    position: null
 - Math:
     content: $b$

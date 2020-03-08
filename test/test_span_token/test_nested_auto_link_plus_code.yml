@@ -2,9 +2,14 @@
     children:
     - RawText:
         content: <
+        position: null
+    position: null
 - RawText:
     content: abc>  <abc
+    position: null
 - InlineCode:
     children:
     - RawText:
         content: '>'
+        position: null
+    position: null

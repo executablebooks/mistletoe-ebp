@@ -6,6 +6,7 @@
           mkdir test
 
           '
+        position: null
     language: ''
     position:
     - 0

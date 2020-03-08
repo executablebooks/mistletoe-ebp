@@ -6,6 +6,7 @@
             children:
             - RawText:
                 content: foo
+                position: null
             position:
             - 1
             - 1
@@ -14,6 +15,7 @@
             children:
             - RawText:
                 content: "bar\n\nbaz\n  ~~~\n"
+                position: null
             language: ''
             position:
             - 2

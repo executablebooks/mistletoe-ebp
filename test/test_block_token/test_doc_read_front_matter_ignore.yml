@@ -8,6 +8,7 @@ Document:
       children:
       - RawText:
           content: 'a: 1'
+          position: null
       level: 2
       position:
       - 2

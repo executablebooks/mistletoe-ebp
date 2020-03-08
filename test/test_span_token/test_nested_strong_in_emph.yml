@@ -2,9 +2,12 @@
     children:
     - RawText:
         content: 'with some '
+        position: null
     - Strong:
         children:
         - RawText:
             content: strong
+            position: null
     - RawText:
         content: ' text'
+        position: null

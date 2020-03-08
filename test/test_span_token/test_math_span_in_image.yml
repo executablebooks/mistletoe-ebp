@@ -2,5 +2,6 @@
     children:
     - Math:
         content: $a$
+    position: null
     src: $b$
     title: ''

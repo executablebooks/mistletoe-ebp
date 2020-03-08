@@ -2,3 +2,5 @@
     children:
     - RawText:
         content: _a_
+        position: null
+    position: null

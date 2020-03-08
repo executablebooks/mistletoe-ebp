@@ -1,4 +1,5 @@
 - RawText:
     content: '{_*-%`'
+    position: null
 - Math:
     content: $a$

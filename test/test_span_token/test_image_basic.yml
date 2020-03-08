@@ -2,5 +2,7 @@
     children:
     - RawText:
         content: alt
+        position: null
+    position: null
     src: link
     title: ''

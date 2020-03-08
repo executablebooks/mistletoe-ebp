@@ -4,16 +4,21 @@ Document:
       children:
       - RawText:
           content: some
+          position: null
       - LineBreak:
           content: ''
+          position: null
           soft: true
       - RawText:
           content: continual
+          position: null
       - LineBreak:
           content: ''
+          position: null
           soft: true
       - RawText:
           content: lines
+          position: null
       position:
       - 1
       - 3

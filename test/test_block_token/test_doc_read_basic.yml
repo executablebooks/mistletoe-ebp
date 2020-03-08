@@ -4,6 +4,7 @@ Document:
       children:
       - RawText:
           content: heading
+          position: null
       level: 1
       position:
       - 1
@@ -12,18 +13,24 @@ Document:
       children:
       - RawText:
           content: paragraph
+          position: null
       - LineBreak:
           content: ''
+          position: null
           soft: true
       - RawText:
           content: with
+          position: null
       - LineBreak:
           content: ''
+          position: null
           soft: true
       - InlineCode:
           children:
           - RawText:
               content: code
+              position: null
+          position: null
       position:
       - 3
       - 5

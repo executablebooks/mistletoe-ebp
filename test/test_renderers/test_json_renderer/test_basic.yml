@@ -1,6 +1,7 @@
 children:
 - children:
   - content: Setext Header
+    position: null
     type: RawText
   level: 1
   position:
@@ -9,6 +10,7 @@ children:
   type: SetextHeading
 - children:
   - content: Atx Header
+    position: null
     type: RawText
   level: 1
   position:
@@ -19,13 +21,16 @@ children:
   - children:
     - children:
       - content: nested strong emphasis
+        position: null
         type: RawText
       type: Emphasis
     type: Strong
   - content: ''
+    position: null
     soft: true
     type: LineBreak
   - content: <www.google.com>
+    position: null
     type: RawText
   position:
   - 10
@@ -35,6 +40,7 @@ children:
   - children:
     - children:
       - content: unordered list
+        position: null
         type: RawText
       position:
       - 13
@@ -60,6 +66,7 @@ children:
   - children:
     - children:
       - content: ordered list
+        position: null
         type: RawText
       position:
       - 15
@@ -82,9 +89,11 @@ children:
 - children:
   - children:
     - content: 'quote '
+      position: null
       type: RawText
     - children:
       - content: emphasis
+        position: null
         type: RawText
       type: Emphasis
     position:
@@ -98,7 +107,9 @@ children:
 - children:
   - children:
     - content: link
+      position: null
       type: RawText
+    position: null
     target: abc
     title: xyz
     type: Link
@@ -119,6 +130,7 @@ children:
   - content: 'code = 1
 
       '
+    position: null
     type: RawText
   language: python
   position:
@@ -131,6 +143,7 @@ children:
       quote
 
       '
+    position: null
     type: RawText
   language: ''
   position:
@@ -146,6 +159,7 @@ children:
     - align: null
       children:
       - content: '1'
+        position: null
         type: RawText
       position:
       - 34
@@ -154,6 +168,7 @@ children:
     - align: 1
       children:
       - content: '2'
+        position: null
         type: RawText
       position:
       - 34
@@ -174,6 +189,7 @@ children:
     - align: null
       children:
       - content: a
+        position: null
         type: RawText
       position:
       - 32
@@ -182,6 +198,7 @@ children:
     - align: 1
       children:
       - content: b
+        position: null
         type: RawText
       position:
       - 32

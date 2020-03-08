@@ -6,6 +6,7 @@
             children:
             - RawText:
                 content: foo
+                position: null
             position:
             - 1
             - 1
@@ -31,6 +32,7 @@
             children:
             - RawText:
                 content: bar
+                position: null
             position:
             - 2
             - 2
@@ -56,6 +58,7 @@
             children:
             - RawText:
                 content: baz
+                position: null
             position:
             - 3
             - 3
@@ -81,6 +84,7 @@
             children:
             - RawText:
                 content: spam
+                position: null
             position:
             - 4
             - 4

@@ -5,6 +5,7 @@ TableRow:
       children:
       - RawText:
           content: cell 1
+          position: null
       position:
       - 0
       - 0
@@ -13,6 +14,7 @@ TableRow:
       children:
       - RawText:
           content: cell 2
+          position: null
       position:
       - 0
       - 0

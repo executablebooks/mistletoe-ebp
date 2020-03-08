@@ -2,5 +2,6 @@
     content: <p>
 - RawText:
     content: some text
+    position: null
 - HTMLSpan:
     content: </p>

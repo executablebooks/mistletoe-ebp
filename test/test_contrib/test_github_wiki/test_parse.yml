@@ -1,7 +1,9 @@
 - RawText:
     content: 'text with '
+    position: null
 - GithubWiki:
     children:
     - RawText:
         content: wiki
+        position: null
     target: target

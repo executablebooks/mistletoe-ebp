@@ -2,5 +2,7 @@
     children:
     - RawText:
         content: name 1
+        position: null
+    position: null
     target: target1
     title: ''

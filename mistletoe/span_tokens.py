@@ -2,7 +2,7 @@
 Built-in span-level token classes.
 """
 import re
-from typing import Pattern
+from typing import Pattern, Tuple
 
 import attr
 
@@ -66,7 +66,14 @@ class InlineCode(SpanToken):
     parse_inner = False
     parse_group = 2
 
-    children = attr.ib(metadata={"doc": "a single RawText node for alternative text."})
+    children = attr.ib(
+        repr=False, metadata={"doc": "a single RawText node for alternative text."}
+    )
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, match: Pattern):
@@ -88,7 +95,12 @@ class Image(SpanToken):
 
     src: str = attr.ib(metadata={"doc": "image source"})
     title: str = attr.ib(default=None, metadata={"doc": "image title"})
-    children = attr.ib(factory=list, metadata={"doc": "alternative text."})
+    children = attr.ib(factory=list, repr=False, metadata={"doc": "alternative text."})
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, match: Pattern):
@@ -104,7 +116,12 @@ class Link(SpanToken):
 
     target: str = attr.ib(metadata={"doc": "link target"})
     title: str = attr.ib(default=None, metadata={"doc": "link title"})
-    children = attr.ib(factory=list, metadata={"doc": "link text."})
+    children = attr.ib(factory=list, repr=False, metadata={"doc": "link text."})
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, match: Pattern):
@@ -128,7 +145,14 @@ class AutoLink(SpanToken):
 
     target: str = attr.ib(metadata={"doc": "link target"})
     mailto: bool = attr.ib(metadata={"doc": "if the link is an email"})
-    children = attr.ib(metadata={"doc": "a single RawText node for alternative text."})
+    children = attr.ib(
+        repr=False, metadata={"doc": "a single RawText node for alternative text."}
+    )
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, match: Pattern):
@@ -154,7 +178,14 @@ class EscapeSequence(SpanToken):
     parse_inner = False
     precedence = 2
 
-    children = attr.ib(metadata={"doc": "a single RawText node for alternative text."})
+    children = attr.ib(
+        repr=False, metadata={"doc": "a single RawText node for alternative text."}
+    )
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, match: Pattern):
@@ -176,8 +207,13 @@ class LineBreak(SpanToken):
     parse_inner = False
     parse_group = 0
 
-    content: bool = attr.ib(default="", metadata={"doc": "raw content."})
+    content: bool = attr.ib(default="", repr=False, metadata={"doc": "raw content."})
     soft: bool = attr.ib(metadata={"doc": "if the break is soft or hard."})
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, match: Pattern):
@@ -195,7 +231,14 @@ class RawText(SpanToken):
     instead of a match object. Also, all recursions should bottom out here.
     """
 
-    content: bool = attr.ib(metadata={"doc": "raw string content of the token"})
+    content: bool = attr.ib(
+        repr=False, metadata={"doc": "raw string content of the token"}
+    )
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
 
     @classmethod
     def read(cls, content: str):

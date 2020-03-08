@@ -2,11 +2,14 @@
     children:
     - RawText:
         content: some
+        position: null
     - LineBreak:
         content: ''
+        position: null
         soft: true
     - RawText:
         content: heading
+        position: null
     level: 2
     position:
     - 1
@@ -15,6 +18,7 @@
     children:
     - RawText:
         content: foobar
+        position: null
     position:
     - 5
     - 5

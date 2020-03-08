@@ -6,6 +6,7 @@
             children:
             - RawText:
                 content: foo
+                position: null
             position:
             - 1
             - 1
@@ -17,6 +18,7 @@
                     children:
                     - RawText:
                         content: bar
+                        position: null
                     position:
                     - 2
                     - 2

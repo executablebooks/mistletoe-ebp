@@ -1,18 +1,26 @@
 - RawText:
     content: 'a '
+    position: null
 - InlineCode:
     children:
     - RawText:
         content: $
+        position: null
+    position: null
 - RawText:
     content: ' '
+    position: null
 - InlineCode:
     children:
     - RawText:
         content: $x=1$
+        position: null
+    position: null
 - RawText:
     content: ' renders '
+    position: null
 - Math:
     content: $x=1$
 - RawText:
     content: .
+    position: null

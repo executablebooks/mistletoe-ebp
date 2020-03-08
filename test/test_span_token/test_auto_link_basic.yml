@@ -2,5 +2,7 @@
     children:
     - RawText:
         content: ftp://foo.com
+        position: null
     mailto: false
+    position: null
     target: ftp://foo.com

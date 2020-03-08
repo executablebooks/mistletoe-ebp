@@ -2,13 +2,18 @@
     children:
     - RawText:
         content: n1
+        position: null
+    position: null
     target: t1
     title: ''
 - RawText:
     content: ' & '
+    position: null
 - Link:
     children:
     - RawText:
         content: n2
+        position: null
+    position: null
     target: t2
     title: ''

@@ -4,7 +4,10 @@
         children:
         - RawText:
             content: alt
+            position: null
+        position: null
         src: src
         title: ''
+    position: null
     target: target
     title: ''

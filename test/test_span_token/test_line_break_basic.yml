@@ -1,3 +1,4 @@
 - LineBreak:
     content: ''
+    position: null
     soft: false

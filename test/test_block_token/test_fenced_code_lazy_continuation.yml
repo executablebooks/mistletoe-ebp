@@ -8,6 +8,7 @@
           mkdir test
 
           '
+        position: null
     language: sh
     position:
     - 1

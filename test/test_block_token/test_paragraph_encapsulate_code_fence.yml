@@ -2,6 +2,7 @@
     children:
     - RawText:
         content: this
+        position: null
     position:
     - 1
     - 1
@@ -12,6 +13,7 @@
         content: 'is some
 
           '
+        position: null
     language: ''
     position:
     - 2
@@ -20,6 +22,7 @@
     children:
     - RawText:
         content: code
+        position: null
     position:
     - 5
     - 5

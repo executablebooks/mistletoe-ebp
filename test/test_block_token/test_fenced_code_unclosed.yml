@@ -3,6 +3,7 @@
     children:
     - RawText:
         content: hey
+        position: null
     language: ''
     position:
     - 1

@@ -2,11 +2,14 @@
     children:
     - RawText:
         content: not header 1 | not header 2
+        position: null
     - LineBreak:
         content: ''
+        position: null
         soft: true
     - RawText:
         content: foo | bar
+        position: null
     position:
     - 1
     - 2

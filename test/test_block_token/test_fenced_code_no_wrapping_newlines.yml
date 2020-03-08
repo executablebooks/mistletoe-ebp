@@ -3,6 +3,7 @@
     children:
     - RawText:
         content: hey
+        position: null
     language: ''
     position:
     - 1
@@ -11,6 +12,7 @@
     children:
     - RawText:
         content: paragraph
+        position: null
     position:
     - 4
     - 4

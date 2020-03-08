@@ -2,15 +2,22 @@
     children:
     - RawText:
         content: ~~
+        position: null
+    position: null
 - RawText:
     content: 'abc '
+    position: null
 - Strikethrough:
     children:
     - RawText:
         content: abc
+        position: null
 - RawText:
     content: ' '
+    position: null
 - InlineCode:
     children:
     - RawText:
         content: ~~
+        position: null
+    position: null

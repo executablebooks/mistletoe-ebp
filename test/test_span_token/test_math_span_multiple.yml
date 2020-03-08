@@ -2,5 +2,6 @@
     content: $a$
 - RawText:
     content: ' '
+    position: null
 - Math:
     content: $b$

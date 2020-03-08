@@ -46,8 +46,9 @@ class BaseRenderer:
 
     :param render_map: maps tokens to their corresponding render functions.
     :type render_map: dict
-    :param extras: a list of custom tokens to be added to the parsing process.
-    :type extras: list
+    :param parse_context: container for the instatiated tokens,
+        and other global parsing variables. These will be re-instatiated on `__enter__`
+
     """
 
     default_block_tokens = (
@@ -92,8 +93,9 @@ class BaseRenderer:
         for token in chain(
             self.parse_context.block_tokens, self.parse_context.span_tokens
         ):
-            render_func = getattr(self, self._cls_to_func(token.__name__))
-            self.render_map[token.__name__] = render_func
+            if token.__name__ not in self.render_map:
+                render_func = getattr(self, self._cls_to_func(token.__name__))
+                self.render_map[token.__name__] = render_func
 
         self.link_definitions = {}
 
