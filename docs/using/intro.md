@@ -40,6 +40,7 @@ import mistletoe
 
 with open('foo.md', 'r') as fin:
     rendered = mistletoe.markdown(fin)
+
 ```
 
 `mistletoe.markdown()` uses mistletoe's default settings: allowing HTML mixins
@@ -65,6 +66,10 @@ from mistletoe import Document, HTMLRenderer
 with open('foo.md', 'r') as fin:
     with HTMLRenderer() as renderer:
         rendered = renderer.render(Document.read(fin))
+```
+
+```{seealso}
+{ref}`api/utils`
 ```
 
 ### From the command-line

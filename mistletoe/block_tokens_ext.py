@@ -74,7 +74,17 @@ class TableRow(BlockToken):
 @autodoc
 @attr.s(slots=True, kw_only=True)
 class Table(BlockToken):
-    """Table token."""
+    """Table token.
+
+    **Note**: header delimiters must be of at least length 3 (`---`)
+
+    Example::
+
+        | Left Align  |   Centered  | Right Align   |
+        | :---        |    :----:   |          ---: |
+        | Header      | Title       | Here's this   |
+        | Paragraph   | Text        | And more      |
+    """
 
     children: ListType[TableRow] = attr.ib(
         repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}

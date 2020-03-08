@@ -234,6 +234,15 @@ def test_table_parse_delimiter():
             "aligned",
             ["header 1 | header 2\n", "    ---: | :---\n", "  cell 1 | cell 2\n"],
         ),
+        (
+            "aligned2",
+            [
+                "| Syntax      | Description | Test Text     |\n",
+                "| :---        |    :----:   |          ---: |\n",
+                "| Header      | Title       | Here's this   |\n",
+                "| Paragraph   | Text        | And more      |\n",
+            ],
+        ),
         ("not_table", ["not header 1 | not header 2\n", "foo | bar\n"]),
     ],
 )

@@ -27,3 +27,7 @@ Span Token
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+.. autoclass:: mistletoe.base_elements.SpanContainer
+    :members:

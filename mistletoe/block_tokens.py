@@ -39,7 +39,7 @@ __all__ = [
 @autodoc
 @attr.s(slots=True, kw_only=True)
 class FrontMatter(BlockToken):
-    """Front matter YAML block.
+    """Front matter YAML block, on the first line of the document.
 
     ::
 
@@ -54,7 +54,8 @@ class FrontMatter(BlockToken):
     the rest of the of document will still be parsed,
     and then the renderers can apply there own error reporting.
 
-    Not included in the parsing process, but called by `Document.read`.
+    Not included in the parsing process, but called by `Document.read`,
+    if `front_matter=True`.
     """
 
     content: str = attr.ib(

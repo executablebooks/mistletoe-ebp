@@ -1,0 +1,118 @@
+- Table:
+    children:
+    - TableRow:
+        children:
+        - TableCell:
+            align: null
+            children:
+            - RawText:
+                content: Header
+                position: null
+            position:
+            - 3
+            - 3
+        - TableCell:
+            align: 0
+            children:
+            - RawText:
+                content: Title
+                position: null
+            position:
+            - 3
+            - 3
+        - TableCell:
+            align: 1
+            children:
+            - RawText:
+                content: Here's this
+                position: null
+            position:
+            - 3
+            - 3
+        position:
+        - 3
+        - 3
+        row_align:
+        - null
+        - 0
+        - 1
+    - TableRow:
+        children:
+        - TableCell:
+            align: null
+            children:
+            - RawText:
+                content: Paragraph
+                position: null
+            position:
+            - 4
+            - 4
+        - TableCell:
+            align: 0
+            children:
+            - RawText:
+                content: Text
+                position: null
+            position:
+            - 4
+            - 4
+        - TableCell:
+            align: 1
+            children:
+            - RawText:
+                content: And more
+                position: null
+            position:
+            - 4
+            - 4
+        position:
+        - 4
+        - 4
+        row_align:
+        - null
+        - 0
+        - 1
+    column_align:
+    - null
+    - 0
+    - 1
+    header:
+      TableRow:
+        children:
+        - TableCell:
+            align: null
+            children:
+            - RawText:
+                content: Syntax
+                position: null
+            position:
+            - 1
+            - 1
+        - TableCell:
+            align: 0
+            children:
+            - RawText:
+                content: Description
+                position: null
+            position:
+            - 1
+            - 1
+        - TableCell:
+            align: 1
+            children:
+            - RawText:
+                content: Test Text
+                position: null
+            position:
+            - 1
+            - 1
+        position:
+        - 1
+        - 1
+        row_align:
+        - null
+        - 0
+        - 1
+    position:
+    - 1
+    - 4

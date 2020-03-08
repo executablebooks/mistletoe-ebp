@@ -3,20 +3,13 @@
 Core Block Tokens
 -----------------
 
+These block tokens are defined in the
+`CommonMark specification <https://spec.commonmark.org/0.29/>`_.
+
 Document
 ........
 
 .. autoclass:: mistletoe.block_tokens.Document
-    :members:
-    :no-undoc-members:
-    :show-inheritance:
-    :exclude-members: __init__
-
-
-FrontMatter
-...........
-
-.. autoclass:: mistletoe.block_tokens.FrontMatter
     :members:
     :no-undoc-members:
     :show-inheritance:
@@ -97,36 +90,6 @@ ListItem
 ........
 
 .. autoclass:: mistletoe.block_tokens.ListItem
-    :members:
-    :no-undoc-members:
-    :show-inheritance:
-    :exclude-members: __init__
-
-
-Table
-.....
-
-.. autoclass:: mistletoe.block_tokens.Table
-    :members:
-    :no-undoc-members:
-    :show-inheritance:
-    :exclude-members: __init__
-
-
-TableRow
-........
-
-.. autoclass:: mistletoe.block_tokens.TableRow
-    :members:
-    :no-undoc-members:
-    :show-inheritance:
-    :exclude-members: __init__
-
-
-TableCell
-.........
-
-.. autoclass:: mistletoe.block_tokens.TableCell
     :members:
     :no-undoc-members:
     :show-inheritance:

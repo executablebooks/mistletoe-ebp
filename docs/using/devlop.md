@@ -7,6 +7,7 @@ To understand the core tokens that mistletoe parses, take a look at:
 - {ref}`tokens/base`
 - {ref}`tokens/block`
 - {ref}`tokens/span`
+- {ref}`tokens/extension`
 
 Then, for more information on how rendrers are implemented see: {ref}`renderers/core`.
 

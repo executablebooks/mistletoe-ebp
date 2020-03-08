@@ -94,14 +94,14 @@ def run_apidoc(app):
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3.7", None)}
 
-autodoc_default_options = {
-    "show-inheritance": True,
-    "special-members": "__init__, __enter__, __exit__",
-    "members": True,
-    # 'exclude-members': '',
-    "undoc-members": True,
-    # 'inherited-members': True
-}
+# autodoc_default_options = {
+#     "show-inheritance": True,
+#     "special-members": "__init__, __enter__, __exit__",
+#     "members": True,
+#     # 'exclude-members': '',
+#     "undoc-members": True,
+#     # 'inherited-members': True
+# }
 autodoc_member_order = "bysource"
 
 nitpick_ignore = [
@@ -109,6 +109,7 @@ nitpick_ignore = [
     ("py:class", "ForwardRef"),
     ("py:class", "NoneType"),
     ("py:class", "Any"),
+    ("py:class", "json.encoder.JSONEncoder"),
 ]
 
 
