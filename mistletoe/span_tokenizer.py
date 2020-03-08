@@ -5,6 +5,13 @@ from mistletoe.parse_context import get_parse_context
 
 
 def tokenize_span(string, token_types=None):
+    """Convert a string to a list of span tokens.
+
+    :param string: the string to parse
+    :param token_types: override block-level tokens set in global context
+
+    :returns: list of span-level token instances.
+    """
     if token_types is None:
         token_types = get_parse_context().span_tokens
     *token_types, fallback_token = token_types

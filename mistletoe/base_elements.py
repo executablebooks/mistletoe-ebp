@@ -84,6 +84,9 @@ class TokenEncoder(json.JSONEncoder):
     """A JSON encoder for mistletoe tokens."""
 
     def default(self, obj):
+        """Convert tokens to `{token.name: token.to_dict()}`,
+        and expand `SpanContainer`.
+        """
         if isinstance(obj, SpanContainer):
             return list(obj.expand())
         if isinstance(obj, Token):
@@ -110,9 +113,11 @@ class SpanContainer:
     """
 
     def __init__(self, text):
+        """Store text for later tokenisation."""
         self.text = text
 
     def expand(self):
+        """Apply `tokenize_span` to text."""
         from mistletoe.span_tokenizer import tokenize_span
 
         return tokenize_span(self.text)
@@ -191,8 +196,8 @@ class SpanToken(Token):
     :cvar parse_group: the group within the pattern match corresponding to the content
     :cvar precedence: Alter the relative order by which the span token is assessed.
 
-    :ivar content: raw string content of the token
-    :ivar children: list of child tokens
+    :param content: raw string content of the token
+    :param children: list of child tokens
     """
 
     pattern = None

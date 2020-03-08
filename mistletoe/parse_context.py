@@ -14,10 +14,10 @@ class ParseContext:
     def __init__(self, find_blocks=None, find_spans=None, link_definitions=None):
         """A class to contain context for a single parse.
 
-        :param find_blocks: a list of block tokens to use during the parse.
-            If None the standard blocks will be used from `block_tokens.__all__`
-        :param find_spans: a list of span tokens to use during the parse.
-            If None the standard blocks will be used from `span_tokens.__all__`
+        :param find_blocks: a list of block tokens to use during the parse. If None,
+            the standard blocks will be used from `BaseRenderer.default_block_token`.
+        :param find_spans: a list of span tokens to use during the parse. If None,
+            the standard blocks will be used from `BaseRenderer.default_span_tokens`.
         :param link_definitions: a dict of link definitons, obtained from `[def]: link`
         :param nesting_matches: a dict of matches recorded from `find_nested_tokenizer`
         """

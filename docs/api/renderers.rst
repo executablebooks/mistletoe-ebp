@@ -7,8 +7,10 @@ Base
 .....
 
 .. autoclass:: mistletoe.renderers.base.BaseRenderer
-    :members:
+    :special-members: __init__, __enter__, __exit__
+    :members: default_block_tokens, default_span_tokens
     :undoc-members:
+    :member-order: alphabetical
     :show-inheritance:
 
 
@@ -16,8 +18,10 @@ HTML
 .....
 
 .. autoclass:: mistletoe.renderers.html.HTMLRenderer
-    :members:
+    :special-members: __init__
+    :members: default_block_tokens, default_span_tokens
     :undoc-members:
+    :member-order: alphabetical
     :show-inheritance:
 
 
@@ -25,14 +29,18 @@ JSON
 .....
 
 .. autoclass:: mistletoe.renderers.json.JsonRenderer
-    :members:
+    :special-members: __init__
+    :members: default_block_tokens, default_span_tokens
     :undoc-members:
+    :member-order: alphabetical
     :show-inheritance:
 
 LaTeX
 .....
 
 .. autoclass:: mistletoe.renderers.latex.LaTeXRenderer
-    :members:
+    :special-members: __init__
+    :members: default_block_tokens, default_span_tokens
     :undoc-members:
+    :member-order: alphabetical
     :show-inheritance:

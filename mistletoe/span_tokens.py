@@ -39,19 +39,19 @@ class CoreTokens(SpanToken):
 
 class Strong(SpanToken):
     """
-    Strong tokens. ("**some text**")
+    Strong tokens: `**some text**` or `__some text__`, read in `CoreTokens.read`
 
-    :ivar content: raw string content of the token
-    :ivar children: list of child tokens
+    :param content: raw string content of the token
+    :param children: list of child tokens
     """
 
 
 class Emphasis(SpanToken):
     """
-    Emphasis tokens. ("*some text*")
+    Emphasis tokens `*some text*` or `_some text_`, read in `CoreTokens.read`
 
-    :ivar content: raw string content of the token
-    :ivar children: list of child tokens
+    :param content: raw string content of the token
+    :param children: list of child tokens
     """
 
 
@@ -59,14 +59,14 @@ class Emphasis(SpanToken):
 @attr.s(kw_only=True, slots=True)
 class InlineCode(SpanToken):
     """
-    Inline code tokens. ("`some code`")
+    Inline code tokens: \\`some code\\`, read in `CoreTokens.read`
     """
 
     pattern = re.compile(r"(?<!\\|`)(?:\\\\)*(`+)(?!`)(.+?)(?<!`)\1(?!`)", re.DOTALL)
     parse_inner = False
     parse_group = 2
 
-    children = attr.ib(
+    children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )
     position: Tuple[int, int] = attr.ib(
@@ -90,12 +90,14 @@ class InlineCode(SpanToken):
 @attr.s(kw_only=True, slots=True)
 class Image(SpanToken):
     """
-    Image tokens, with inline targets: "![alt](src "title")".
+    Image tokens, with inline targets: "![alt](src "title")", read in `CoreTokens.read`
     """
 
     src: str = attr.ib(metadata={"doc": "image source"})
     title: str = attr.ib(default=None, metadata={"doc": "image title"})
-    children = attr.ib(factory=list, repr=False, metadata={"doc": "alternative text."})
+    children: list = attr.ib(
+        factory=list, repr=False, metadata={"doc": "alternative text."}
+    )
     position: Tuple[int, int] = attr.ib(
         default=None,
         repr=False,
@@ -111,12 +113,12 @@ class Image(SpanToken):
 @attr.s(kw_only=True, slots=True)
 class Link(SpanToken):
     """
-    Link tokens, with inline targets: "[name](target)"
+    Link tokens, with inline targets: "[name](target)", read in `CoreTokens.read`
     """
 
     target: str = attr.ib(metadata={"doc": "link target"})
     title: str = attr.ib(default=None, metadata={"doc": "link title"})
-    children = attr.ib(factory=list, repr=False, metadata={"doc": "link text."})
+    children: list = attr.ib(factory=list, repr=False, metadata={"doc": "link text."})
     position: Tuple[int, int] = attr.ib(
         default=None,
         repr=False,
@@ -145,7 +147,7 @@ class AutoLink(SpanToken):
 
     target: str = attr.ib(metadata={"doc": "link target"})
     mailto: bool = attr.ib(metadata={"doc": "if the link is an email"})
-    children = attr.ib(
+    children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )
     position: Tuple[int, int] = attr.ib(
@@ -168,17 +170,16 @@ class AutoLink(SpanToken):
 @attr.s(kw_only=True, slots=True)
 class EscapeSequence(SpanToken):
     """
-    Escape sequences. ("\\*")
+    Escape sequences. ("\\\\*")
 
-    Attributes:
-        children (iterator): a single RawText node for alternative text.
+    This should be set first in the token parse list.
     """
 
     pattern = re.compile(r"\\([!\"#$%&'()*+,-./:;<=>?@\[\\\]^_`{|}~])")
     parse_inner = False
     precedence = 2
 
-    children = attr.ib(
+    children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )
     position: Tuple[int, int] = attr.ib(
@@ -326,8 +327,8 @@ class HTMLSpan(SpanToken):
     """
     Span-level HTML tokens.
 
-    :ivar content: raw string content of the token
-    :ivar children: list of child tokens
+    :param content: raw string content of the token
+    :param children: list of child tokens
     """
 
     pattern = re.compile(

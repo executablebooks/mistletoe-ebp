@@ -74,7 +74,8 @@ maxdepth: 2
 caption: Contents
 ---
 using/intro.md
-using/devlop.md
+using/develop.md
+using/contributing.md
 api/index.rst
 ```
 

@@ -3,6 +3,21 @@
 Core Span Tokens
 ----------------
 
+These span tokens are defined in the
+`CommonMark specification <https://spec.commonmark.org/0.29/>`_.
+
+Core
+....
+
+This is a special token that runs a nested parse of the inline string
+and extracts nested tokens.
+
+.. autoclass:: mistletoe.span_tokens.CoreTokens
+    :members:
+    :no-undoc-members:
+    :show-inheritance:
+    :exclude-members: __init__
+
 Strong
 ......
 
@@ -30,14 +45,6 @@ InlineCode
     :show-inheritance:
     :exclude-members: __init__
 
-Strikethrough
-.............
-
-.. autoclass:: mistletoe.span_tokens.Strikethrough
-    :members:
-    :no-undoc-members:
-    :show-inheritance:
-    :exclude-members: __init__
 
 Image
 .....
