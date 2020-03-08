@@ -1,0 +1,27 @@
+- Quote:
+    children:
+    - Paragraph:
+        children:
+        - RawText:
+            content: foo
+        - LineBreak:
+            content: ''
+            soft: true
+        - RawText:
+            content: 1item 1
+        - LineBreak:
+            content: ''
+            soft: true
+        - RawText:
+            content: 2| item 2
+        - LineBreak:
+            content: ''
+            soft: true
+        - RawText:
+            content: 1234567890. item x
+        position:
+        - 2
+        - 5
+    position:
+    - 1
+    - 4

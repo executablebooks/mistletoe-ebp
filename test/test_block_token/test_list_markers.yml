@@ -1,0 +1,98 @@
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: foo
+            position:
+            - 1
+            - 1
+        leader: '-'
+        loose: false
+        next_marker:
+        - 2
+        - '*'
+        position:
+        - 0
+        - 1
+        prepend: 2
+    loose: false
+    position:
+    - 0
+    - 1
+    start_at: null
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: bar
+            position:
+            - 2
+            - 2
+        leader: '*'
+        loose: false
+        next_marker:
+        - 3
+        - '1.'
+        position:
+        - 1
+        - 2
+        prepend: 2
+    loose: false
+    position:
+    - 1
+    - 2
+    start_at: null
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: baz
+            position:
+            - 3
+            - 3
+        leader: '1.'
+        loose: false
+        next_marker:
+        - 3
+        - 2)
+        position:
+        - 2
+        - 3
+        prepend: 3
+    loose: false
+    position:
+    - 2
+    - 3
+    start_at: 1
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: spam
+            position:
+            - 4
+            - 4
+        leader: 2)
+        loose: false
+        next_marker: null
+        position:
+        - 3
+        - 4
+        prepend: 3
+    loose: false
+    position:
+    - 3
+    - 4
+    start_at: 2

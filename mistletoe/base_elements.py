@@ -1,5 +1,6 @@
 from collections import namedtuple
-from typing import List, Optional
+import json
+from typing import List, Optional, Pattern
 
 import attr
 
@@ -39,7 +40,7 @@ class Token:
     def to_dict(self) -> dict:
         """Convert instatiated attributes to a dict"""
         try:
-            return attr.asdict(self)
+            return attr.asdict(self, recurse=False)
         except attr.exceptions.NotAnAttrsClassError:
             return self.__dict__
 
@@ -77,6 +78,25 @@ class Token:
                     new_children.append((child, child.header))
 
             next_children = new_children
+
+
+class TokenEncoder(json.JSONEncoder):
+    """A JSON encoder for mistletoe tokens."""
+
+    def default(self, obj):
+        if isinstance(obj, SpanContainer):
+            return list(obj.expand())
+        if isinstance(obj, Token):
+            return {obj.name: obj.to_dict()}
+        return super().default(obj)
+
+
+def serialize_tokens(tokens, as_dict=False):
+    """Serialize one or more tokens, to a JSON representation."""
+    string = json.dumps(tokens, cls=TokenEncoder)
+    if as_dict:
+        return json.loads(string)
+    return string
 
 
 class SpanContainer:
@@ -166,10 +186,13 @@ class BlockToken(Token):
 class SpanToken(Token):
     """Base class for span-level tokens.
 
-    - `pattern`: regex pattern to search for
-    - To parse child tokens, `parse_inner` should be set to `True`.
-    - `parse_group` corresponds to the match group in which child tokens might occur
-    - `precedence`: Alter the relative order by which the span token is assessed.
+    :cvar pattern: regex pattern to search for.
+    :cvar parse_inner: whether to do a nested parse of the content
+    :cvar parse_group: the group within the pattern match corresponding to the content
+    :cvar precedence: Alter the relative order by which the span token is assessed.
+
+    :ivar content: raw string content of the token
+    :ivar children: list of child tokens
     """
 
     pattern = None
@@ -177,9 +200,20 @@ class SpanToken(Token):
     parse_group = 1
     precedence = 5
 
-    def __init__(self, match):
-        if not self.parse_inner:
-            self.content = match.group(self.parse_group)
+    def __init__(
+        self, *, content: Optional[str] = None, children: Optional[list] = None
+    ):
+        if content is not None:
+            self.content = content
+        if children is not None:
+            self.children = children
+
+    @classmethod
+    def read(cls, match: Pattern):
+        """Take a pattern match and return the instatiated token."""
+        if not cls.parse_inner:
+            return cls(content=match.group(cls.parse_group))
+        return cls()
 
     @classmethod
     def find(cls, string: str):

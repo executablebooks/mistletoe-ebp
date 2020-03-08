@@ -1,0 +1,8 @@
+- EscapeSequence:
+    children:
+    - RawText:
+        content: $
+- RawText:
+    content: 'a '
+- Math:
+    content: $b$

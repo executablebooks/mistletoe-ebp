@@ -1,123 +1,183 @@
-import unittest
-from unittest.mock import patch
-from mistletoe import span_tokens
+import pytest
+
 from mistletoe.span_tokenizer import tokenize_span
+from mistletoe.span_tokens import CoreTokens, HTMLSpan
+from mistletoe.span_tokens_ext import Math
+from mistletoe.base_elements import serialize_tokens
 from mistletoe.parse_context import get_parse_context
 
 
-class TestBranchToken(unittest.TestCase):
-    def setUp(self):
-        self.addCleanup(
-            lambda: get_parse_context().span_tokens.__setitem__(-1, span_tokens.RawText)
-        )
-        patcher = patch("mistletoe.span_tokens.RawText")
-        self.mock = patcher.start()
-        get_parse_context().span_tokens[-1] = self.mock
-        self.addCleanup(patcher.stop)
-
-    def _test_parse(self, token_cls, raw, arg, **kwargs):
-        token = next(iter(tokenize_span(raw)))
-        self.assertIsInstance(token, token_cls)
-        self._test_token(token, arg, **kwargs)
-
-    def _test_token(self, token, arg, children=True, **kwargs):
-        for attr, value in kwargs.items():
-            self.assertEqual(getattr(token, attr), value)
-        if children:
-            self.mock.assert_any_call(arg)
+@pytest.mark.parametrize(
+    "name,source",
+    [
+        ("star", "**some text**"),
+        ("underline", "__some text__"),
+        ("multi", "**one** **two**"),
+    ],
+)
+def test_strong(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_strong_{name}",
+    )
 
 
-class TestStrong(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(span_tokens.Strong, "**some text**", "some text")
-        self._test_parse(span_tokens.Strong, "__some text__", "some text")
+@pytest.mark.parametrize(
+    "name,source",
+    [("star", "*some text*"), ("underline", "_some text_"), ("multi", "*one* *two*")],
+)
+def test_emphasis(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_emphasis_{name}",
+    )
 
 
-class TestEmphasis(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(span_tokens.Emphasis, "*some text*", "some text")
-        self._test_parse(span_tokens.Emphasis, "_some text_", "some text")
+@pytest.mark.parametrize(
+    "name,source", [("basic", "`some text`"), ("multi", "`one` `two`")]
+)
+def test_inline_code(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_inline_code_{name}",
+    )
 
 
-class TestInlineCode(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(span_tokens.InlineCode, "`some text`", "some text")
+@pytest.mark.parametrize(
+    "name,source",
+    [
+        ("basic", "~~some text~~"),
+        ("multi", "~~one~~ ~~two~~"),
+        ("nesting", "~~*some text*~~"),
+    ],
+)
+def test_strikethrough(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_strikethrough_{name}",
+    )
 
 
-class TestStrikethrough(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(span_tokens.Strikethrough, "~~some text~~", "some text")
+@pytest.mark.parametrize(
+    "name,source",
+    [
+        ("basic", "[name 1](target1)"),
+        ("multi", "[n1](t1) & [n2](t2)"),
+        ("children", "[![alt](src)](target)"),
+    ],
+)
+def test_link(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_link_{name}",
+    )
 
 
-class TestLink(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(
-            span_tokens.Link, "[name 1](target1)", "name 1", target="target1", title=""
-        )
-
-    def test_parse_multi_links(self):
-        tokens = iter(tokenize_span("[n1](t1) & [n2](t2)"))
-        self._test_token(next(tokens), "n1", target="t1")
-        self._test_token(next(tokens), " & ", children=False)
-        self._test_token(next(tokens), "n2", target="t2")
-
-    def test_parse_children(self):
-        token = next(iter(tokenize_span("[![alt](src)](target)")))
-        child = next(iter(token.children))
-        self._test_token(child, "alt", src="src")
+@pytest.mark.parametrize("name,source", [("basic", "<ftp://foo.com>")])
+def test_auto_link(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_auto_link_{name}",
+    )
 
 
-class TestAutoLink(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(
-            span_tokens.AutoLink,
-            "<ftp://foo.com>",
-            "ftp://foo.com",
-            target="ftp://foo.com",
-        )
+@pytest.mark.parametrize(
+    "name,source",
+    [
+        ("basic", "![alt](link)"),
+        ("with_title", '![alt](link "title")'),
+        ("no_alt", "![](link)"),
+    ],
+)
+def test_image(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_image_{name}",
+    )
 
 
-class TestImage(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(span_tokens.Image, "![alt](link)", "alt", src="link")
-        self._test_parse(
-            span_tokens.Image, '![alt](link "title")', "alt", src="link", title="title"
-        )
-
-    def test_no_alternative_text(self):
-        self._test_parse(span_tokens.Image, "![](link)", "", children=False, src="link")
-
-
-class TestEscapeSequence(TestBranchToken):
-    def test_parse(self):
-        self._test_parse(span_tokens.EscapeSequence, "\\*", "*")
-
-    def test_parse_in_text(self):
-        tokens = iter(tokenize_span("some \\*text*"))
-        self._test_token(next(tokens), "some ", children=False)
-        self._test_token(next(tokens), "*")
-        self._test_token(next(tokens), "text*", children=False)
+@pytest.mark.parametrize(
+    "name,source",
+    [("single_star", "\\*"), ("emphasis", "some \\*text*"), ("in_code", "`a \\* b`")],
+)
+def test_escape_sequence(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_escape_sequence_{name}",
+    )
 
 
-class TestRawText(unittest.TestCase):
-    def test_attribute(self):
-        token = span_tokens.RawText("some text")
-        self.assertEqual(token.content, "some text")
-
-    def test_no_children(self):
-        token = span_tokens.RawText("some text")
-        assert token.children is None
+@pytest.mark.parametrize("name,source", [("basic", "some text")])
+def test_raw_text(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_raw_text_{name}",
+    )
 
 
-class TestLineBreak(unittest.TestCase):
-    def test_parse(self):
-        (token,) = tokenize_span("  \n")
-        self.assertIsInstance(token, span_tokens.LineBreak)
+@pytest.mark.parametrize("name,source", [("basic", "  \n")])
+def test_line_break(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_line_break_{name}",
+    )
 
 
-class TestContains(unittest.TestCase):
-    def test_contains(self):
-        token = next(iter(tokenize_span("**with some *emphasis* text**")))
-        self.assertTrue("text" in token)
-        self.assertTrue("emphasis" in token)
-        self.assertFalse("foo" in token)
+@pytest.mark.parametrize("name,source", [("basic", "<p>some text</p>")])
+def test_html_span(name, source, data_regression):
+    get_parse_context().span_tokens.insert(1, HTMLSpan)
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_html_span_{name}",
+    )
+
+
+@pytest.mark.parametrize(
+    "name,source",
+    [
+        ("basic", "$a$"),
+        ("contains_special_chars", "$a`{_*-%$"),
+        ("preceding_special_chars", "{_*-%`$a$"),
+        ("multiple", "$a$ $b$"),
+        ("escaped_opening", "\\$a $b$"),
+        ("no_closing", "$a"),
+        ("internal_emphasis", "$*a*$"),
+        ("external_emphasis", "*$a$*"),
+        ("multi-line", "$$a\nc\nb$$"),
+        ("dollar_in_code", "a `$` `$x=1$` renders $x=1$."),
+        ("in_link_content", "[$a$](link)"),
+        ("in_link_target", "[a]($b$)"),
+        ("in_image", "![$a$]($b$)"),
+    ],
+)
+def test_math_span(name, source, data_regression):
+    _span_tokens = get_parse_context().span_tokens
+    _span_tokens.insert(_span_tokens.index(CoreTokens) + 1, Math)
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_math_span_{name}",
+    )
+
+
+@pytest.mark.parametrize(
+    "name,source",
+    [
+        ("emph_in_strong", "**with some *emphasis* text**"),
+        ("strong_in_emph", "*with some **strong** text*"),
+        ("star_underline", "*__some text__*"),
+        ("underline_star", "__*some text*__"),
+        ("emph_in_link", "[*some text*](link)"),
+        ("link_in_emph", "*[*some text*](link)*"),
+        ("star_in_inline_code", "`*a*`"),
+        ("underscore_in_inline_code", "`_a_`"),
+        ("inline_code_in_star", "*`a`*"),
+        ("inline_code_in_underscore", "_`a`_"),
+        ("auto_link_plus_code", "`<`abc>  <abc`>`"),
+        ("strikethrough_plus_code", "`~~`abc ~~abc~~ `~~`"),
+    ],
+)
+def test_nested(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_span(source), as_dict=True),
+        basename=f"test_nested_{name}",
+    )

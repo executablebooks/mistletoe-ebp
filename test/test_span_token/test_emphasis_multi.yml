@@ -1,0 +1,10 @@
+- Emphasis:
+    children:
+    - RawText:
+        content: one
+- RawText:
+    content: ' '
+- Emphasis:
+    children:
+    - RawText:
+        content: two

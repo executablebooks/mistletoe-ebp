@@ -1,0 +1,7 @@
+- GithubWiki:
+    children:
+    - Emphasis:
+        children:
+        - RawText:
+            content: alt
+    target: link

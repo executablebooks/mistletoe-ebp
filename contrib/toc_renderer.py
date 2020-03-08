@@ -20,8 +20,15 @@ class TOCRenderer(HTMLRenderer):
         extras (list): allows subclasses to add even more custom tokens.
     """
 
-    def __init__(self, depth=5, omit_title=True, filter_conds=[], *extras):
-        super().__init__(*extras)
+    def __init__(
+        self,
+        depth=5,
+        omit_title=True,
+        filter_conds=[],
+        find_blocks=None,
+        find_spans=None,
+    ):
+        super().__init__(find_blocks=find_blocks, find_spans=find_spans)
         self._headings = []
         self.depth = depth
         self.omit_title = omit_title

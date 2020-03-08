@@ -1,0 +1,4 @@
+- Strong:
+    children:
+    - RawText:
+        content: some text

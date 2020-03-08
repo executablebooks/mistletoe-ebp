@@ -1,0 +1,8 @@
+TableCell:
+  align: null
+  children:
+  - RawText:
+      content: cell 2
+  position:
+  - 0
+  - 0

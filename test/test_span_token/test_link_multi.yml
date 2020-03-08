@@ -1,0 +1,14 @@
+- Link:
+    children:
+    - RawText:
+        content: n1
+    target: t1
+    title: ''
+- RawText:
+    content: ' & '
+- Link:
+    children:
+    - RawText:
+        content: n2
+    target: t2
+    title: ''

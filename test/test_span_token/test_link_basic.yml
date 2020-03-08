@@ -1,0 +1,6 @@
+- Link:
+    children:
+    - RawText:
+        content: name 1
+    target: target1
+    title: ''

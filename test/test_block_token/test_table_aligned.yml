@@ -1,0 +1,57 @@
+- Table:
+    children:
+    - TableRow:
+        children:
+        - TableCell:
+            align: 1
+            children:
+            - RawText:
+                content: cell 1
+            position:
+            - 3
+            - 3
+        - TableCell:
+            align: null
+            children:
+            - RawText:
+                content: cell 2
+            position:
+            - 3
+            - 3
+        position:
+        - 3
+        - 3
+        row_align:
+        - 1
+        - null
+    column_align:
+    - 1
+    - null
+    header:
+      TableRow:
+        children:
+        - TableCell:
+            align: 1
+            children:
+            - RawText:
+                content: header 1
+            position:
+            - 1
+            - 1
+        - TableCell:
+            align: null
+            children:
+            - RawText:
+                content: header 2
+            position:
+            - 1
+            - 1
+        position:
+        - 1
+        - 1
+        row_align:
+        - 1
+        - null
+    position:
+    - 1
+    - 3

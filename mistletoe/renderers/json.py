@@ -41,6 +41,8 @@ def ast_to_json(token):
     node.update(token.to_dict())
     if "header" in node:
         node["header"] = ast_to_json(token.header)
+    if node.get("front_matter", None) is not None:
+        node["front_matter"] = ast_to_json(token.front_matter)
     if token.children is not None:
         node["children"] = [ast_to_json(child) for child in token.children]
     return node

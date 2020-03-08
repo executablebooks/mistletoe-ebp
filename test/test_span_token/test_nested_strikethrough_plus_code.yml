@@ -1,0 +1,16 @@
+- InlineCode:
+    children:
+    - RawText:
+        content: ~~
+- RawText:
+    content: 'abc '
+- Strikethrough:
+    children:
+    - RawText:
+        content: abc
+- RawText:
+    content: ' '
+- InlineCode:
+    children:
+    - RawText:
+        content: ~~

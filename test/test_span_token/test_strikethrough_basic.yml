@@ -1,0 +1,4 @@
+- Strikethrough:
+    children:
+    - RawText:
+        content: some text

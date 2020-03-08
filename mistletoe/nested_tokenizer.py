@@ -1,6 +1,7 @@
 """Tokenize nested span tokens."""
 import re
-from threading import local
+
+from mistletoe.span_tokens_ext import Math, Strikethrough
 from mistletoe.parse_context import get_parse_context
 
 
@@ -73,25 +74,73 @@ punctuation = {
 code_pattern = re.compile(r"(?<!\\|`)(?:\\\\)*(`+)(?!`)(.+?)(?<!`)\1(?!`)", re.DOTALL)
 
 
-_code_matches = local()
-_code_matches.value = []
-
-
 def find_nested_tokenizer(string):
+    get_parse_context().nesting_matches = {}  # reset nesting matches
+    if not string:
+        return []
     delimiters = []
     matches = []
-    escaped = False
-    in_delimiter_run = None
+    escaped = False  # escaped denotes that the last cursor position had `\`
+    in_delimiter_run = None  # delimiter runs are sequences of `*` or `_`
     in_image = False
     start = 0
     i = 0
+
+    has_math = Math in get_parse_context().span_tokens
+    has_strikethrough = Strikethrough in get_parse_context().span_tokens
+
+    # these tokens are special cases,
+    # because they start and end with the same character
+    # therefore, we need to re-search as we progress, to reset the opening character
     code_match = code_pattern.search(string)
+    strike_match = math_match = None
+    if has_strikethrough:
+        strike_match = Strikethrough.pattern.search(string)
+    if has_math:
+        math_match = Math.pattern.search(string)
+
     while i < len(string):
+
+        if strike_match is not None and i == strike_match.start():
+            get_parse_context().nesting_matches.setdefault("Strikethrough", []).append(
+                strike_match
+            )
+            strike_match = Strikethrough.pattern.search(string, i + 1)
+            continue
+
         if code_match is not None and i == code_match.start():
-            _code_matches.value.append(code_match)
+
+            if in_delimiter_run:
+                delimiters.append(Delimiter(start, i, string))
+            in_delimiter_run = None
+
+            get_parse_context().nesting_matches.setdefault("InlineCode", []).append(
+                code_match
+            )
             i = code_match.end()
             code_match = code_pattern.search(string, i)
+            if has_strikethrough:
+                strike_match = Strikethrough.pattern.search(string, i)
+            if has_math:
+                math_match = Math.pattern.search(string, i)
             continue
+
+        if math_match is not None and i == math_match.start():
+
+            if in_delimiter_run:
+                delimiters.append(Delimiter(start, i, string))
+            in_delimiter_run = None
+
+            get_parse_context().nesting_matches.setdefault("Math", []).append(
+                math_match
+            )
+            i = math_match.end()
+            code_match = code_pattern.search(string, i)
+            math_match = Math.pattern.search(string, i)
+            if has_strikethrough:
+                strike_match = Strikethrough.pattern.search(string, i)
+            continue
+
         c = string[i]
         if c == "\\" and not escaped:
             escaped = True
@@ -115,6 +164,10 @@ def find_nested_tokenizer(string):
             elif c == "]":
                 i = find_link_image(string, i, delimiters, matches)
                 code_match = code_pattern.search(string, i)
+                if has_strikethrough:
+                    strike_match = Strikethrough.pattern.search(string, i)
+                if has_math:
+                    math_match = Math.pattern.search(string, i)
             elif in_image:
                 in_image = False
         else:

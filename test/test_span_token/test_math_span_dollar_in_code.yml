@@ -1,0 +1,18 @@
+- RawText:
+    content: 'a '
+- InlineCode:
+    children:
+    - RawText:
+        content: $
+- RawText:
+    content: ' '
+- InlineCode:
+    children:
+    - RawText:
+        content: $x=1$
+- RawText:
+    content: ' renders '
+- Math:
+    content: $x=1$
+- RawText:
+    content: .

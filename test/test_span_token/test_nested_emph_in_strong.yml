@@ -1,0 +1,10 @@
+- Strong:
+    children:
+    - RawText:
+        content: 'with some '
+    - Emphasis:
+        children:
+        - RawText:
+            content: emphasis
+    - RawText:
+        content: ' text'

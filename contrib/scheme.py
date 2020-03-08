@@ -1,16 +1,29 @@
 from collections import ChainMap
 from functools import reduce
 import re
+from typing import List as ListType
+
+import attr
 
 from mistletoe import BaseRenderer, base_elements
-from span_tokenizer import tokenize_span
+from mistletoe.span_tokenizer import tokenize_span
 from mistletoe.nested_tokenizer import MatchObj
-from mistletoe.parse_context import get_parse_context
 
 
+@attr.s(slots=True, kw_only=True)
 class Program(base_elements.BlockToken):
-    def __init__(self, lines):
-        self.children = tokenize_span("".join([line.strip() for line in lines]))
+
+    children: ListType[base_elements.Token] = attr.ib(
+        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
+    )
+
+    @classmethod
+    def start(cls, line: str) -> bool:
+        return True
+
+    @classmethod
+    def read(cls, lines):
+        return cls(children=tokenize_span("".join([line.strip() for line in lines])))
 
 
 class Expr(base_elements.SpanToken):
@@ -28,57 +41,65 @@ class Expr(base_elements.SpanToken):
                 matches.append(MatchObj(pos, end_pos, (pos + 1, i, content)))
         return matches
 
-    def __repr__(self):
-        return "<Expr {}>".format(self.children)
-
 
 class Number(base_elements.SpanToken):
     pattern = re.compile(r"(\d+)")
     parse_inner = False
 
-    def __init__(self, match):
-        self.number = eval(match.group(0))
+    def __init__(self, *, number: int):
+        self.number = number
 
-    def __repr__(self):
-        return "<Number {}>".format(self.number)
+    @classmethod
+    def read(cls, match):
+        return cls(number=eval(match.group(0)))
+
+
+class String(base_elements.SpanToken):
+    pattern = re.compile(r"\"([^\"]+)\"")
+    parse_inner = False
+
+    def __init__(self, *, string: int):
+        self.string = string
+
+    @classmethod
+    def read(cls, match):
+        return cls(string=match.group(0)[1:-1])
 
 
 class Variable(base_elements.SpanToken):
     pattern = re.compile(r"([^\s()]+)")
     parse_inner = False
 
-    def __init__(self, match):
-        self.name = match.group(0)
+    def __init__(self, var_name: str):
+        self.var_name = var_name
 
-    def __repr__(self):
-        return "<Variable {!r}>".format(self.name)
+    @classmethod
+    def read(cls, match):
+        return cls(var_name=match.group(0))
 
 
 class Whitespace(base_elements.SpanToken):
     parse_inner = False
 
-    def __new__(self, _):
+    @classmethod
+    def read(self, match):
         return None
 
 
 class Procedure:
     def __init__(self, expr_token, body, env):
-        self.params = [child.name for child in expr_token.children]
+        self.params = [child.var_name for child in expr_token.children]
         self.body = body
         self.env = env
 
 
 class Scheme(BaseRenderer):
+
+    default_block_tokens = (Program,)
+    default_span_tokens = (Expr, Number, String, Variable, Whitespace)
+
     def __init__(self):
-        self.render_map = {
-            "Program": self.render_program,
-            "Expr": self.render_expr,
-            "Number": self.render_number,
-            "Variable": self.render_variable,
-        }
-        parse_context = get_parse_context()
-        parse_context.block_tokens = []
-        parse_context.span_tokens = [Expr, Number, Variable, Whitespace]
+        super().__init__()
 
         self.env = ChainMap(
             {
@@ -109,6 +130,7 @@ class Scheme(BaseRenderer):
                 "cond": self.cond,
                 "null": None,
                 "null?": lambda x: self.render(x) is None,
+                "nil": (),
                 "list": lambda *args: reduce(
                     lambda x, y: (y, x), map(self.render, reversed(args)), None
                 ),
@@ -130,16 +152,19 @@ class Scheme(BaseRenderer):
     def render_number(self, token):
         return token.number
 
+    def render_string(self, token):
+        return token.string
+
     def render_variable(self, token):
-        return self.env[token.name]
+        return self.env[token.var_name]
 
     def define(self, *args):
         if len(args) == 2:
             name_token, val_token = args
-            self.env[name_token.name] = self.render(val_token)
+            self.env[name_token.var_name] = self.render(val_token)
         else:
             name_token, expr_token, *body = args
-            self.env[name_token.name] = Procedure(expr_token, body, self.env)
+            self.env[name_token.var_name] = Procedure(expr_token, body, self.env)
 
     def cond(self, *exprs):
         for expr in exprs:
@@ -161,9 +186,3 @@ class Scheme(BaseRenderer):
         finally:
             self.env = old_env
         return result
-
-
-if __name__ == "__main__":
-    with Scheme() as renderer:
-        prog = ["(define x (* 2 21))", "x"]
-        print(renderer.render(Program(prog)))

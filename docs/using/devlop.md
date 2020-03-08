@@ -10,6 +10,29 @@ To understand the core tokens that mistletoe parses, take a look at:
 
 Then, for more information on how rendrers are implemented see: {ref}`renderers/core`.
 
+### The mistletoe AST
+
+Both `BlockToken` and `SpanToken` can be instatiated programatically,
+to build up an AST tree from scratch:
+
+```python
+from mistletoe.block_tokens import Document, Paragraph
+from mistletoe.span_tokens import Link, RawText
+
+doc = Document(
+    children=[
+        Paragraph(
+            children=[Link(target="target", children=[RawText(content="some text")])],
+            position=(0, 2),
+        )
+    ],
+    link_definitions={},
+)
+```
+
+All `Token`s then have a `read()` `classmethod`, which is used by the parser,
+to dictate how the source text is converted to a token (possibly with nested children).
+
 Here's an example to add GitHub-style wiki links to the parsing process,
 and provide a renderer for this new token.
 
@@ -66,19 +89,24 @@ the list of child tokens.
 Note that there is no need to manually set this attribute,
 unlike previous versions of mistletoe.
 
-Lastly, the `SpanToken` constructors take a regex match object as its argument.
-We can simply store off the `target` attribute from `match_obj.group(2)`.
+Lastly, the `SpanToken.read` method takes a regex match object as its argument, which is used to instatiate the token.
+We can simply extract the `target` attribute from `match_obj.group(2)`.
 
 ```python
-from mistletoe.span_token import SpanToken
+from mistletoe.base_elements import SpanToken
 
 class GithubWiki(SpanToken):
     pattern = re.compile(r"\[\[ *(.+?) *\| *(.+?) *\]\]")
-    def __init__(self, match_obj):
-        self.target = match_obj.group(2)
+
+    def __init__(self, target: str):
+        self.target = target
+
+    @classmethod
+    def read(cls, match):
+        return cls(target=match.group(2))
 ```
 
-There you go: a new token in 5 lines of code.
+There you go: a new token in a few lines of code.
 
 ### Side note about precedence
 

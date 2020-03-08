@@ -1,0 +1,23 @@
+TableRow:
+  children:
+  - TableCell:
+      align: null
+      children:
+      - RawText:
+          content: cell 1
+      position:
+      - 0
+      - 0
+  - TableCell:
+      align: null
+      children:
+      - RawText:
+          content: cell 2
+      position:
+      - 0
+      - 0
+  position:
+  - 0
+  - 0
+  row_align:
+  - null

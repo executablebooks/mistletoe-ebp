@@ -1,0 +1,4 @@
+- InlineCode:
+    children:
+    - RawText:
+        content: '*a*'

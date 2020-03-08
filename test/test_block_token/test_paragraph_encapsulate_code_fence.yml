@@ -1,0 +1,25 @@
+- Paragraph:
+    children:
+    - RawText:
+        content: this
+    position:
+    - 1
+    - 1
+- CodeFence:
+    arguments: ''
+    children:
+    - RawText:
+        content: 'is some
+
+          '
+    language: ''
+    position:
+    - 2
+    - 4
+- Paragraph:
+    children:
+    - RawText:
+        content: code
+    position:
+    - 5
+    - 5

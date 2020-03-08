@@ -1,0 +1,6 @@
+- Link:
+    children:
+    - Math:
+        content: $a$
+    target: link
+    title: ''

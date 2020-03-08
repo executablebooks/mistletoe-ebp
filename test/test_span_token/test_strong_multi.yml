@@ -1,0 +1,10 @@
+- Strong:
+    children:
+    - RawText:
+        content: one
+- RawText:
+    content: ' '
+- Strong:
+    children:
+    - RawText:
+        content: two

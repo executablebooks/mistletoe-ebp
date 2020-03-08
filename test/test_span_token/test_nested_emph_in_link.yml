@@ -1,0 +1,8 @@
+- Link:
+    children:
+    - Emphasis:
+        children:
+        - RawText:
+            content: some text
+    target: link
+    title: ''

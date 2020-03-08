@@ -1,0 +1,8 @@
+- RawText:
+    content: 'some '
+- EscapeSequence:
+    children:
+    - RawText:
+        content: '*'
+- RawText:
+    content: text*

@@ -9,8 +9,8 @@ class PygmentsRenderer(HTMLRenderer):
     formatter = HtmlFormatter()
     formatter.noclasses = True
 
-    def __init__(self, *extras, style="default"):
-        super().__init__(*extras)
+    def __init__(self, find_blocks=None, find_spans=None, style="default"):
+        super().__init__(find_blocks=find_blocks, find_spans=find_spans)
         self.formatter.style = get_style(style)
 
     def render_block_code(self, token):

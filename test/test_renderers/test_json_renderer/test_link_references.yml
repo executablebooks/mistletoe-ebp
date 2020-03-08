@@ -10,7 +10,11 @@ children:
   - 1
   - 1
   type: Paragraph
-- position:
+- definitions:
+  - - baz
+    - spam
+    - ''
+  position:
   - 3
   - 3
   type: LinkDefinition

@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from mistletoe import Document
 from mistletoe.renderers.json import ast_to_json, JsonRenderer
-from mistletoe.latex_token import Math
+from mistletoe.renderers.latex import LaTeXRenderer
 
 
 def test_basic(data_regression):
@@ -71,7 +71,7 @@ def test_extra_tokens():
             {
                 "type": "Paragraph",
                 "children": [{"type": "RawText", "content": "$b$"}],
-                "position": [1, 1],
+                "position": (1, 1),
             }
         ],
     }
@@ -83,7 +83,7 @@ def test_extra_tokens():
             {
                 "type": "Paragraph",
                 "children": [{"type": "Math", "content": "$b$"}],
-                "position": [1, 1],
+                "position": (1, 1),
             }
         ],
     }
@@ -91,7 +91,7 @@ def test_extra_tokens():
     with JsonRenderer() as render:
         output = render.render(Document.read(["$b$"]), as_string=False)
     assert output == output
-    renderer = JsonRenderer(Math)
+    renderer = JsonRenderer(find_spans=LaTeXRenderer.default_span_tokens)
     with renderer as render:
         output = render.render(Document.read(["$b$"]), as_string=False)
     assert output == output_math

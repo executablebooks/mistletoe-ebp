@@ -1,0 +1,17 @@
+- Paragraph:
+    children:
+    - RawText:
+        content: some
+    - LineBreak:
+        content: ''
+        soft: true
+    - RawText:
+        content: continuous
+    - LineBreak:
+        content: ''
+        soft: true
+    - RawText:
+        content: lines
+    position:
+    - 1
+    - 3

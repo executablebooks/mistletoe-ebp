@@ -2,16 +2,20 @@
 Built-in span-level token classes.
 """
 import re
+from typing import Pattern
+
+import attr
 
 from mistletoe import nested_tokenizer
 from mistletoe.base_elements import SpanToken
+from mistletoe.parse_context import get_parse_context
+from mistletoe.attr_doc import autodoc
 
 """
 Tokens to be included in the parsing process, in the order specified.
 """
 __all__ = [
     "EscapeSequence",
-    "Strikethrough",
     "AutoLink",
     "CoreTokens",
     "InlineCode",
@@ -23,9 +27,10 @@ __all__ = [
 class CoreTokens(SpanToken):
     precedence = 3
 
-    def __new__(self, match):
+    @classmethod
+    def read(cls, match: Pattern):
         # TODO this needs to be made more general (so tokens can be in diffent modules)
-        return globals()[match.type](match)
+        return globals()[match.type].read(match)
 
     @classmethod
     def find(cls, string):
@@ -35,15 +40,23 @@ class CoreTokens(SpanToken):
 class Strong(SpanToken):
     """
     Strong tokens. ("**some text**")
+
+    :ivar content: raw string content of the token
+    :ivar children: list of child tokens
     """
 
 
 class Emphasis(SpanToken):
     """
     Emphasis tokens. ("*some text*")
+
+    :ivar content: raw string content of the token
+    :ivar children: list of child tokens
     """
 
 
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class InlineCode(SpanToken):
     """
     Inline code tokens. ("`some code`")
@@ -53,57 +66,59 @@ class InlineCode(SpanToken):
     parse_inner = False
     parse_group = 2
 
-    def __init__(self, match):
-        content = match.group(self.parse_group)
-        self.children = (RawText(" ".join(re.split("[ \n]+", content.strip()))),)
+    children = attr.ib(metadata={"doc": "a single RawText node for alternative text."})
+
+    @classmethod
+    def read(cls, match: Pattern):
+        content = match.group(cls.parse_group)
+        return cls(children=(RawText(" ".join(re.split("[ \n]+", content.strip()))),))
 
     @classmethod
     def find(cls, string):
-        matches = nested_tokenizer._code_matches.value
-        nested_tokenizer._code_matches.value = []
+        matches = get_parse_context().nesting_matches.pop("InlineCode", [])
         return matches
 
 
-class Strikethrough(SpanToken):
-    """
-    Strikethrough tokens. ("~~some text~~")
-    """
-
-    pattern = re.compile(r"(?<!\\)(?:\\\\)*~~(.+)~~", re.DOTALL)
-
-
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class Image(SpanToken):
     """
     Image tokens, with inline targets: "![alt](src "title")".
-
-    :param src: image source.
-    :param title: image title (default to empty).
     """
 
-    def __init__(self, match):
-        self.src = match.group(2).strip()
-        self.title = match.group(3)
+    src: str = attr.ib(metadata={"doc": "image source"})
+    title: str = attr.ib(default=None, metadata={"doc": "image title"})
+    children = attr.ib(factory=list, metadata={"doc": "alternative text."})
+
+    @classmethod
+    def read(cls, match: Pattern):
+        return cls(src=match.group(2).strip(), title=match.group(3))
 
 
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class Link(SpanToken):
     """
     Link tokens, with inline targets: "[name](target)"
-
-    :param target: link target.
-    :param title: image title (default to empty).
     """
 
-    def __init__(self, match):
-        self.target = EscapeSequence.strip(match.group(2).strip())
-        self.title = EscapeSequence.strip(match.group(3))
+    target: str = attr.ib(metadata={"doc": "link target"})
+    title: str = attr.ib(default=None, metadata={"doc": "link title"})
+    children = attr.ib(factory=list, metadata={"doc": "link text."})
+
+    @classmethod
+    def read(cls, match: Pattern):
+        return cls(
+            target=EscapeSequence.strip(match.group(2).strip()),
+            title=EscapeSequence.strip(match.group(3)),
+        )
 
 
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class AutoLink(SpanToken):
     """
     Autolink tokens. ("<http://www.google.com>")
-
-    ;param children: a single RawText node for alternative text.
-    :param target: link target.
     """
 
     pattern = re.compile(
@@ -111,32 +126,47 @@ class AutoLink(SpanToken):
     )
     parse_inner = False
 
-    def __init__(self, match):
-        content = match.group(self.parse_group)
-        self.children = (RawText(content),)
-        self.target = content
-        self.mailto = "@" in self.target and "mailto" not in self.target.casefold()
+    target: str = attr.ib(metadata={"doc": "link target"})
+    mailto: bool = attr.ib(metadata={"doc": "if the link is an email"})
+    children = attr.ib(metadata={"doc": "a single RawText node for alternative text."})
+
+    @classmethod
+    def read(cls, match: Pattern):
+        content = match.group(cls.parse_group)
+        return cls(
+            children=(RawText(content),),
+            target=content,
+            mailto="@" in content and "mailto" not in content.casefold(),
+        )
 
 
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class EscapeSequence(SpanToken):
     """
     Escape sequences. ("\\*")
 
-    :param children: a single RawText node for alternative text.
+    Attributes:
+        children (iterator): a single RawText node for alternative text.
     """
 
     pattern = re.compile(r"\\([!\"#$%&'()*+,-./:;<=>?@\[\\\]^_`{|}~])")
     parse_inner = False
     precedence = 2
 
-    def __init__(self, match):
-        self.children = (RawText(match.group(self.parse_group)),)
+    children = attr.ib(metadata={"doc": "a single RawText node for alternative text."})
+
+    @classmethod
+    def read(cls, match: Pattern):
+        return cls(children=(RawText(match.group(cls.parse_group)),))
 
     @classmethod
     def strip(cls, string):
         return cls.pattern.sub(r"\1", string)
 
 
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class LineBreak(SpanToken):
     """
     Hard or soft line breaks.
@@ -146,22 +176,30 @@ class LineBreak(SpanToken):
     parse_inner = False
     parse_group = 0
 
-    def __init__(self, match):
+    content: bool = attr.ib(default="", metadata={"doc": "raw content."})
+    soft: bool = attr.ib(metadata={"doc": "if the break is soft or hard."})
+
+    @classmethod
+    def read(cls, match: Pattern):
         content = match.group(1)
-        self.soft = not content.startswith(("  ", "\\"))
-        self.content = ""
+        return cls(soft=not content.startswith(("  ", "\\")))
 
 
+@autodoc
+@attr.s(slots=True)
 class RawText(SpanToken):
     """
     Raw text. A leaf node.
 
-    RawText is the only token that accepts a string for its constructor,
+    RawText is the only token that accepts a string for its `read` method,
     instead of a match object. Also, all recursions should bottom out here.
     """
 
-    def __init__(self, content):
-        self.content = content
+    content: bool = attr.ib(metadata={"doc": "raw string content of the token"})
+
+    @classmethod
+    def read(cls, content: str):
+        return cls(content=content)
 
 
 _tags = {
@@ -245,7 +283,8 @@ class HTMLSpan(SpanToken):
     """
     Span-level HTML tokens.
 
-    :param content: literal strings rendered as-is.
+    :ivar content: raw string content of the token
+    :ivar children: list of child tokens
     """
 
     pattern = re.compile(

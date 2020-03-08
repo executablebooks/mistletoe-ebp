@@ -1,0 +1,31 @@
+Document:
+  children:
+  - Heading:
+      children:
+      - RawText:
+          content: heading
+      level: 1
+      position:
+      - 1
+      - 1
+  - Paragraph:
+      children:
+      - RawText:
+          content: paragraph
+      - LineBreak:
+          content: ''
+          soft: true
+      - RawText:
+          content: with
+      - LineBreak:
+          content: ''
+          soft: true
+      - InlineCode:
+          children:
+          - RawText:
+              content: code
+      position:
+      - 3
+      - 5
+  front_matter: null
+  link_definitions: {}

@@ -1,0 +1,16 @@
+- Program:
+    children:
+    - Variable:
+        var_name: lambda
+    - Expr:
+        children:
+        - Variable:
+            var_name: arg
+    - Expr:
+        children:
+        - Variable:
+            var_name: +
+        - Variable:
+            var_name: arg
+        - Number:
+            number: 1

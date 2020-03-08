@@ -1,0 +1,13 @@
+- CodeFence:
+    arguments: ''
+    children:
+    - RawText:
+        content: 'rm dir
+
+          mkdir test
+
+          '
+    language: sh
+    position:
+    - 1
+    - 4

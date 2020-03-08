@@ -1,0 +1,18 @@
+- Program:
+    children:
+    - Expr:
+        children:
+        - Variable:
+            var_name: or
+        - Expr:
+            children:
+            - Variable:
+                var_name: and
+            - String:
+                string: zero
+            - Variable:
+                var_name: nil
+            - String:
+                string: never
+        - String:
+            string: James

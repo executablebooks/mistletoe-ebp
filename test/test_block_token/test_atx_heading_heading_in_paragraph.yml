@@ -1,0 +1,22 @@
+- Paragraph:
+    children:
+    - RawText:
+        content: foo
+    position:
+    - 1
+    - 1
+- Heading:
+    children:
+    - RawText:
+        content: heading
+    level: 1
+    position:
+    - 2
+    - 2
+- Paragraph:
+    children:
+    - RawText:
+        content: bar
+    position:
+    - 3
+    - 3

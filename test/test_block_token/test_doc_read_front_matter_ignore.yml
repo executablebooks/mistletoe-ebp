@@ -1,0 +1,16 @@
+Document:
+  children:
+  - ThematicBreak:
+      position:
+      - 1
+      - 1
+  - SetextHeading:
+      children:
+      - RawText:
+          content: 'a: 1'
+      level: 2
+      position:
+      - 2
+      - 3
+  front_matter: null
+  link_definitions: {}

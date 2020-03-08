@@ -1,0 +1,6 @@
+- Link:
+    children:
+    - RawText:
+        content: a
+    target: $b$
+    title: ''

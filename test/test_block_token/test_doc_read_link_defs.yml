@@ -1,0 +1,10 @@
+Document:
+  children: []
+  front_matter: null
+  link_definitions:
+    key 1:
+    - value1
+    - ''
+    key 2:
+    - value2
+    - ''

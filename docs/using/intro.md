@@ -131,7 +131,7 @@ mistletoe is the fastest CommonMark compliant implementation in Python.
 Try the benchmarks yourself by running:
 
 ```sh
-$ python3 test/test_samples/benchmark.py  # all results in seconds
+$ python test/test_samples/benchmark.py  # all results in seconds
 Test document: syntax.md
 Test iterations: 1000
 Running tests with markdown, mistune, commonmark, mistletoe...

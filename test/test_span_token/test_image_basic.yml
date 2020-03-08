@@ -1,0 +1,6 @@
+- Image:
+    children:
+    - RawText:
+        content: alt
+    src: link
+    title: ''

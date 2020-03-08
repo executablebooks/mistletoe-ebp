@@ -1,0 +1,38 @@
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: foo
+            - LineBreak:
+                content: ''
+                soft: true
+            - RawText:
+                content: bar
+            position:
+            - 1
+            - 2
+        - BlockCode:
+            children:
+            - RawText:
+                content: 'baz
+
+                  '
+            language: ''
+            position:
+            - 3
+            - 4
+        leader: '-'
+        loose: true
+        next_marker: null
+        position:
+        - 0
+        - 4
+        prepend: 6
+    loose: true
+    position:
+    - 0
+    - 4
+    start_at: null

@@ -1,0 +1,12 @@
+- Paragraph:
+    children:
+    - RawText:
+        content: not header 1 | not header 2
+    - LineBreak:
+        content: ''
+        soft: true
+    - RawText:
+        content: foo | bar
+    position:
+    - 1
+    - 2

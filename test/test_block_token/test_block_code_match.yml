@@ -1,0 +1,12 @@
+- BlockCode:
+    children:
+    - RawText:
+        content: 'rm dir
+
+          mkdir test
+
+          '
+    language: ''
+    position:
+    - 0
+    - 2

@@ -4,10 +4,8 @@ HTML renderer for mistletoe.
 
 import re
 import sys
-from itertools import chain
 from urllib.parse import quote
-from mistletoe.block_tokens import HTMLBlock
-from mistletoe.span_tokens import HTMLSpan
+
 from mistletoe.renderers.base import BaseRenderer
 
 if sys.version_info < (3, 4):
@@ -19,13 +17,14 @@ else:
 class HTMLRenderer(BaseRenderer):
     """HTML renderer class."""
 
-    def __init__(self, *extras):
+    def __init__(self, find_blocks=None, find_spans=None):
+        """Initialise the renderer
+
+        :param find_blocks: override the default block tokens (classes or class paths)
+        :param find_spans: override the default span tokens (classes or class paths)
         """
-        Args:
-            extras (list): allows subclasses to add even more custom tokens.
-        """
+        super().__init__(find_blocks=find_blocks, find_spans=find_spans)
         self._suppress_ptag_stack = [False]
-        super().__init__(*chain((HTMLBlock, HTMLSpan), extras))
         # html.entities.html5 includes entitydefs not ending with ';',
         # CommonMark seems to hate them, so...
         self._stdlib_charref = html._charref

@@ -1,0 +1,6 @@
+- AutoLink:
+    children:
+    - RawText:
+        content: ftp://foo.com
+    mailto: false
+    target: ftp://foo.com

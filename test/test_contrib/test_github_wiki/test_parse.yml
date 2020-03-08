@@ -1,0 +1,7 @@
+- RawText:
+    content: 'text with '
+- GithubWiki:
+    children:
+    - RawText:
+        content: wiki
+    target: target

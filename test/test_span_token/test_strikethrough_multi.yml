@@ -1,0 +1,10 @@
+- Strikethrough:
+    children:
+    - RawText:
+        content: one
+- RawText:
+    content: ' '
+- Strikethrough:
+    children:
+    - RawText:
+        content: two

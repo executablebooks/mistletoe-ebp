@@ -1,0 +1,6 @@
+- Strikethrough:
+    children:
+    - Emphasis:
+        children:
+        - RawText:
+            content: some text

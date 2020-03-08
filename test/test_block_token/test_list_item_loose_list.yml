@@ -1,0 +1,32 @@
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: foo
+            position:
+            - 1
+            - 1
+        - CodeFence:
+            arguments: ''
+            children:
+            - RawText:
+                content: "bar\n\nbaz\n  ~~~\n"
+            language: ''
+            position:
+            - 2
+            - 5
+        leader: '-'
+        loose: false
+        next_marker: null
+        position:
+        - 0
+        - 5
+        prepend: 2
+    loose: false
+    position:
+    - 0
+    - 5
+    start_at: null

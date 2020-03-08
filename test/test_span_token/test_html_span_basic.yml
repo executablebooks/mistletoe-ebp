@@ -1,0 +1,6 @@
+- HTMLSpan:
+    content: <p>
+- RawText:
+    content: some text
+- HTMLSpan:
+    content: </p>

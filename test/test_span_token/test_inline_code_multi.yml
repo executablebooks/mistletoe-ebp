@@ -1,0 +1,10 @@
+- InlineCode:
+    children:
+    - RawText:
+        content: one
+- RawText:
+    content: ' '
+- InlineCode:
+    children:
+    - RawText:
+        content: two

@@ -1,0 +1,8 @@
+- SetextHeading:
+    children:
+    - RawText:
+        content: some heading
+    level: 2
+    position:
+    - 1
+    - 2

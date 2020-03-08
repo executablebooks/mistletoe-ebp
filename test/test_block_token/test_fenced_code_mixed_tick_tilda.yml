@@ -1,0 +1,15 @@
+- CodeFence:
+    arguments: ''
+    children:
+    - RawText:
+        content: '```sh
+
+          some code
+
+          ```
+
+          '
+    language: markdown
+    position:
+    - 1
+    - 5

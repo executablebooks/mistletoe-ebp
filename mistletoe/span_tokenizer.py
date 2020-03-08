@@ -68,7 +68,7 @@ def make_tokens(tokens, start, end, string, fallback_token):
     prev_end = start
     for token in tokens:
         if token.start > prev_end:
-            t = fallback_token(string[prev_end : token.start])
+            t = fallback_token.read(string[prev_end : token.start])
             if t is not None:
                 result.append(t)
         t = token.make()
@@ -76,7 +76,7 @@ def make_tokens(tokens, start, end, string, fallback_token):
             result.append(t)
         prev_end = token.end
     if prev_end != end:
-        result.append(fallback_token(string[prev_end:end]))
+        result.append(fallback_token.read(string[prev_end:end]))
     return result
 
 
@@ -101,7 +101,7 @@ class ParseToken:
 
     def make(self):
         if not self.cls.parse_inner:
-            return self.cls(self.match)
+            return self.cls.read(self.match)
         children = make_tokens(
             self.children,
             self.parse_start,
@@ -109,7 +109,7 @@ class ParseToken:
             self.string,
             self.fallback_token,
         )
-        token = self.cls(self.match)
+        token = self.cls.read(self.match)
         token.children = children
         return token
 

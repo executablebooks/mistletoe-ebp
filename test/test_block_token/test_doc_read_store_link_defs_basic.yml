@@ -1,0 +1,21 @@
+Document:
+  children:
+  - LinkDefinition:
+      definitions:
+      - - key 1
+        - value1
+        - ''
+      - - key 2
+        - value2
+        - ''
+      position:
+      - 1
+      - 2
+  front_matter: null
+  link_definitions:
+    key 1:
+    - value1
+    - ''
+    key 2:
+    - value2
+    - ''

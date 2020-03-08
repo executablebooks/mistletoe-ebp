@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+from pathlib import Path
 import sys
 from importlib import import_module
 from time import perf_counter
 
 
-TEST_FILE = "syntax.md"
+TEST_FILE = str(Path(__file__).parent.joinpath("syntax.md"))
 TIMES = 1000
 
 

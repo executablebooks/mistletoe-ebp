@@ -1,0 +1,46 @@
+- List:
+    children:
+    - ListItem:
+        children:
+        - Paragraph:
+            children:
+            - RawText:
+                content: foo
+            position:
+            - 1
+            - 1
+        - List:
+            children:
+            - ListItem:
+                children:
+                - Paragraph:
+                    children:
+                    - RawText:
+                        content: bar
+                    position:
+                    - 2
+                    - 2
+                leader: +
+                loose: false
+                next_marker: null
+                position:
+                - 1
+                - 2
+                prepend: 2
+            loose: false
+            position:
+            - 1
+            - 2
+            start_at: null
+        leader: '-'
+        loose: false
+        next_marker: null
+        position:
+        - 0
+        - 2
+        prepend: 2
+    loose: false
+    position:
+    - 0
+    - 2
+    start_at: null

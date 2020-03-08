@@ -1,0 +1,17 @@
+- Quote:
+    children:
+    - Paragraph:
+        children:
+        - RawText:
+            content: line 1
+        - LineBreak:
+            content: ''
+            soft: true
+        - RawText:
+            content: line 2
+        position:
+        - 2
+        - 3
+    position:
+    - 1
+    - 2

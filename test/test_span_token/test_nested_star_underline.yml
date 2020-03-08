@@ -1,0 +1,6 @@
+- Emphasis:
+    children:
+    - Strong:
+        children:
+        - RawText:
+            content: some text
