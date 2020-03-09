@@ -136,16 +136,26 @@ mistletoe is the fastest CommonMark compliant implementation in Python.
 Try the benchmarks yourself by running:
 
 ```sh
-$ python test/test_samples/benchmark.py  # all results in seconds
+$ mistletoe-bench test/test_samples/syntax.md
 Test document: syntax.md
 Test iterations: 1000
-Running tests with markdown, mistune, commonmark, mistletoe...
-==============================================================
-markdown: 40.270715949
-mistune: 11.054077996000004
-commonmark: 44.426582849
-mistletoe: 34.47910147500001
+Running 7 test(s) ...
+=====================
+markdown        (3.2.1): 31.13 s
+markdown:extra  (3.2.1): 42.45 s
+mistune         (0.8.4): 11.49 s
+commonmark      (x.x.x): 47.94 s
+mistletoe       (0.9.4): 35.58 s
+mistletoe:extra (0.9.4): 40.37 s
+panflute        (1.12.5): 168.06 s
 ```
+
+notes:
+
+- `markdown` without `extra` does not parse fenced code blocks or tables
+- `mistletoe` is CommonMark compliant and `mistletoe:extra`
+  includes {ref}`tokens/extension`.
+- `panflute` calls pandoc *via* a subprocess
 
 We notice that Mistune is the fastest Markdown parser,
 and by a good margin, which demands some explanation.
@@ -222,7 +232,6 @@ If you need a spec-compliant and readily extensible implementation, however,
 mistletoe is still marginally faster than Python-Markdown,
 while supporting more functionality (lists in block quotes, for example),
 and significantly faster than CommonMark-py.
-
 
 One last note: another bottleneck of mistletoe compared to mistune
 is the function overhead. Because, unlike mistune, mistletoe chooses to split

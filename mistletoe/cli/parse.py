@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 version_str = "mistletoe [version {}]".format(mistletoe.__version__)
 
 
-def main(args):
+def main(args=None):
     namespace = parse(args)
     if namespace.filenames:
         convert(namespace.filenames, namespace.renderer)
