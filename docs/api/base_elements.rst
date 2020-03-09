@@ -31,6 +31,7 @@ Span Token
 
 .. autoclass:: mistletoe.base_elements.SpanToken
     :members:
+    :special-members: __init__
     :undoc-members:
     :show-inheritance:
 

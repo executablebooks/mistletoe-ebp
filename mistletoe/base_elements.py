@@ -249,10 +249,10 @@ class BlockToken(Token):
 class SpanToken(Token):
     """Base class for span-level tokens.
 
-    :param pattern: regex pattern to search for.
-    :param parse_inner: whether to do a nested parse of the content
-    :param parse_group: the group within the pattern match corresponding to the content
-    :param precedence: Alter the relative order by which the span token is assessed.
+    :arg pattern: regex pattern to search for.
+    :arg parse_inner: whether to do a nested parse of the content
+    :arg parse_group: the group within the pattern match corresponding to the content
+    :arg precedence: Alter the relative order by which the span token is assessed.
     """
 
     pattern = None
