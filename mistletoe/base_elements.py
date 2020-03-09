@@ -196,8 +196,6 @@ class SpanToken(Token):
     :cvar parse_group: the group within the pattern match corresponding to the content
     :cvar precedence: Alter the relative order by which the span token is assessed.
 
-    Parameters:
-
     :param content: raw string content of the token
     :param children: list of child tokens
     """
