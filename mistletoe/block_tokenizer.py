@@ -1,7 +1,7 @@
 """
 Block-level tokenizer for mistletoe.
 """
-from mistletoe.base_elements import SpanContainer
+from mistletoe.base_elements import SpanContainer, SourceLines
 from mistletoe.parse_context import get_parse_context
 
 
@@ -42,7 +42,7 @@ def tokenize_block(iterable, token_types=None, start_line=0, store_definitions=F
     """Returns a list of parsed tokens."""
     if token_types is None:
         token_types = get_parse_context().block_tokens
-    lines = FileWrapper(iterable, start_line)
+    lines = SourceLines(iterable, start_line)
     parsed_tokens = ParseBuffer()
     line = lines.peek()
     while line is not None:
@@ -58,47 +58,6 @@ def tokenize_block(iterable, token_types=None, start_line=0, store_definitions=F
             parsed_tokens.loose = True
         line = lines.peek()
     return parsed_tokens
-
-
-class FileWrapper:
-    """A class for storing source lines and tracking current line number."""
-
-    def __init__(self, lines, start_line=0):
-        self.lines = lines if isinstance(lines, list) else list(lines)
-        self._index = -1
-        self._anchor = 0
-        self.start_line = start_line
-
-    @property
-    def lineno(self):
-        return self.start_line + self._index + 1
-
-    def __next__(self):
-        if self._index + 1 < len(self.lines):
-            self._index += 1
-            return self.lines[self._index]
-        raise StopIteration
-
-    def __iter__(self):
-        return self
-
-    def __repr__(self):
-        return repr(self.lines[self._index + 1 :])
-
-    def anchor(self):
-        self._anchor = self._index
-
-    def reset(self):
-        self._index = self._anchor
-
-    def peek(self):
-        if self._index + 1 < len(self.lines):
-            return self.lines[self._index + 1]
-        return None
-
-    def backstep(self):
-        if self._index != -1:
-            self._index -= 1
 
 
 class ParseBuffer(list):

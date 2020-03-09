@@ -130,6 +130,64 @@ class SpanContainer:
         return 0
 
 
+class SourceLines:
+    """A class for storing source lines and tracking current line index.
+
+    :param lines: the source lines
+    :param start_line: the position of the lines with the full source text.
+    """
+
+    def __init__(self, lines: List[str], start_line=0):
+        self.lines = lines if isinstance(lines, list) else list(lines)
+        self._index = -1
+        self._anchor = 0
+        self.start_line = start_line
+
+    @property
+    def lineno(self):
+        """Return the line number in the source text
+        (taking into account the ``start_line``).
+        """
+        return self.start_line + self._index + 1
+
+    def __next__(self):
+        """Progress the line index and return the line.
+
+        :raises: ``StopIteration`` if reached the end of the source lines.
+        """
+        if self._index + 1 < len(self.lines):
+            self._index += 1
+            return self.lines[self._index]
+        raise StopIteration
+
+    def __iter__(self):
+        return self
+
+    def __repr__(self):
+        return repr(self.lines[self._index + 1 :])
+
+    def anchor(self):
+        """Set an anchor for resetting the line index."""
+        self._anchor = self._index
+
+    def reset(self):
+        """Revert the line index to the set anchor (or 0)."""
+        self._index = self._anchor
+
+    def peek(self) -> Optional[str]:
+        """Return the next line, if exists,
+        without actually advancing the line index.
+        """
+        if self._index + 1 < len(self.lines):
+            return self.lines[self._index + 1]
+        return None
+
+    def backstep(self):
+        """Step back the line index by 1."""
+        if self._index != -1:
+            self._index -= 1
+
+
 class BlockToken(Token):
     """Base class for block-level tokens. Recursively parse inner tokens.
 
@@ -158,8 +216,8 @@ class BlockToken(Token):
 
       If BlockToken.read returns None, the read result is ignored,
       but the token class is responsible for resetting the iterator
-      to a previous state. See `block_tokenizer.FileWrapper.anchor`,
-      `block_tokenizer.FileWrapper.reset`.
+      to a previous state. See `SourceLines.anchor`,
+      `SourceLines.reset`.
 
     """
 
@@ -173,7 +231,7 @@ class BlockToken(Token):
         raise NotImplementedError
 
     @classmethod
-    def read(cls, lines) -> Optional[Token]:
+    def read(cls, lines: SourceLines) -> Optional[Token]:
         """takes the rest of the lines in the document as an
         iterator (including the start line), and consumes all the lines
         that should be read into this token.
