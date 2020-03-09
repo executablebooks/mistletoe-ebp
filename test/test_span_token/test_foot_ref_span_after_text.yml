@@ -1,0 +1,17 @@
+- Link:
+    children:
+    - RawText:
+        content: a
+        position: null
+    position: null
+    target: b
+    title: ''
+- RawText:
+    content: ' abc '
+    position: null
+- FootReference:
+    position: null
+    target: a
+- RawText:
+    content: ' xyz'
+    position: null

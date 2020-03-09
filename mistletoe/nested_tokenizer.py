@@ -1,7 +1,7 @@
 """Tokenize nested span tokens."""
 import re
 
-from mistletoe.span_tokens_ext import Math, Strikethrough
+from mistletoe.span_tokens_ext import Math, Strikethrough, FootReference
 from mistletoe.parse_context import get_parse_context
 
 
@@ -88,6 +88,7 @@ def find_nested_tokenizer(string):
 
     has_math = Math in get_parse_context().span_tokens
     has_strikethrough = Strikethrough in get_parse_context().span_tokens
+    has_footrefs = FootReference in get_parse_context().span_tokens
     code_match, strike_match, math_match = advance_searches(
         string, 0, has_strikethrough, has_math
     )
@@ -144,6 +145,14 @@ def find_nested_tokenizer(string):
             start = i
         if not escaped:
             if c == "[":
+                foot_ref_match = match_foot_ref(string, i) if has_footrefs else None
+                if foot_ref_match:
+                    get_parse_context().nesting_matches.setdefault(
+                        "FootReference", []
+                    ).append(foot_ref_match)
+                    i = foot_ref_match.end()
+                    in_image = False
+                    continue
                 if not in_image:
                     delimiters.append(Delimiter(i, i + 1, string))
                 else:
@@ -180,6 +189,14 @@ def advance_searches(string, pos=0, has_strikethrough=False, has_math=False):
     if has_math:
         math_match = Math.pattern.search(string, pos)
     return code_match, strike_match, math_match
+
+
+def match_foot_ref(string, offset):
+    match = FootReference.pattern.match(string[offset:])
+    if not match:
+        return
+    if match.group(1) in get_parse_context().foot_definitions:
+        return MatchObj(offset, match.end() + offset, (-1, -1, match.group(1)))
 
 
 def find_link_image(string, offset, delimiters, matches):
@@ -562,6 +579,8 @@ class Delimiter:
 
 
 class MatchObj:
+    """A mock of ``re.Match``, to parse to span tokens ``read()`` method."""
+
     def __init__(self, start, end, *fields):
         self._start = start
         self._end = end

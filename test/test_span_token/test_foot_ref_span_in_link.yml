@@ -1,0 +1,8 @@
+- Link:
+    children:
+    - FootReference:
+        position: null
+        target: a
+    position: null
+    target: b
+    title: ''

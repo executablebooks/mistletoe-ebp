@@ -1,0 +1,6 @@
+- InlineCode:
+    children:
+    - RawText:
+        content: '[^a]'
+        position: null
+    position: null

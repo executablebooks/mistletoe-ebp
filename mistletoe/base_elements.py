@@ -191,13 +191,10 @@ class BlockToken(Token):
 class SpanToken(Token):
     """Base class for span-level tokens.
 
-    :cvar pattern: regex pattern to search for.
-    :cvar parse_inner: whether to do a nested parse of the content
-    :cvar parse_group: the group within the pattern match corresponding to the content
-    :cvar precedence: Alter the relative order by which the span token is assessed.
-
-    :param content: raw string content of the token
-    :param children: list of child tokens
+    :param pattern: regex pattern to search for.
+    :param parse_inner: whether to do a nested parse of the content
+    :param parse_group: the group within the pattern match corresponding to the content
+    :param precedence: Alter the relative order by which the span token is assessed.
     """
 
     pattern = None
@@ -208,6 +205,11 @@ class SpanToken(Token):
     def __init__(
         self, *, content: Optional[str] = None, children: Optional[list] = None
     ):
+        """Initialise basic span token.
+
+        :param content: raw string content of the token
+        :param children: list of child tokens
+        """
         if content is not None:
             self.content = content
         if children is not None:
