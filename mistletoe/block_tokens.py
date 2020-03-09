@@ -122,7 +122,7 @@ class Document(BlockToken):
         lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
         # reset link definitions
         if reset_definitions:
-            get_parse_context().link_definitions = {}
+            get_parse_context().reset_definitions()
 
         front_matter_token = None
         if front_matter and lines and lines[0].startswith("---"):

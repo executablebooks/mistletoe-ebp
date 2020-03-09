@@ -152,7 +152,7 @@ def test_html_span(name, source, data_regression):
 )
 def test_math_span(name, source, data_regression):
     _span_tokens = get_parse_context().span_tokens
-    _span_tokens.insert(_span_tokens.index(CoreTokens) + 1, Math)
+    _span_tokens.insert_after(Math, CoreTokens)
     data_regression.check(
         serialize_tokens(tokenize_span(source), as_dict=True),
         basename=f"test_math_span_{name}",

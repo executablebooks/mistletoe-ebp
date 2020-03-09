@@ -88,16 +88,9 @@ def find_nested_tokenizer(string):
 
     has_math = Math in get_parse_context().span_tokens
     has_strikethrough = Strikethrough in get_parse_context().span_tokens
-
-    # these tokens are special cases,
-    # because they start and end with the same character
-    # therefore, we need to re-search as we progress, to reset the opening character
-    code_match = code_pattern.search(string)
-    strike_match = math_match = None
-    if has_strikethrough:
-        strike_match = Strikethrough.pattern.search(string)
-    if has_math:
-        math_match = Math.pattern.search(string)
+    code_match, strike_match, math_match = advance_searches(
+        string, 0, has_strikethrough, has_math
+    )
 
     while i < len(string):
 
@@ -118,11 +111,9 @@ def find_nested_tokenizer(string):
                 code_match
             )
             i = code_match.end()
-            code_match = code_pattern.search(string, i)
-            if has_strikethrough:
-                strike_match = Strikethrough.pattern.search(string, i)
-            if has_math:
-                math_match = Math.pattern.search(string, i)
+            code_match, strike_match, math_match = advance_searches(
+                string, i, has_strikethrough, has_math
+            )
             continue
 
         if math_match is not None and i == math_match.start():
@@ -135,10 +126,9 @@ def find_nested_tokenizer(string):
                 math_match
             )
             i = math_match.end()
-            code_match = code_pattern.search(string, i)
-            math_match = Math.pattern.search(string, i)
-            if has_strikethrough:
-                strike_match = Strikethrough.pattern.search(string, i)
+            code_match, strike_match, math_match = advance_searches(
+                string, i, has_strikethrough, has_math
+            )
             continue
 
         c = string[i]
@@ -163,11 +153,9 @@ def find_nested_tokenizer(string):
                 in_image = True
             elif c == "]":
                 i = find_link_image(string, i, delimiters, matches)
-                code_match = code_pattern.search(string, i)
-                if has_strikethrough:
-                    strike_match = Strikethrough.pattern.search(string, i)
-                if has_math:
-                    math_match = Math.pattern.search(string, i)
+                code_match, strike_match, math_match = advance_searches(
+                    string, i, has_strikethrough, has_math
+                )
             elif in_image:
                 in_image = False
         else:
@@ -177,6 +165,21 @@ def find_nested_tokenizer(string):
         delimiters.append(Delimiter(start, i, string))
     process_emphasis(string, None, delimiters, matches)
     return matches
+
+
+def advance_searches(string, pos=0, has_strikethrough=False, has_math=False):
+    """
+    These tokens are special cases,
+    because they start and end with the same character
+    therefore, we need to re-search as we progress, to reset the opening character
+    """
+    code_match = code_pattern.search(string, pos)
+    strike_match = math_match = None
+    if has_strikethrough:
+        strike_match = Strikethrough.pattern.search(string, pos)
+    if has_math:
+        math_match = Math.pattern.search(string, pos)
+    return code_match, strike_match, math_match
 
 
 def find_link_image(string, offset, delimiters, matches):
