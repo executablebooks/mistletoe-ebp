@@ -20,6 +20,12 @@ Block Token
     :show-inheritance:
 
 
+.. autoclass:: mistletoe.base_elements.SourceLines
+    :members:
+    :special-members: __next__
+    :undoc-members:
+    :show-inheritance:
+
 Span Token
 ..........
 
