@@ -13,7 +13,10 @@ THREAD = local()
 
 
 class TokenSet(MutableSet):
-    """An ordered set of tokens."""
+    """An ordered set of tokens.
+
+    This allows for faster processing of e.g. ``Token in token_set``, than a list
+    """
 
     def __init__(self, tokens):
         self._tokens = OrderedDict((t, t.__name__) for t in tokens)
@@ -66,7 +69,7 @@ class ParseContext:
             obtained from `[^def]: link` (if Footnote token active)
         :param nesting_matches: a dict of matches recorded from `find_nested_tokenizer`
         """
-        # tokens used for matching
+        # tokens matched during parse
         if find_blocks is not None:
             self.block_tokens = TokenSet(tokens_from_classes(find_blocks))
         else:

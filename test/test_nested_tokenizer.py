@@ -13,7 +13,7 @@ from mistletoe.nested_tokenizer import (
 
 class TestNestedTokenizer(TestCase):
     def test_match_obj(self):
-        match = MatchObj(0, 2, (0, 1, "a"), (1, 2, "b"))
+        match = MatchObj("ab", 0, 2, (0, 1, "a"), (1, 2, "b"))
         self.assertEqual(match.start(), 0)
         self.assertEqual(match.start(1), 0)
         self.assertEqual(match.start(2), 1)

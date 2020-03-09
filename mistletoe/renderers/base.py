@@ -4,7 +4,6 @@ Base class for renderers.
 
 from itertools import chain
 import re
-import sys
 
 from mistletoe import block_tokens, block_tokens_ext, span_tokens, span_tokens_ext
 from mistletoe.parse_context import ParseContext, get_parse_context, set_parse_context
@@ -101,32 +100,37 @@ class BaseRenderer:
 
     def get_default_render_map(self):
         """Return the default map of token names to methods."""
-        return {
-            "Strong": self.render_strong,
-            "Emphasis": self.render_emphasis,
-            "InlineCode": self.render_inline_code,
-            "RawText": self.render_raw_text,
-            "Strikethrough": self.render_strikethrough,
-            "Image": self.render_image,
-            "Link": self.render_link,
-            "AutoLink": self.render_auto_link,
-            "EscapeSequence": self.render_escape_sequence,
-            "Heading": self.render_heading,
-            "SetextHeading": self.render_setext_heading,
-            "Quote": self.render_quote,
-            "Paragraph": self.render_paragraph,
-            "CodeFence": self.render_code_fence,
-            "BlockCode": self.render_block_code,
-            "List": self.render_list,
-            "ListItem": self.render_list_item,
-            "Table": self.render_table,
-            "TableRow": self.render_table_row,
-            "TableCell": self.render_table_cell,
-            "ThematicBreak": self.render_thematic_break,
-            "LineBreak": self.render_line_break,
-            "Document": self.render_document,
-            "LinkDefinition": self.render_link_definition,
-        }
+        try:
+            return {
+                "Strong": self.render_strong,
+                "Emphasis": self.render_emphasis,
+                "InlineCode": self.render_inline_code,
+                "RawText": self.render_raw_text,
+                "Strikethrough": self.render_strikethrough,
+                "Image": self.render_image,
+                "Link": self.render_link,
+                "AutoLink": self.render_auto_link,
+                "EscapeSequence": self.render_escape_sequence,
+                "Heading": self.render_heading,
+                "SetextHeading": self.render_setext_heading,
+                "Quote": self.render_quote,
+                "Paragraph": self.render_paragraph,
+                "CodeFence": self.render_code_fence,
+                "BlockCode": self.render_block_code,
+                "List": self.render_list,
+                "ListItem": self.render_list_item,
+                "Table": self.render_table,
+                "TableRow": self.render_table_row,
+                "TableCell": self.render_table_cell,
+                "ThematicBreak": self.render_thematic_break,
+                "LineBreak": self.render_line_break,
+                "Document": self.render_document,
+                "LinkDefinition": self.render_link_definition,
+                "CoreTokens": self.render_core_tokens,
+                "PendingReference": self.render_pending_reference,
+            }
+        except AttributeError as err:
+            raise NotImplementedError(err)
 
     def render(self, token):
         """
@@ -199,25 +203,16 @@ class BaseRenderer:
         """
         return self.render_block_code(token)
 
-    def __getattr__(self, name):
-        """
-        Provides a default render method for all tokens.
+    def render_link_definition(self, token):
+        return self.render_inner(token)
 
-        Any token without a custom render method will simply be rendered by
-        self.render_inner.
+    def render_core_tokens(self, token):
+        raise NotImplementedError(
+            "CoreTokens span tokens should not be present in the final syntax tree"
+        )
 
-        If name does not start with 'render_', raise AttributeError as normal,
-        for less magic during debugging.
-
-        This method would only be called if the attribute requested has not
-        been defined. Defined attributes will not be overridden.
-
-        I still think this is heavy wizardry.
-        Let me know if you would like this method removed.
-        """
-        if not name.startswith("render_"):
-            msg = "{cls} object has no attribute {name}".format(
-                cls=type(self).__name__, name=name
-            )
-            raise AttributeError(msg).with_traceback(sys.exc_info()[2])
-        return self.render_inner
+    def render_pending_reference(self, token):
+        raise NotImplementedError(
+            "PendingReference span tokens should not be present "
+            "in the final syntax tree"
+        )

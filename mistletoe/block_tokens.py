@@ -8,6 +8,7 @@ from typing import List as ListType
 import attr
 
 import mistletoe.block_tokenizer as tokenizer
+from mistletoe.span_tokenizer import tokenize_span
 from mistletoe import span_tokens
 from mistletoe.nested_tokenizer import (
     follows,
@@ -17,7 +18,7 @@ from mistletoe.nested_tokenizer import (
     normalize_label,
 )
 from mistletoe.parse_context import get_parse_context
-from mistletoe.base_elements import Token, BlockToken, SpanContainer
+from mistletoe.base_elements import Token, BlockToken
 from mistletoe.attr_doc import autodoc
 
 
@@ -174,11 +175,9 @@ class Heading(BlockToken):
         return True
 
     @classmethod
-    def read(cls, lines, expand_spans=False):
+    def read(cls, lines):
         next(lines)
-        children = SpanContainer(cls.content)
-        if expand_spans:
-            children = children.expand()
+        children = tokenize_span(cls.content)
         return cls(
             level=cls.level, children=children, position=(lines.lineno, lines.lineno)
         )
@@ -339,7 +338,7 @@ class Paragraph(BlockToken):
         )
 
     @classmethod
-    def read(cls, lines, expand_spans=False):
+    def read(cls, lines):
         line_buffer = [next(lines)]
         start_line = lines.lineno
         next_line = lines.peek()
@@ -363,11 +362,9 @@ class Paragraph(BlockToken):
             if cls.parse_setext and cls.is_setext_heading(next_line):
                 line_buffer.append(next(lines))
                 level = 1 if line_buffer.pop().lstrip().startswith("=") else 2
-                children = SpanContainer(
+                children = tokenize_span(
                     "\n".join([line.strip() for line in line_buffer])
                 )
-                if expand_spans:
-                    children = children.expand()
                 return SetextHeading(
                     children=children, level=level, position=(start_line, lines.lineno)
                 )
@@ -381,9 +378,7 @@ class Paragraph(BlockToken):
             next_line = lines.peek()
 
         content = "".join([line.lstrip() for line in line_buffer]).strip()
-        children = SpanContainer(content)
-        if expand_spans:
-            children = children.expand()
+        children = tokenize_span(content)
         return cls(children=children, position=(start_line, lines.lineno))
 
 
@@ -888,7 +883,12 @@ class LinkDefinition(BlockToken):
             dest = span_tokens.EscapeSequence.strip(dest.strip())
             title = span_tokens.EscapeSequence.strip(title)
             link_definitions = get_parse_context().link_definitions
+            # From the CommonMark spec:
+            # If there are multiple matching reference link definitions,
+            # the one that comes first in the document is used.
+            # (It is desirable in such cases to emit a warning.)
             if key not in link_definitions:
+                # TODO emit/store a warning if multiple matching reference links found
                 link_definitions[key] = dest, title
 
     @staticmethod

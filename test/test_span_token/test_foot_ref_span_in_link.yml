@@ -1,8 +1,16 @@
-- Link:
-    children:
-    - FootReference:
-        position: null
-        target: a
+- RawText:
+    content: '['
     position: null
-    target: b
-    title: ''
+- PendingReference:
+    children:
+    - RawText:
+        content: ^a
+        position: null
+    is_image: false
+    position: null
+    raw: '[^a]'
+    ref_type: shortcut
+    target: ^a
+- RawText:
+    content: '](b)'
+    position: null

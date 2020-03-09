@@ -135,6 +135,32 @@ class Link(SpanToken):
 
 @autodoc
 @attr.s(kw_only=True, slots=True)
+class PendingReference(SpanToken):
+    ref_type: str = attr.ib(metadata={"doc": "the type of reference"})
+    is_image: bool = attr.ib(metadata={"doc": "whether the reference is an image"})
+    target: str = attr.ib(metadata={"doc": "link target"})
+    children: list = attr.ib(factory=list, repr=False, metadata={"doc": "link text."})
+    raw: str = attr.ib(
+        default=None, repr=False, metadata={"doc": "the raw string representation"}
+    )
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
+    )
+
+    @classmethod
+    def read(cls, match: Pattern):
+        return cls(
+            raw=match.group(0),
+            target=match.group(2),
+            ref_type=match.ref_type,
+            is_image=match.is_image,
+        )
+
+
+@autodoc
+@attr.s(kw_only=True, slots=True)
 class AutoLink(SpanToken):
     """
     Autolink tokens. ("<http://www.google.com>")

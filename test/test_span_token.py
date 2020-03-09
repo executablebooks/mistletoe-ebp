@@ -64,6 +64,9 @@ def test_strikethrough(name, source, data_regression):
         ("basic", "[name 1](target1)"),
         ("multi", "[n1](t1) & [n2](t2)"),
         ("children", "[![alt](src)](target)"),
+        ("link_full", "[foo][bar]"),
+        ("link_collapsed", "[foo][]"),
+        ("link_shortcut", "[foo]"),
     ],
 )
 def test_link(name, source, data_regression):
@@ -87,6 +90,9 @@ def test_auto_link(name, source, data_regression):
         ("basic", "![alt](link)"),
         ("with_title", '![alt](link "title")'),
         ("no_alt", "![](link)"),
+        ("link_full", "![foo][bar]"),
+        ("link_collapsed", "![foo][]"),
+        ("link_shortcut", "![foo]"),
     ],
 )
 def test_image(name, source, data_regression):

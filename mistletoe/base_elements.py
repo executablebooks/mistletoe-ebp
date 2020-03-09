@@ -5,7 +5,7 @@ from typing import List, Optional, Pattern
 import attr
 
 
-WalkItem = namedtuple("WalkItem", ["node", "parent", "depth"])
+WalkItem = namedtuple("WalkItem", ["node", "parent", "index", "depth"])
 
 
 class Token:
@@ -61,21 +61,23 @@ class Token:
         """
         current_depth = 0
         if include_self:
-            yield WalkItem(self, None, current_depth)
-        next_children = [(self, c) for c in self.children or []]
+            yield WalkItem(self, None, None, current_depth)
+        next_children = [(self, c, i) for i, c in enumerate(self.children or [])]
         if self.name == "Table" and getattr(self, "header", None) is not None:
             # table headers row
-            next_children.append((self, self.header))
+            next_children.append((self, self.header, 0))
         while next_children and (depth is None or current_depth > depth):
             current_depth += 1
             new_children = []
-            for idx, (parent, child) in enumerate(next_children):
+            for idx, (parent, child, indx) in enumerate(next_children):
                 if tokens is None or child.name in tokens:
-                    yield WalkItem(child, parent, current_depth)
-                new_children.extend([(child, c) for c in child.children or []])
+                    yield WalkItem(child, parent, indx, current_depth)
+                new_children.extend(
+                    [(child, c, i) for i, c in enumerate(child.children or [])]
+                )
                 if child.name == "Table" and getattr(child, "header", None) is not None:
                     # table headers row
-                    new_children.append((child, child.header))
+                    new_children.append((child, child.header, 0))
 
             next_children = new_children
 
@@ -84,11 +86,8 @@ class TokenEncoder(json.JSONEncoder):
     """A JSON encoder for mistletoe tokens."""
 
     def default(self, obj):
-        """Convert tokens to `{token.name: token.to_dict()}`,
-        and expand `SpanContainer`.
+        """Convert tokens to `{token.name: token.to_dict()}`.
         """
-        if isinstance(obj, SpanContainer):
-            return list(obj.expand())
         if isinstance(obj, Token):
             return {obj.name: obj.to_dict()}
         return super().default(obj)
@@ -100,34 +99,6 @@ def serialize_tokens(tokens, as_dict=False):
     if as_dict:
         return json.loads(string)
     return string
-
-
-class SpanContainer:
-    """This is a container for inline span text.
-
-    We use it in order to delay the assessment of span text, when parsing a document,
-    so that all link definitions can be gathered first.
-    After the initial block parse, we walk through the document
-    and replace these span containers with the actual span tokens
-    (see `block_tokenizer.tokenize_main`).
-    """
-
-    def __init__(self, text):
-        """Store text for later tokenisation."""
-        self.text = text
-
-    def expand(self):
-        """Apply `tokenize_span` to text."""
-        from mistletoe.span_tokenizer import tokenize_span
-
-        return tokenize_span(self.text)
-
-    def __iter__(self):
-        for _ in []:
-            yield
-
-    def __len__(self):
-        return 0
 
 
 class SourceLines:

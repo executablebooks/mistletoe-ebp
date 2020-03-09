@@ -1,5 +1,12 @@
 - Emphasis:
     children:
-    - FootReference:
+    - PendingReference:
+        children:
+        - RawText:
+            content: ^a
+            position: null
+        is_image: false
         position: null
-        target: a
+        raw: '[^a]'
+        ref_type: shortcut
+        target: ^a

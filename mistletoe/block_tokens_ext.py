@@ -9,10 +9,43 @@ from typing import List as ListType
 import attr
 
 from mistletoe.attr_doc import autodoc
-from mistletoe.base_elements import Token, BlockToken, SpanContainer
+from mistletoe.base_elements import Token, BlockToken, SourceLines
+from mistletoe.span_tokenizer import tokenize_span
 
 
-__all__ = ["TableCell", "TableRow", "Table"]
+__all__ = ["TableCell", "TableRow", "Table", "Footnote"]
+
+
+@autodoc
+@attr.s(slots=True, kw_only=True)
+class Footnote(BlockToken):
+    """Footnote token. ("[^a]: the footnote body")
+
+    As outlined in <https://www.markdownguide.org/extended-syntax/#footnotes>
+    and <https://michelf.ca/projects/php-markdown/extra/#footnotes>
+
+    This should be ordered before `LinkDefinition`
+    """
+
+    position: Tuple[int, int] = attr.ib(
+        metadata={"doc": "Line position in source text (start, end)"}
+    )
+
+    label_pattern = re.compile(r"^[ \n]{0,3}\[\^([a-zA-Z0-9#]+)\]\:\s*(.*)$")
+
+    @classmethod
+    def start(cls, line):
+        return line.lstrip().startswith("[^")
+
+    @classmethod
+    def read(cls, lines: SourceLines):
+        # line_buffer = []
+        start_line = lines.lineno + 1
+        next_line = lines.peek()
+        first_line_match = cls.label_pattern.match(next_line)
+        if not first_line_match:
+            return None
+        return cls(position=(start_line, lines.lineno))
 
 
 @autodoc
@@ -36,10 +69,8 @@ class TableCell(BlockToken):
     )
 
     @classmethod
-    def read(cls, content, align=None, expand_spans=False, lineno=0):
-        children = SpanContainer(content)
-        if expand_spans:
-            children = children.expand()
+    def read(cls, content, align=None, lineno=0):
+        children = tokenize_span(content)
         return cls(children=children, align=align, position=(lineno, lineno))
 
 
@@ -124,7 +155,7 @@ class Table(BlockToken):
         return "|" in line
 
     @classmethod
-    def read(cls, lines):
+    def read(cls, lines: SourceLines):
         start_line = lines.lineno + 1
         lines.anchor()
         line_buffer = [next(lines)]

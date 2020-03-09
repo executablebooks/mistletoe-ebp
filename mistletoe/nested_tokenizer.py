@@ -1,7 +1,7 @@
 """Tokenize nested span tokens."""
 import re
 
-from mistletoe.span_tokens_ext import Math, Strikethrough, FootReference
+from mistletoe.span_tokens_ext import Math, Strikethrough
 from mistletoe.parse_context import get_parse_context
 
 
@@ -88,7 +88,6 @@ def find_nested_tokenizer(string):
 
     has_math = Math in get_parse_context().span_tokens
     has_strikethrough = Strikethrough in get_parse_context().span_tokens
-    has_footrefs = FootReference in get_parse_context().span_tokens
     code_match, strike_match, math_match = advance_searches(
         string, 0, has_strikethrough, has_math
     )
@@ -145,14 +144,6 @@ def find_nested_tokenizer(string):
             start = i
         if not escaped:
             if c == "[":
-                foot_ref_match = match_foot_ref(string, i) if has_footrefs else None
-                if foot_ref_match:
-                    get_parse_context().nesting_matches.setdefault(
-                        "FootReference", []
-                    ).append(foot_ref_match)
-                    i = foot_ref_match.end()
-                    in_image = False
-                    continue
                 if not in_image:
                     delimiters.append(Delimiter(i, i + 1, string))
                 else:
@@ -189,14 +180,6 @@ def advance_searches(string, pos=0, has_strikethrough=False, has_math=False):
     if has_math:
         math_match = Math.pattern.search(string, pos)
     return code_match, strike_match, math_match
-
-
-def match_foot_ref(string, offset):
-    match = FootReference.pattern.match(string[offset:])
-    if not match:
-        return
-    if match.group(1) in get_parse_context().foot_definitions:
-        return MatchObj(offset, match.end() + offset, (-1, -1, match.group(1)))
 
 
 def find_link_image(string, offset, delimiters, matches):
@@ -242,7 +225,7 @@ def process_emphasis(string, stack_bottom, delimiters, matches):
             start = opener.end - n
             end = closer.start + n
             match = MatchObj(
-                start, end, (start + n, end - n, string[start + n : end - n])
+                string, start, end, (start + n, end - n, string[start + n : end - n])
             )
             match.type = "Strong" if n == 2 else "Emphasis"
             matches.append(match)
@@ -293,6 +276,7 @@ def match_link_image(string, offset, delimiter):
                 if paren_index < len(string) and string[paren_index] == ")":
                     end = paren_index + 1
                     match = MatchObj(
+                        string,
                         start,
                         end,
                         (text_start, text_end, text),
@@ -301,47 +285,46 @@ def match_link_image(string, offset, delimiter):
                     )
                     match.type = "Link" if not image else "Image"
                     return match
-    # link definition reference
+    # link definition reference: https://spec.commonmark.org/0.29/#reference-link
     if follows(string, offset, "["):
-        # full link definition reference
+        # full link definition reference: [foo][bar]
+        # https://spec.commonmark.org/0.29/#full-reference-link
         result = match_link_label(string, offset + 1)
         if result:
-            match_info, (dest, title) = result
+            match_info, label = result
             end = match_info[1]
             match = MatchObj(
-                start,
-                end,
-                (text_start, text_end, text),
-                (-1, -1, dest),
-                (-1, -1, title),
+                string, start, end, (text_start, text_end, text), (-1, -1, label)
             )
-            match.type = "Link" if not image else "Image"
+            match.type = "PendingReference"
+            match.ref_type = "full"
+            match.is_image = image
             return match
         ref = is_link_label(text)
-        if ref:
-            # compact link definition reference
+        if ref is not None:
+            # collapsed link definition reference: [foo][]
+            # https://spec.commonmark.org/0.29/#collapsed-reference-link
             if follows(string, offset + 1, "]"):
-                dest, title = ref
                 end = offset + 3
                 match = MatchObj(
-                    start,
-                    end,
-                    (text_start, text_end, text),
-                    (-1, -1, dest),
-                    (-1, -1, title),
+                    string, start, end, (text_start, text_end, text), (-1, -1, ref)
                 )
-                match.type = "Link" if not image else "Image"
+                match.type = "PendingReference"
+                match.ref_type = "collapsed"
+                match.is_image = image
                 return match
         return None
-    # shortcut link definition reference
+    # shortcut link definition reference: [foo]
+    # https://spec.commonmark.org/0.29/#shortcut-reference-link
     ref = is_link_label(text)
-    if ref:
-        dest, title = ref
+    if ref is not None:
         end = offset + 1
         match = MatchObj(
-            start, end, (text_start, text_end, text), (-1, -1, dest), (-1, -1, title)
+            string, start, end, (text_start, text_end, text), (-1, -1, ref)
         )
-        match.type = "Link" if not image else "Image"
+        match.type = "PendingReference"
+        match.ref_type = "shortcut"
+        match.is_image = image
         return match
     return None
 
@@ -422,11 +405,7 @@ def match_link_label(string, offset):
             label = string[start + 1 : end]
             match_info = start, end + 1, label
             if label.strip() != "":
-                link_definitions = get_parse_context().link_definitions
-                ref = link_definitions.get(normalize_label(label), None)
-                if ref is not None:
-                    return match_info, ref
-                return None
+                return match_info, normalize_label(label)
             return None
         elif escaped:
             escaped = False
@@ -443,8 +422,7 @@ def is_link_label(text):
         elif escaped:
             escaped = False
     if text.strip() != "":
-        link_definitions = get_parse_context().link_definitions
-        return link_definitions.get(normalize_label(text), None)
+        return normalize_label(text)
     return None
 
 
@@ -581,7 +559,8 @@ class Delimiter:
 class MatchObj:
     """A mock of ``re.Match``, to parse to span tokens ``read()`` method."""
 
-    def __init__(self, start, end, *fields):
+    def __init__(self, string, start, end, *fields):
+        self._string = string
         self._start = start
         self._end = end
         self.fields = fields
@@ -598,7 +577,7 @@ class MatchObj:
 
     def group(self, n=0):
         if n == 0:
-            return "".join([field[2] for field in self.fields])
+            return self._string[self._start : self._end]
         return self.fields[n - 1][2]
 
     def __repr__(self):

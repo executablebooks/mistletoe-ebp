@@ -1,0 +1,10 @@
+- PendingReference:
+    children:
+    - RawText:
+        content: foo
+        position: null
+    is_image: true
+    position: null
+    raw: '![foo][]'
+    ref_type: collapsed
+    target: foo

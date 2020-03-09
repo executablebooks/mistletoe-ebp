@@ -1,7 +1,8 @@
 """
 Block-level tokenizer for mistletoe.
 """
-from mistletoe.base_elements import SpanContainer, SourceLines
+from mistletoe.base_elements import SourceLines
+from mistletoe.span_tokens import PendingReference, Image, Link, EscapeSequence, RawText
 from mistletoe.parse_context import get_parse_context
 
 
@@ -9,7 +10,7 @@ def tokenize_main(
     iterable,
     token_types=None,
     start_line: int = 0,
-    expand_spans: bool = True,
+    resolve_references: bool = True,
     skip_tokens: list = ("LinkDefinition", "Footnote"),
 ):
     """Searches for token_types in an iterable.
@@ -17,7 +18,9 @@ def tokenize_main(
     :param iterable: list of strings (each line must end with a newline `\\n`!).
     :param token_types: override block-level tokens set in global context
     :param start_line: the source line number corresponding to `iterable[0]`
-    :param expand_spans: After the initial parse the span text is not yet tokenized,
+    :param resolve_references:
+
+    After the initial parse the span text is not yet tokenized,
         but stored instead as raw text in `SpanContainer`, in order to ensure
         all link definitons are read first. Setting True, runs a second walk of the
         syntax tree to replace these `SpanContainer` with the final span tokens.
@@ -34,12 +37,53 @@ def tokenize_main(
         start_line=start_line,
         skip_tokens=skip_tokens,
     )
-    if expand_spans:
+    if resolve_references:
         for token in tokens:
-            for result in list(token.walk(include_self=True)):
-                if isinstance(result.node.children, SpanContainer):
-                    result.node.children = result.node.children.expand()
+            for result in list(token.walk()):
+                if isinstance(result.node, PendingReference):
+                    new_nodes = resolve_reference(result.node)
+                    result.parent.children = (
+                        result.parent.children[: result.index]
+                        + new_nodes
+                        + result.parent.children[result.index + 1 :]
+                    )
+                    print(result.parent.children)
+
     return tokens
+
+
+def resolve_reference(token: PendingReference):
+    link_definitions = get_parse_context().link_definitions
+    if token.target in link_definitions:
+        destination, title = link_definitions[token.target]
+        if token.is_image:
+            return [
+                Image(
+                    src=destination,
+                    title=title,
+                    position=token.position,
+                    children=token.children,
+                )
+            ]
+        return [
+            Link(
+                target=EscapeSequence.strip(destination.strip()),
+                title=EscapeSequence.strip(title),
+                position=token.position,
+                children=token.children,
+            )
+        ]
+
+    init_raw = RawText("![" if token.is_image else "[")
+    print(token)
+    if token.ref_type == "shortcut":
+        return [init_raw] + token.children + [RawText("]")]
+    if token.ref_type == "collapsed":
+        return [init_raw] + token.children + [RawText("]")]
+    if token.ref_type == "full":
+        return [init_raw] + token.children + [RawText("]")]
+
+    return [token]
 
 
 def tokenize_block(

@@ -1,10 +1,10 @@
 - PendingReference:
     children:
     - RawText:
-        content: ^b
+        content: foo
         position: null
     is_image: false
     position: null
-    raw: '[^b]'
+    raw: '[foo]'
     ref_type: shortcut
-    target: ^b
+    target: foo
