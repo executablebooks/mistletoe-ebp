@@ -327,8 +327,8 @@ class HTMLSpan(SpanToken):
     """
     Span-level HTML tokens.
 
-    :ivar content: raw string content of the token
-    :ivar children: list of child tokens
+    :param content: raw string content of the token
+    :param children: list of child tokens
     """
 
     pattern = re.compile(
