@@ -195,6 +195,9 @@ class SpanToken(Token):
     :cvar parse_inner: whether to do a nested parse of the content
     :cvar parse_group: the group within the pattern match corresponding to the content
     :cvar precedence: Alter the relative order by which the span token is assessed.
+
+    :param content: raw string content of the token
+    :param children: list of child tokens
     """
 
     pattern = None
@@ -205,11 +208,6 @@ class SpanToken(Token):
     def __init__(
         self, *, content: Optional[str] = None, children: Optional[list] = None
     ):
-        """Initialise base span token.
-
-        :param content: raw string content of the token
-        :param children: list of child tokens
-        """
         if content is not None:
             self.content = content
         if children is not None:
