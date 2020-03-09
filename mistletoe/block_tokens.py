@@ -104,26 +104,30 @@ class Document(BlockToken):
         cls,
         lines,
         start_line: int = 0,
-        reset_definitions=True,
-        store_definitions=False,
-        front_matter=False,
+        reset_definitions: bool = True,
+        skip_tokens: list = ("LinkDefinition", "Footnote"),
+        front_matter: bool = False,
     ):
         """Read a document
 
         :param lines:  Lines or string to parse
         :param start_line: The initial line (used for nested parsing)
-        :param reset_definitions: remove any previously stored link_definitions
-        :param store_definitions: store LinkDefinitions or ignore them
+        :param reset_definitions: remove any previously stored definitions
+            in the global context (see ``ParseContext.reset_definitions()``).
+        :param skip_tokens: do not store these ``token.name`` in the syntax tree.
+            These are usually tokens that store themselves in the global context.
         :param front_matter: search for an initial YAML block front matter block
             (note this is not strictly CommonMark compliant)
         """
         if isinstance(lines, str):
             lines = lines.splitlines(keepends=True)
         lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
-        # reset link definitions
         if reset_definitions:
             get_parse_context().reset_definitions()
 
+        # TODO can we do this in a way where we are checking
+        # FrontMatter in get_parse_context().block_tokens?
+        # then it would be easier to add/remove it in the renderers
         front_matter_token = None
         if front_matter and lines and lines[0].startswith("---"):
             front_matter_token = FrontMatter.read(lines)
@@ -131,7 +135,7 @@ class Document(BlockToken):
             lines = lines[front_matter_token.position[1] :]
 
         children = tokenizer.tokenize_main(
-            lines, start_line=start_line, store_definitions=store_definitions
+            lines, start_line=start_line, skip_tokens=skip_tokens
         )
         return cls(
             children=children,
