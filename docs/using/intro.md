@@ -55,17 +55,31 @@ with open('foo.md', 'r') as fin:
     rendered = mistletoe.markdown(fin, LaTeXRenderer)
 ```
 
-Finally, here's how you would manually specify extra tokens and a renderer
+Finally, here's how you would manually specify tokens sets and a renderer
 for mistletoe. In the following example, we use `HTMLRenderer` to render
-the AST, which adds `HTMLBlock` and `HTMLSpan` to the normal parsing
-process.
+the AST; first parsing only tokens that are strictly CommonMark compliant
+(see {ref}`block tokens <tokens/block>` and {ref}`span tokens <tokens/span>`),
+then including an extended token set (see {ref}`extended tokens <tokens/extension>`).
 
 ```python
-from mistletoe import Document, HTMLRenderer
+from mistletoe import Document, HTMLRenderer, renderers
+
+cmark_block_tokens = renderers.get_commonmark_block_tokens()
+cmark_span_tokens = renderers.get_commonmark_span_tokens()
+extended_block_tokens = renderers.get_extended_block_tokens()
+extended_span_tokens = renderers.get_extended_span_tokens()
 
 with open('foo.md', 'r') as fin:
-    with HTMLRenderer() as renderer:
-        rendered = renderer.render(Document.read(fin))
+    rendered1 = mistletoe.markdown(
+        fin, renderer=HTMLRenderer,
+        find_blocks=cmark_block_tokens, find_spans=cmark_span_tokens
+    )
+
+    rendered2 = mistletoe.markdown(
+        fin, renderer=HTMLRenderer,
+        find_blocks=extended_block_tokens, find_spans=extended_span_tokens
+    )
+
 ```
 
 ```{seealso}

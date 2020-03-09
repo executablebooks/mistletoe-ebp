@@ -199,7 +199,7 @@ def test_doc_read_with_front_matter(name, source, data_regression):
 def test_doc_read_store_link_defs(name, source, data_regression):
     data_regression.check(
         serialize_tokens(
-            block_tokens.Document.read(source, store_definitions=True), as_dict=True
+            block_tokens.Document.read(source, skip_tokens=()), as_dict=True
         ),
         basename=f"test_doc_read_store_link_defs_{name}",
     )

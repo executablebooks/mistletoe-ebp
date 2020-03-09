@@ -6,7 +6,11 @@ from mistletoe.parse_context import get_parse_context
 
 
 def tokenize_main(
-    iterable, token_types=None, start_line=0, expand_spans=True, store_definitions=False
+    iterable,
+    token_types=None,
+    start_line: int = 0,
+    expand_spans: bool = True,
+    skip_tokens: list = ("LinkDefinition", "Footnote"),
 ):
     """Searches for token_types in an iterable.
 
@@ -17,8 +21,8 @@ def tokenize_main(
         but stored instead as raw text in `SpanContainer`, in order to ensure
         all link definitons are read first. Setting True, runs a second walk of the
         syntax tree to replace these `SpanContainer` with the final span tokens.
-    :param store_definitions: store `LinkDefinitions` specifically in the syntax tree
-        (or just record their target mappings globally and discard.)
+    :param skip_tokens: do not store these ``token.name`` in the syntax tree.
+        These are usually tokens that store themselves in the global context
 
     :returns: list of block-level token instances.
     """
@@ -28,7 +32,7 @@ def tokenize_main(
         iterable,
         token_types=token_types,
         start_line=start_line,
-        store_definitions=store_definitions,
+        skip_tokens=skip_tokens,
     )
     if expand_spans:
         for token in tokens:
@@ -38,7 +42,9 @@ def tokenize_main(
     return tokens
 
 
-def tokenize_block(iterable, token_types=None, start_line=0, store_definitions=False):
+def tokenize_block(
+    iterable, token_types=None, start_line=0, skip_tokens=("LinkDefinition", "Footnote")
+):
     """Returns a list of parsed tokens."""
     if token_types is None:
         token_types = get_parse_context().block_tokens
@@ -50,7 +56,7 @@ def tokenize_block(iterable, token_types=None, start_line=0, store_definitions=F
             if token_type.start(line):
                 token = token_type.read(lines)
                 if token is not None:
-                    if store_definitions or token.name != "LinkDefinition":
+                    if token.name not in skip_tokens:
                         parsed_tokens.append(token)
                     break
         else:  # unmatched newlines
