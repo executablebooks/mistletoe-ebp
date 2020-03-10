@@ -67,6 +67,7 @@ def test_extra_tokens():
         "type": "Document",
         "front_matter": None,
         "link_definitions": {},
+        "footnotes": {},
         "children": [
             {
                 "type": "Paragraph",
@@ -79,6 +80,7 @@ def test_extra_tokens():
         "type": "Document",
         "front_matter": None,
         "link_definitions": {},
+        "footnotes": {},
         "children": [
             {
                 "type": "Paragraph",

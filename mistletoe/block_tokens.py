@@ -2,7 +2,7 @@
 Built-in block-level token classes.
 """
 import re
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 from typing import List as ListType
 
 import attr
@@ -93,7 +93,14 @@ class Document(BlockToken):
         repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
     )
     link_definitions: dict = attr.ib(
-        repr=lambda d: str(len(d)), metadata={"doc": "Mapping of keys to (url, title)"}
+        factory=dict,
+        repr=lambda d: str(len(d)),
+        metadata={"doc": "Mapping of keys to (url, title)"},
+    )
+    footnotes: Dict[str, Token] = attr.ib(
+        factory=dict,
+        repr=lambda d: str(len(d)),
+        metadata={"doc": "Footnote tokens mapped to their target names"},
     )
     front_matter: Optional[FrontMatter] = attr.ib(
         default=None, metadata={"doc": "Front matter YAML block"}
@@ -141,6 +148,7 @@ class Document(BlockToken):
             children=children,
             front_matter=front_matter_token,
             link_definitions=get_parse_context().link_definitions,
+            footnotes=get_parse_context().foot_definitions,
         )
 
 
@@ -726,6 +734,9 @@ class ListItem(BlockToken):
 class LinkDefinition(BlockToken):
     """LinkDefinition token: `[ref]: url "title"`"""
 
+    # TODO this should only store one definition, then they can be stored as a dict
+    # in parse_context.list_definitions
+
     definitions: list = attr.ib(metadata={"doc": "list of (label, dest, title)"})
     position: Tuple[int, int] = attr.ib(
         metadata={"doc": "Line position in source text (start, end)"}
@@ -889,6 +900,7 @@ class LinkDefinition(BlockToken):
             title = span_tokens.EscapeSequence.strip(title)
             link_definitions = get_parse_context().link_definitions
             if key not in link_definitions:
+                # TODO store/emit warning if duplicate
                 link_definitions[key] = dest, title
 
     @staticmethod

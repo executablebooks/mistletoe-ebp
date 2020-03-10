@@ -2,7 +2,7 @@ import pytest
 
 from mistletoe.span_tokenizer import tokenize_span
 from mistletoe.span_tokens import CoreTokens, HTMLSpan
-from mistletoe.span_tokens_ext import Math, FootReference
+from mistletoe.span_tokens_ext import Math
 from mistletoe.base_elements import serialize_tokens
 from mistletoe.parse_context import get_parse_context
 
@@ -156,29 +156,6 @@ def test_math_span(name, source, data_regression):
     data_regression.check(
         serialize_tokens(tokenize_span(source), as_dict=True),
         basename=f"test_math_span_{name}",
-    )
-
-
-@pytest.mark.parametrize(
-    "name,source",
-    [
-        ("basic", "[^a]"),
-        ("no_match", "[^b]"),
-        ("multiple", "[^a] [^a]"),
-        ("after_text", "[a](b) abc [^a] xyz"),
-        ("not_image", "![^a] ![b](c)"),
-        ("in_emphasis", "*[^a]*"),
-        ("in_link", "[[^a]](b)"),
-        ("in_code", "`[^a]`"),
-    ],
-)
-def test_foot_ref_span(name, source, data_regression):
-    get_parse_context().foot_definitions["a"] = True
-    _span_tokens = get_parse_context().span_tokens
-    _span_tokens.insert_after(FootReference, CoreTokens)
-    data_regression.check(
-        serialize_tokens(tokenize_span(source), as_dict=True),
-        basename=f"test_foot_ref_span_{name}",
     )
 
 

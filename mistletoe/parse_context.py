@@ -40,7 +40,7 @@ class TokenSet(MutableSet):
         self._tokens = OrderedDict(token_list)
 
     def insert_after(self, token, after_token):
-        assert after_token in self._tokens
+        assert after_token in self._tokens, after_token
         indx = list(self._tokens.keys()).index(after_token) + 1
         token_list = list(self._tokens.items())
         token_list.insert(indx, (token, token.__name__))

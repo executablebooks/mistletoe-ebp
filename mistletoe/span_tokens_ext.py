@@ -52,7 +52,7 @@ class FootReference(SpanToken):
     Must be parsed after `CoreTokens`.
     """
 
-    pattern = re.compile(r"^\[\^([a-zA-Z0-9#]+)\]")
+    pattern = re.compile(r"^\[\^([a-zA-Z0-9#@]+)\]")
     parse_inner = False
     parse_group = 0
 

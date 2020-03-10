@@ -20,6 +20,7 @@ children:
   - 3
   - 3
   type: LinkDefinition
+footnotes: {}
 front_matter: null
 link_definitions:
   baz:

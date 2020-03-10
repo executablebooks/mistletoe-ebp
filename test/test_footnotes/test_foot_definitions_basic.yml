@@ -1,0 +1,16 @@
+footnotes:
+  '1':
+    Footnote:
+      children:
+      - RawText:
+          content: value1
+          position: null
+      position:
+      - 1
+      - 1
+      target: '1'
+link_definitions:
+  '2':
+  - value2
+  - ''
+tree: []

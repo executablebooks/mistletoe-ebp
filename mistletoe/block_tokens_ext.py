@@ -9,10 +9,58 @@ from typing import List as ListType
 import attr
 
 from mistletoe.attr_doc import autodoc
-from mistletoe.base_elements import Token, BlockToken, SpanContainer
+from mistletoe.base_elements import Token, BlockToken, SourceLines, SpanContainer
+from mistletoe.parse_context import get_parse_context
 
 
-__all__ = ["TableCell", "TableRow", "Table"]
+__all__ = ["TableCell", "TableRow", "Table", "Footnote"]
+
+
+@autodoc
+@attr.s(slots=True, kw_only=True)
+class Footnote(BlockToken):
+    """Footnote token. ("[^a]: the footnote body")
+
+    As outlined in <https://www.markdownguide.org/extended-syntax/#footnotes>
+    and <https://michelf.ca/projects/php-markdown/extra/#footnotes>
+
+    This should be ordered before `LinkDefinition`
+    """
+
+    target: str = attr.ib(metadata={"doc": "footnote reference target"})
+    children: ListType[Token] = attr.ib(
+        repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
+    )
+    position: Tuple[int, int] = attr.ib(
+        metadata={"doc": "Line position in source text (start, end)"}
+    )
+
+    label_pattern = re.compile(r"^[ \n]{0,3}\[\^([a-zA-Z0-9#@]+)\]\:\s*(.*)$")
+
+    @classmethod
+    def start(cls, line):
+        return line.lstrip().startswith("[^")
+
+    @classmethod
+    def read(cls, lines: SourceLines):
+        start_line = lines.lineno + 1
+        next_line = lines.peek()
+        first_line_match = cls.label_pattern.match(next_line)
+        if not first_line_match:
+            return None
+        target = first_line_match.group(1)
+        first_line = first_line_match.group(2)
+        # line_buffer = []
+        next(lines)
+        token = cls(
+            target=target,
+            children=SpanContainer(first_line),
+            position=(start_line, lines.lineno),
+        )
+        if target not in get_parse_context().foot_definitions:
+            # TODO store/emit warning if duplicate
+            get_parse_context().foot_definitions[target] = token
+        return token
 
 
 @autodoc
@@ -124,7 +172,7 @@ class Table(BlockToken):
         return "|" in line
 
     @classmethod
-    def read(cls, lines):
+    def read(cls, lines: SourceLines):
         start_line = lines.lineno + 1
         lines.anchor()
         line_buffer = [next(lines)]
