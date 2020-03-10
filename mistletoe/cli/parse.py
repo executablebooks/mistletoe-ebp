@@ -7,25 +7,28 @@ version_str = "mistletoe [version {}]".format(mistletoe.__version__)
 
 
 def main(args=None):
-    namespace = parse(args)
+    namespace = parse_args(args)
     if namespace.filenames:
-        convert(namespace.filenames, namespace.renderer)
+        convert(namespace.filenames, namespace.renderer, namespace.front_matter)
     else:
         interactive(namespace.renderer)
 
 
-def convert(filenames, renderer):
+def convert(filenames, renderer, front_matter=False):
     for filename in filenames:
-        convert_file(filename, renderer)
+        convert_file(filename, renderer, front_matter)
 
 
-def convert_file(filename, renderer):
+def convert_file(filename, renderer, front_matter=False):
     """
     Parse a Markdown file and dump the output to stdout.
     """
+    read_kwargs = {}
+    if front_matter:
+        read_kwargs["front_matter"] = True
     try:
         with open(filename, "r") as fin:
-            rendered = mistletoe.markdown(fin, renderer)
+            rendered = mistletoe.markdown(fin, renderer, read_kwargs=read_kwargs)
             print(rendered, end="")
     except OSError:
         sys.exit('Cannot open file "{}".'.format(filename))
@@ -53,7 +56,8 @@ def interactive(renderer):
             break
 
 
-def parse(args):
+def parse_args(args):
+    """Parse input CLI arguments."""
     parser = ArgumentParser()
     parser.add_argument(
         "-r",
@@ -63,6 +67,9 @@ def parse(args):
         help="specify an importable renderer class",
     )
     parser.add_argument("-v", "--version", action="version", version=version_str)
+    parser.add_argument(
+        "-f", "--front-matter", action="store_true", help="parse front matter block"
+    )
     parser.add_argument(
         "filenames", nargs="*", help="specify an optional list of files to convert"
     )

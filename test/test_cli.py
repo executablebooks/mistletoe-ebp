@@ -9,7 +9,7 @@ from mistletoe.cli import benchmark
 
 class TestCLI(TestCase):
     @patch(
-        "mistletoe.cli.parse.parse",
+        "mistletoe.cli.parse.parse_args",
         return_value=Mock(filenames=[], renderer=sentinel.Renderer),
     )
     @patch("mistletoe.cli.parse.interactive")
@@ -18,30 +18,32 @@ class TestCLI(TestCase):
         mock_interactive.assert_called_with(sentinel.Renderer)
 
     @patch(
-        "mistletoe.cli.parse.parse",
-        return_value=Mock(filenames=["foo.md"], renderer=sentinel.Renderer),
+        "mistletoe.cli.parse.parse_args",
+        return_value=Mock(
+            filenames=["foo.md"], renderer=sentinel.Renderer, front_matter=False
+        ),
     )
     @patch("mistletoe.cli.parse.convert")
     def test_main_to_convert(self, mock_convert, mock_parse):
         cli.parse.main(None)
-        mock_convert.assert_called_with(["foo.md"], sentinel.Renderer)
+        mock_convert.assert_called_with(["foo.md"], sentinel.Renderer, False)
 
     @patch("importlib.import_module", return_value=Mock(Renderer=sentinel.RendererCls))
     def test_parse_renderer(self, mock_import_module):
-        namespace = cli.parse.parse(["-r", "foo.Renderer"])
+        namespace = cli.parse.parse_args(["-r", "foo.Renderer"])
         mock_import_module.assert_called_with("foo")
         self.assertEqual(namespace.renderer, sentinel.RendererCls)
 
     def test_parse_filenames(self):
         filenames = ["foo.md", "bar.md"]
-        namespace = cli.parse.parse(filenames)
+        namespace = cli.parse.parse_args(filenames)
         self.assertEqual(namespace.filenames, filenames)
 
     @patch("mistletoe.cli.parse.convert_file")
     def test_convert(self, mock_convert_file):
         filenames = ["foo", "bar"]
         cli.parse.convert(filenames, sentinel.RendererCls)
-        calls = [call(filename, sentinel.RendererCls) for filename in filenames]
+        calls = [call(filename, sentinel.RendererCls, False) for filename in filenames]
         mock_convert_file.assert_has_calls(calls)
 
     @patch("mistletoe.markdown", return_value="rendered text")

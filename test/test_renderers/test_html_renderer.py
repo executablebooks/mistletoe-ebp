@@ -163,7 +163,7 @@ def test_footer_definitions(html_renderer_standalone, file_regression):
         [
             "[^name] a [^name] b [^1]\n",
             "\n",
-            "[^name]: the footnote *text*\n",
+            "[^name]: the footnote*text*\n",
             "[^1]: another footnote\n",
             "[^2]: unreferenced footnote\n",
         ]

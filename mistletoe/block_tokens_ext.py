@@ -28,6 +28,9 @@ class Footnote(BlockToken):
     but footnotes will always be listed in the order they are referenced to in the text
     (and will not be shown if they are not referenced).
 
+    **NOTE**: currently this only supports single line footnotes,
+    but it is intended that this will eventually support multi-line.
+
     Footnotes are stored in the `Document.footnotes` in the final syntax tree.
 
     This should be ordered for parsing, before the `LinkDefinition` token

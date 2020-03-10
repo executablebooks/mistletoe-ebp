@@ -361,13 +361,17 @@ class Paragraph(BlockToken):
         )
 
     @classmethod
+    def parse_list_marker(cls, next_line):
+        return ListItem.parse_marker(next_line)
+
+    @classmethod
     def read(cls, lines, expand_spans=False):
         line_buffer = [next(lines)]
         start_line = lines.lineno
         next_line = lines.peek()
         while not cls.transition(next_line):
             # check if next_line starts List
-            list_pair = ListItem.parse_marker(next_line)
+            list_pair = cls.parse_list_marker(next_line)
             if len(next_line) - len(next_line.lstrip()) < 4 and list_pair is not None:
                 prepend, leader = list_pair
                 # non-empty list item
