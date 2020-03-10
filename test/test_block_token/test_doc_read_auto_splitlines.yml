@@ -22,5 +22,7 @@ Document:
       position:
       - 1
       - 3
+  footnotes: {}
+  footref_order: []
   front_matter: null
   link_definitions: {}

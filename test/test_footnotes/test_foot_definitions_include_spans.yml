@@ -1,0 +1,15 @@
+footnotes:
+  abcd:
+    Footnote:
+      children:
+      - Emphasis:
+          children:
+          - RawText:
+              content: a
+              position: null
+      position:
+      - 1
+      - 1
+      target: abcd
+link_definitions: {}
+tree: []

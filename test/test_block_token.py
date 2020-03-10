@@ -50,6 +50,14 @@ def test_quote(name, source, data_regression):
     )
 
 
+@pytest.mark.parametrize("name,source", [("match", ["<p>a</p>\n"])])
+def test_html_block(name, source, data_regression):
+    data_regression.check(
+        serialize_tokens(tokenize_main(source), as_dict=True),
+        basename=f"test_html_block_{name}",
+    )
+
+
 @pytest.mark.parametrize(
     "name,source",
     [
@@ -199,7 +207,7 @@ def test_doc_read_with_front_matter(name, source, data_regression):
 def test_doc_read_store_link_defs(name, source, data_regression):
     data_regression.check(
         serialize_tokens(
-            block_tokens.Document.read(source, store_definitions=True), as_dict=True
+            block_tokens.Document.read(source, skip_tokens=()), as_dict=True
         ),
         basename=f"test_doc_read_store_link_defs_{name}",
     )

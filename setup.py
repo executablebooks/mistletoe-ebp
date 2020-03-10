@@ -15,7 +15,12 @@ setup(
     author_email="chrisj_sewell@hotmail.com",
     license="MIT",
     packages=find_packages(),
-    entry_points={"console_scripts": ["mistletoe = mistletoe.__main__:main"]},
+    entry_points={
+        "console_scripts": [
+            "mistletoe = mistletoe.cli.parse:main",
+            "mistletoe-bench = mistletoe.cli.benchmark:main",
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
@@ -36,8 +41,13 @@ setup(
     extras_require={
         "code_style": ["flake8<3.8.0,>=3.7.0", "black==19.10b0", "pre-commit==1.17.0"],
         "testing": ["coverage", "pytest>=3.6,<4", "pytest-cov", "pytest-regressions"],
-        "rtd": ["sphinx>=2,<3", "myst-parser==0.5.0a1", "pyyaml"],
-        "benchmark": ["commonmark~=0.9.1", "markdown~=3.2", "mistune~=0.8.4"],
+        "rtd": ["sphinx>=2,<3", "myst-parser~=0.5", "pyyaml"],
+        "benchmark": [
+            "commonmark~=0.9.1",
+            "markdown~=3.2",
+            "mistune~=0.8.4",
+            "panflute~=1.12",
+        ],
     },
     zip_safe=False,
 )

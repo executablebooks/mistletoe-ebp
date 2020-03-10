@@ -46,7 +46,7 @@ def test_basic(data_regression):
 
     """
         ),
-        store_definitions=True,
+        skip_tokens=(),
         front_matter=True,
     )
     output = ast_to_json(doc)
@@ -54,7 +54,7 @@ def test_basic(data_regression):
 
 
 def test_link_references(data_regression):
-    doc = Document.read(["[bar][baz]\n", "\n", "[baz]: spam\n"], store_definitions=True)
+    doc = Document.read(["[bar][baz]\n", "\n", "[baz]: spam\n"], skip_tokens=())
     output = ast_to_json(doc)
     data_regression.check(output)
 
@@ -67,6 +67,8 @@ def test_extra_tokens():
         "type": "Document",
         "front_matter": None,
         "link_definitions": {},
+        "footnotes": {},
+        "footref_order": [],
         "children": [
             {
                 "type": "Paragraph",
@@ -79,6 +81,8 @@ def test_extra_tokens():
         "type": "Document",
         "front_matter": None,
         "link_definitions": {},
+        "footnotes": {},
+        "footref_order": [],
         "children": [
             {
                 "type": "Paragraph",

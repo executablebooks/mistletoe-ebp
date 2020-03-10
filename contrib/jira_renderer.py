@@ -148,7 +148,7 @@ class JIRARenderer(BaseRenderer):
         # The primary difficulty seems to be passing down alignment options to
         # reach individual cells.
         template = "{inner}\n"
-        if hasattr(token, "header"):
+        if getattr(token, "header", None) is not None:
             head_template = "{inner}"
             header = token.children[0]
             head_inner = self.render_table_row(header, True)

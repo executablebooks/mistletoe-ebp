@@ -1,11 +1,11 @@
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import json
-from typing import List, Optional, Pattern
+from typing import List, Optional, Pattern, Tuple
 
 import attr
 
 
-WalkItem = namedtuple("WalkItem", ["node", "parent", "depth"])
+WalkItem = namedtuple("WalkItem", ["node", "parent", "index", "depth"])
 
 
 class Token:
@@ -59,23 +59,34 @@ class Token:
         :yield: A container for an element, its parent and depth
 
         """
+
+        def _get_children(_parent):
+            _children = [(_parent, c, i) for i, c in enumerate(_parent.children or [])]
+            if _parent.name == "Table" and getattr(_parent, "header", None) is not None:
+                _children.append((_parent, _parent.header, 0))
+            if (
+                _parent.name == "Document"
+                and getattr(_parent, "footnotes", None) is not None
+            ):
+                _children.extend(
+                    [
+                        (_parent.footnotes, c, i)
+                        for i, c in enumerate(_parent.footnotes.values())
+                    ]
+                )
+            return _children
+
         current_depth = 0
         if include_self:
-            yield WalkItem(self, None, current_depth)
-        next_children = [(self, c) for c in self.children or []]
-        if self.name == "Table" and getattr(self, "header", None) is not None:
-            # table headers row
-            next_children.append((self, self.header))
+            yield WalkItem(self, None, None, current_depth)
+        next_children = _get_children(self)
         while next_children and (depth is None or current_depth > depth):
             current_depth += 1
             new_children = []
-            for idx, (parent, child) in enumerate(next_children):
+            for idx, (parent, child, index) in enumerate(next_children):
                 if tokens is None or child.name in tokens:
-                    yield WalkItem(child, parent, current_depth)
-                new_children.extend([(child, c) for c in child.children or []])
-                if child.name == "Table" and getattr(child, "header", None) is not None:
-                    # table headers row
-                    new_children.append((child, child.header))
+                    yield WalkItem(child, parent, index, current_depth)
+                new_children.extend(_get_children(child))
 
             next_children = new_children
 
@@ -87,6 +98,8 @@ class TokenEncoder(json.JSONEncoder):
         """Convert tokens to `{token.name: token.to_dict()}`,
         and expand `SpanContainer`.
         """
+        if isinstance(obj, OrderedDict):
+            return dict(obj)
         if isinstance(obj, SpanContainer):
             return list(obj.expand())
         if isinstance(obj, Token):
@@ -130,6 +143,64 @@ class SpanContainer:
         return 0
 
 
+class SourceLines:
+    """A class for storing source lines and tracking current line index.
+
+    :param lines: the source lines
+    :param start_line: the position of the lines with the full source text.
+    """
+
+    def __init__(self, lines: List[str], start_line=0):
+        self.lines = lines if isinstance(lines, list) else list(lines)
+        self._index = -1
+        self._anchor = 0
+        self.start_line = start_line
+
+    @property
+    def lineno(self):
+        """Return the line number in the source text
+        (taking into account the ``start_line``).
+        """
+        return self.start_line + self._index + 1
+
+    def __next__(self):
+        """Progress the line index and return the line.
+
+        :raises: ``StopIteration`` if reached the end of the source lines.
+        """
+        if self._index + 1 < len(self.lines):
+            self._index += 1
+            return self.lines[self._index]
+        raise StopIteration
+
+    def __iter__(self):
+        return self
+
+    def __repr__(self):
+        return repr(self.lines[self._index + 1 :])
+
+    def anchor(self):
+        """Set an anchor for resetting the line index."""
+        self._anchor = self._index
+
+    def reset(self):
+        """Revert the line index to the set anchor (or 0)."""
+        self._index = self._anchor
+
+    def peek(self) -> Optional[str]:
+        """Return the next line, if exists,
+        without actually advancing the line index.
+        """
+        if self._index + 1 < len(self.lines):
+            return self.lines[self._index + 1]
+        return None
+
+    def backstep(self):
+        """Step back the line index by 1."""
+        if self._index != -1:
+            self._index -= 1
+
+
 class BlockToken(Token):
     """Base class for block-level tokens. Recursively parse inner tokens.
 
@@ -158,8 +229,8 @@ class BlockToken(Token):
 
       If BlockToken.read returns None, the read result is ignored,
       but the token class is responsible for resetting the iterator
-      to a previous state. See `block_tokenizer.FileWrapper.anchor`,
-      `block_tokenizer.FileWrapper.reset`.
+      to a previous state. See `SourceLines.anchor`,
+      `SourceLines.reset`.
 
     """
 
@@ -173,7 +244,7 @@ class BlockToken(Token):
         raise NotImplementedError
 
     @classmethod
-    def read(cls, lines) -> Optional[Token]:
+    def read(cls, lines: SourceLines) -> Optional[Token]:
         """takes the rest of the lines in the document as an
         iterator (including the start line), and consumes all the lines
         that should be read into this token.
@@ -191,13 +262,10 @@ class BlockToken(Token):
 class SpanToken(Token):
     """Base class for span-level tokens.
 
-    :cvar pattern: regex pattern to search for.
-    :cvar parse_inner: whether to do a nested parse of the content
-    :cvar parse_group: the group within the pattern match corresponding to the content
-    :cvar precedence: Alter the relative order by which the span token is assessed.
-
-    :param content: raw string content of the token
-    :param children: list of child tokens
+    :arg pattern: regex pattern to search for.
+    :arg parse_inner: whether to do a nested parse of the content
+    :arg parse_group: the group within the pattern match corresponding to the content
+    :arg precedence: Alter the relative order by which the span token is assessed.
     """
 
     pattern = None
@@ -206,8 +274,18 @@ class SpanToken(Token):
     precedence = 5
 
     def __init__(
-        self, *, content: Optional[str] = None, children: Optional[list] = None
+        self,
+        *,
+        content: Optional[str] = None,
+        children: Optional[list] = None,
+        position: Tuple[int, int] = None
     ):
+        """Initialise basic span token.
+
+        :param content: raw string content of the token
+        :param children: list of child tokens
+        :param position: span position within the source text
+        """
         if content is not None:
             self.content = content
         if children is not None:

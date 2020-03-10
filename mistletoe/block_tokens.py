@@ -2,7 +2,7 @@
 Built-in block-level token classes.
 """
 import re
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 from typing import List as ListType
 
 import attr
@@ -55,7 +55,7 @@ class FrontMatter(BlockToken):
     and then the renderers can apply there own error reporting.
 
     Not included in the parsing process, but called by `Document.read`,
-    if `front_matter=True`.
+    if `front_matter=True`, and stored on `Document.front_matter` in the syntax tree.
     """
 
     content: str = attr.ib(
@@ -93,7 +93,24 @@ class Document(BlockToken):
         repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
     )
     link_definitions: dict = attr.ib(
-        repr=lambda d: str(len(d)), metadata={"doc": "Mapping of keys to (url, title)"}
+        factory=dict,
+        repr=lambda d: str(len(d)),
+        metadata={"doc": "Mapping of keys to (url, title)"},
+    )
+    footnotes: Dict[str, Token] = attr.ib(
+        factory=dict,
+        repr=lambda d: str(len(d)),
+        metadata={"doc": "Footnote tokens mapped to their target names"},
+    )
+    footref_order: list = attr.ib(
+        factory=list,
+        repr=lambda d: str(len(d)),
+        metadata={
+            "doc": (
+                "A set of footnote targets, "
+                "in the order they are referenced in the document."
+            )
+        },
     )
     front_matter: Optional[FrontMatter] = attr.ib(
         default=None, metadata={"doc": "Front matter YAML block"}
@@ -104,26 +121,30 @@ class Document(BlockToken):
         cls,
         lines,
         start_line: int = 0,
-        reset_definitions=True,
-        store_definitions=False,
-        front_matter=False,
+        reset_definitions: bool = True,
+        skip_tokens: list = ("LinkDefinition", "Footnote"),
+        front_matter: bool = False,
     ):
         """Read a document
 
         :param lines:  Lines or string to parse
         :param start_line: The initial line (used for nested parsing)
-        :param reset_definitions: remove any previously stored link_definitions
-        :param store_definitions: store LinkDefinitions or ignore them
+        :param reset_definitions: remove any previously stored definitions
+            in the global context (see ``ParseContext.reset_definitions()``).
+        :param skip_tokens: do not store these ``token.name`` in the syntax tree.
+            These are usually tokens that store themselves in the global context.
         :param front_matter: search for an initial YAML block front matter block
             (note this is not strictly CommonMark compliant)
         """
         if isinstance(lines, str):
             lines = lines.splitlines(keepends=True)
         lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
-        # reset link definitions
         if reset_definitions:
-            get_parse_context().link_definitions = {}
+            get_parse_context().reset_definitions()
 
+        # TODO can we do this in a way where we are checking
+        # FrontMatter in get_parse_context().block_tokens?
+        # then it would be easier to add/remove it in the renderers
         front_matter_token = None
         if front_matter and lines and lines[0].startswith("---"):
             front_matter_token = FrontMatter.read(lines)
@@ -131,12 +152,17 @@ class Document(BlockToken):
             lines = lines[front_matter_token.position[1] :]
 
         children = tokenizer.tokenize_main(
-            lines, start_line=start_line, store_definitions=store_definitions
+            lines, start_line=start_line, skip_tokens=skip_tokens
         )
+        foot_defs = get_parse_context().foot_definitions
         return cls(
             children=children,
             front_matter=front_matter_token,
             link_definitions=get_parse_context().link_definitions,
+            footnotes=foot_defs,
+            footref_order=[
+                t for t in get_parse_context().foot_references if t in foot_defs
+            ],
         )
 
 
@@ -335,13 +361,17 @@ class Paragraph(BlockToken):
         )
 
     @classmethod
+    def parse_list_marker(cls, next_line):
+        return ListItem.parse_marker(next_line)
+
+    @classmethod
     def read(cls, lines, expand_spans=False):
         line_buffer = [next(lines)]
         start_line = lines.lineno
         next_line = lines.peek()
         while not cls.transition(next_line):
             # check if next_line starts List
-            list_pair = ListItem.parse_marker(next_line)
+            list_pair = cls.parse_list_marker(next_line)
             if len(next_line) - len(next_line.lstrip()) < 4 and list_pair is not None:
                 prepend, leader = list_pair
                 # non-empty list item
@@ -586,8 +616,8 @@ class ListItem(BlockToken):
         metadata={"doc": "Whether list items are separated by blank lines"}
     )
     leader: str = attr.ib(metadata={"doc": "The prefix number or bullet point."})
-    prepend = attr.ib(metadata={"doc": ""})
-    next_marker = attr.ib(metadata={"doc": ""})
+    prepend: int = attr.ib(metadata={"doc": ""})
+    next_marker = attr.ib(default=None, metadata={"doc": ""})
     position: Tuple[int, int] = attr.ib(
         metadata={"doc": "Line position in source text (start, end)"}
     )
@@ -720,7 +750,13 @@ class ListItem(BlockToken):
 @autodoc
 @attr.s(slots=True, kw_only=True)
 class LinkDefinition(BlockToken):
-    """LinkDefinition token: `[ref]: url "title"`"""
+    """LinkDefinition token: `[ref]: url "title"`
+
+    These are stores in `Document.link_definitions` in the final syntax tree.
+    """
+
+    # TODO this should only store one definition, then they can be stored as a dict
+    # in parse_context.list_definitions
 
     definitions: list = attr.ib(metadata={"doc": "list of (label, dest, title)"})
     position: Tuple[int, int] = attr.ib(
@@ -885,6 +921,7 @@ class LinkDefinition(BlockToken):
             title = span_tokens.EscapeSequence.strip(title)
             link_definitions = get_parse_context().link_definitions
             if key not in link_definitions:
+                # TODO store/emit warning if duplicate
                 link_definitions[key] = dest, title
 
     @staticmethod

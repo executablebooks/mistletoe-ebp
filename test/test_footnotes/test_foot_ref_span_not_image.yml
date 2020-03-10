@@ -1,0 +1,17 @@
+- RawText:
+    content: '!'
+    position: null
+- FootReference:
+    position: null
+    target: a
+- RawText:
+    content: ' '
+    position: null
+- Image:
+    children:
+    - RawText:
+        content: b
+        position: null
+    position: null
+    src: c
+    title: ''

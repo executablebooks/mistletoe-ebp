@@ -11,6 +11,8 @@ Document:
       position:
       - 1
       - 2
+  footnotes: {}
+  footref_order: []
   front_matter: null
   link_definitions:
     key 1:

@@ -16,6 +16,7 @@ class LaTeXRenderer(BaseRenderer):
         block_tokens.ThematicBreak,
         block_tokens.List,
         block_tokens_ext.Table,
+        # block_tokens_ext.Footnote,
         block_tokens.LinkDefinition,
         block_tokens.Paragraph,
     )
@@ -26,6 +27,7 @@ class LaTeXRenderer(BaseRenderer):
         span_tokens.AutoLink,
         span_tokens.CoreTokens,
         span_tokens_ext.Math,
+        # span_tokens_ext.FootReference,
         span_tokens_ext.Strikethrough,
         span_tokens.InlineCode,
         span_tokens.LineBreak,
@@ -139,7 +141,7 @@ class LaTeXRenderer(BaseRenderer):
             raise RuntimeError("Unrecognized align option: " + col)
 
         template = "\\begin{{tabular}}{align}\n" "{inner}" "\\end{{tabular}}\n"
-        if hasattr(token, "header"):
+        if getattr(token, "header", None) is not None:
             head_template = "{inner}\\hline\n"
             head_inner = self.render_table_row(token.header)
             head_rendered = head_template.format(inner=head_inner)

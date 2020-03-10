@@ -34,5 +34,7 @@ Document:
       position:
       - 3
       - 5
+  footnotes: {}
+  footref_order: []
   front_matter: null
   link_definitions: {}

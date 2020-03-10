@@ -1,4 +1,4 @@
-# Using mistletoe
+# Getting Started
 
 (intro/install)=
 
@@ -17,7 +17,7 @@ or *via* pip:
 pip install mistletoe-ebp
 ```
 
-Alternatively, clone the repo:
+Alternatively, for code development, clone the repo:
 
 ```sh
 git clone https://github.com/ExecutableBookProject/mistletoe-ebp.git
@@ -25,7 +25,9 @@ cd mistletoe-ebp
 pip install -e .[testing,code_style]
 ```
 
-<!-- See the [contributing][contributing] doc for how to contribute to mistletoe. -->
+```{seealso}
+The {ref}`Contributing section <contribute>` to contribute to mistletoe's development!
+```
 
 (intro/usage)=
 
@@ -55,17 +57,31 @@ with open('foo.md', 'r') as fin:
     rendered = mistletoe.markdown(fin, LaTeXRenderer)
 ```
 
-Finally, here's how you would manually specify extra tokens and a renderer
+Finally, here's how you would manually specify tokens sets and a renderer
 for mistletoe. In the following example, we use `HTMLRenderer` to render
-the AST, which adds `HTMLBlock` and `HTMLSpan` to the normal parsing
-process.
+the AST; first parsing only tokens that are strictly CommonMark compliant
+(see {ref}`block tokens <tokens/block>` and {ref}`span tokens <tokens/span>`),
+then including an extended token set (see {ref}`extended tokens <tokens/extension>`).
 
 ```python
-from mistletoe import Document, HTMLRenderer
+from mistletoe import Document, HTMLRenderer, token_sets
+
+cmark_block_tokens = token_sets.get_commonmark_block_tokens()
+cmark_span_tokens = token_sets.get_commonmark_span_tokens()
+extended_block_tokens = token_sets.get_extended_block_tokens()
+extended_span_tokens = token_sets.get_extended_span_tokens()
 
 with open('foo.md', 'r') as fin:
-    with HTMLRenderer() as renderer:
-        rendered = renderer.render(Document.read(fin))
+    rendered1 = mistletoe.markdown(
+        fin, renderer=HTMLRenderer,
+        find_blocks=cmark_block_tokens, find_spans=cmark_span_tokens
+    )
+
+    rendered2 = mistletoe.markdown(
+        fin, renderer=HTMLRenderer,
+        find_blocks=extended_block_tokens, find_spans=extended_span_tokens
+    )
+
 ```
 
 ```{seealso}
@@ -133,21 +149,33 @@ and some \textit{italics}
 ## Performance
 
 mistletoe is the fastest CommonMark compliant implementation in Python.
-Try the benchmarks yourself by running:
+Try the benchmarks yourself by installing
+`pip install mistletoe-ebp[benchmark]` and running:
 
 ```sh
-$ python test/test_samples/benchmark.py  # all results in seconds
+$ mistletoe-bench test/test_samples/syntax.md
 Test document: syntax.md
 Test iterations: 1000
-Running tests with markdown, mistune, commonmark, mistletoe...
-==============================================================
-markdown: 40.270715949
-mistune: 11.054077996000004
-commonmark: 44.426582849
-mistletoe: 34.47910147500001
+Running 7 test(s) ...
+=====================
+markdown        (3.2.1): 31.13 s
+markdown:extra  (3.2.1): 42.45 s
+mistune         (0.8.4): 11.49 s
+commonmark      (0.9.1): 47.94 s
+mistletoe       (0.9.4): 35.58 s
+mistletoe:extra (0.9.4): 40.37 s
+panflute        (1.12.5): 168.06 s
 ```
 
-We notice that Mistune is the fastest Markdown parser,
+notes:
+
+- `markdown` without `extra` does not parse some CommonMark syntax,
+  like fenced code blocks (see [Python-Markdown Extra](https://python-markdown.github.io/extensions/extra/))
+- `mistletoe` uses only CommonMark compliant tokens, whereas `mistletoe:extra`
+  includes {ref}`tokens/extension`.
+- `panflute` calls [pandoc](https://pandoc.org/) *via* a subprocess
+
+We notice that [Mistune][mistune] is the fastest Markdown parser,
 and by a good margin, which demands some explanation.
 mistletoe's biggest performance penalty
 comes from stringently following the CommonMark spec,
@@ -170,7 +198,7 @@ The natural interpretation is:
 <p><em><strong>foo</strong> bar</em></p>
 ```
 
-... and it is indeed the output of Python-Markdown, Commonmark-py and mistletoe.
+... and it is indeed the output of [Python-Markdown], [Commonmark-py] and mistletoe.
 Mistune (version 0.8.3) greedily parses the first two asterisks
 in the first delimiter run as a strong-emphasis opener,
 the second delimiter run as its closer,
@@ -211,7 +239,8 @@ It is nevertheless *highly likely* that,
 when Mistune implements all the necessary context checks,
 it will suffer from the same performance penalties.
 
-Contextual analysis is why Python-Markdown is slow, and why CommonMark-py is slower.
+Contextual analysis is why [Python-Markdown] is slow,
+and why [CommonMark-py] is slower.
 The lack thereof is the reason mistune enjoys stellar performance
 among similar parser implementations,
 as well as the limitations that come with these performance benefits.
@@ -219,10 +248,9 @@ as well as the limitations that come with these performance benefits.
 If you want an implementation that focuses on raw speed,
 mistune remains a solid choice.
 If you need a spec-compliant and readily extensible implementation, however,
-mistletoe is still marginally faster than Python-Markdown,
+mistletoe is still marginally faster than [Python-Markdown],
 while supporting more functionality (lists in block quotes, for example),
-and significantly faster than CommonMark-py.
-
+and significantly faster than [CommonMark-py].
 
 One last note: another bottleneck of mistletoe compared to mistune
 is the function overhead. Because, unlike mistune, mistletoe chooses to split
@@ -241,10 +269,10 @@ mistletoe: 15.088351159000013
 ```
 
 [conda-env]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
-[mistune]: https://github.com/lepture/mistune
-[python-markdown]: https://github.com/waylan/Python-Markdown
+[mistune]: https://mistune.readthedocs.io
+[Python-Markdown]: https://Python-Markdown.github.io
 [python-markdown2]: https://github.com/trentm/python-markdown2
-[commonmark-py]: https://github.com/rtfd/CommonMark-py
+[CommonMark-py]: https://commonmarkpy.readthedocs.io
 [oilshell]: https://www.oilshell.org/blog/2018/02/14.html
 [commonmark]: https://spec.commonmark.org/
 [contrib]: https://github.com/ExecutableBookProject/mistletoe-ebp/tree/master/contrib

@@ -12,21 +12,17 @@ Strikethrough
 .............
 
 .. autoclass:: mistletoe.span_tokens_ext.Strikethrough
-    :members:
-    :no-undoc-members:
+    :members: pattern, parse_inner, parse_group
+    :undoc-members:
     :show-inheritance:
-    :exclude-members: __init__
-
 
 Math
 ....
 
 .. autoclass:: mistletoe.span_tokens_ext.Math
-    :members:
-    :no-undoc-members:
+    :members: pattern, parse_inner, parse_group
+    :undoc-members:
     :show-inheritance:
-    :exclude-members: __init__
-
 
 
 FrontMatter
@@ -64,5 +60,24 @@ TableCell
 .. autoclass:: mistletoe.block_tokens_ext.TableCell
     :members:
     :no-undoc-members:
+    :show-inheritance:
+    :exclude-members: __init__
+
+
+FootReference
+.............
+
+.. autoclass:: mistletoe.span_tokens_ext.FootReference
+    :members: pattern, parse_inner, parse_group
+    :undoc-members:
+    :show-inheritance:
+
+
+Footnote
+.........
+
+.. autoclass:: mistletoe.block_tokens_ext.Footnote
+    :members: label_pattern, start, read
+    :undoc-members:
     :show-inheritance:
     :exclude-members: __init__

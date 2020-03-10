@@ -144,6 +144,9 @@ class Scheme(BaseRenderer):
             result = self.render(child)
         return result
 
+    def render_program(self, token):
+        return self.render_inner(token)
+
     def render_expr(self, token):
         proc, *args = token.children
         proc = self.render(proc)

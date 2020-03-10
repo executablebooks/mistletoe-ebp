@@ -1,7 +1,7 @@
 """Tokenize nested span tokens."""
 import re
 
-from mistletoe.span_tokens_ext import Math, Strikethrough
+from mistletoe.span_tokens_ext import Math, Strikethrough, FootReference
 from mistletoe.parse_context import get_parse_context
 
 
@@ -88,16 +88,10 @@ def find_nested_tokenizer(string):
 
     has_math = Math in get_parse_context().span_tokens
     has_strikethrough = Strikethrough in get_parse_context().span_tokens
-
-    # these tokens are special cases,
-    # because they start and end with the same character
-    # therefore, we need to re-search as we progress, to reset the opening character
-    code_match = code_pattern.search(string)
-    strike_match = math_match = None
-    if has_strikethrough:
-        strike_match = Strikethrough.pattern.search(string)
-    if has_math:
-        math_match = Math.pattern.search(string)
+    has_footrefs = FootReference in get_parse_context().span_tokens
+    code_match, strike_match, math_match = advance_searches(
+        string, 0, has_strikethrough, has_math
+    )
 
     while i < len(string):
 
@@ -118,11 +112,9 @@ def find_nested_tokenizer(string):
                 code_match
             )
             i = code_match.end()
-            code_match = code_pattern.search(string, i)
-            if has_strikethrough:
-                strike_match = Strikethrough.pattern.search(string, i)
-            if has_math:
-                math_match = Math.pattern.search(string, i)
+            code_match, strike_match, math_match = advance_searches(
+                string, i, has_strikethrough, has_math
+            )
             continue
 
         if math_match is not None and i == math_match.start():
@@ -135,10 +127,9 @@ def find_nested_tokenizer(string):
                 math_match
             )
             i = math_match.end()
-            code_match = code_pattern.search(string, i)
-            math_match = Math.pattern.search(string, i)
-            if has_strikethrough:
-                strike_match = Strikethrough.pattern.search(string, i)
+            code_match, strike_match, math_match = advance_searches(
+                string, i, has_strikethrough, has_math
+            )
             continue
 
         c = string[i]
@@ -154,6 +145,14 @@ def find_nested_tokenizer(string):
             start = i
         if not escaped:
             if c == "[":
+                foot_ref_match = match_foot_ref(string, i) if has_footrefs else None
+                if foot_ref_match:
+                    get_parse_context().nesting_matches.setdefault(
+                        "FootReference", []
+                    ).append(foot_ref_match)
+                    i = foot_ref_match.end()
+                    in_image = False
+                    continue
                 if not in_image:
                     delimiters.append(Delimiter(i, i + 1, string))
                 else:
@@ -163,11 +162,9 @@ def find_nested_tokenizer(string):
                 in_image = True
             elif c == "]":
                 i = find_link_image(string, i, delimiters, matches)
-                code_match = code_pattern.search(string, i)
-                if has_strikethrough:
-                    strike_match = Strikethrough.pattern.search(string, i)
-                if has_math:
-                    math_match = Math.pattern.search(string, i)
+                code_match, strike_match, math_match = advance_searches(
+                    string, i, has_strikethrough, has_math
+                )
             elif in_image:
                 in_image = False
         else:
@@ -177,6 +174,29 @@ def find_nested_tokenizer(string):
         delimiters.append(Delimiter(start, i, string))
     process_emphasis(string, None, delimiters, matches)
     return matches
+
+
+def advance_searches(string, pos=0, has_strikethrough=False, has_math=False):
+    """
+    These tokens are special cases,
+    because they start and end with the same character
+    therefore, we need to re-search as we progress, to reset the opening character
+    """
+    code_match = code_pattern.search(string, pos)
+    strike_match = math_match = None
+    if has_strikethrough:
+        strike_match = Strikethrough.pattern.search(string, pos)
+    if has_math:
+        math_match = Math.pattern.search(string, pos)
+    return code_match, strike_match, math_match
+
+
+def match_foot_ref(string, offset):
+    match = FootReference.pattern.match(string[offset:])
+    if not match:
+        return
+    if match.group(1) in get_parse_context().foot_definitions:
+        return MatchObj(offset, match.end() + offset, (-1, -1, match.group(1)))
 
 
 def find_link_image(string, offset, delimiters, matches):
@@ -281,9 +301,10 @@ def match_link_image(string, offset, delimiter):
                     )
                     match.type = "Link" if not image else "Image"
                     return match
-    # link definition reference
+    # link definition reference: https://spec.commonmark.org/0.29/#reference-link
     if follows(string, offset, "["):
-        # full link definition reference
+        # full link definition reference: [foo][bar]
+        # https://spec.commonmark.org/0.29/#full-reference-link
         result = match_link_label(string, offset + 1)
         if result:
             match_info, (dest, title) = result
@@ -299,7 +320,8 @@ def match_link_image(string, offset, delimiter):
             return match
         ref = is_link_label(text)
         if ref:
-            # compact link definition reference
+            # collapsed link definition reference: [foo][]
+            # https://spec.commonmark.org/0.29/#collapsed-reference-link
             if follows(string, offset + 1, "]"):
                 dest, title = ref
                 end = offset + 3
@@ -313,7 +335,8 @@ def match_link_image(string, offset, delimiter):
                 match.type = "Link" if not image else "Image"
                 return match
         return None
-    # shortcut link definition reference
+    # shortcut link definition reference: [foo]
+    # https://spec.commonmark.org/0.29/#shortcut-reference-link
     ref = is_link_label(text)
     if ref:
         dest, title = ref
@@ -559,6 +582,8 @@ class Delimiter:
 
 
 class MatchObj:
+    """A mock of ``re.Match``, to parse to span tokens ``read()`` method."""
+
     def __init__(self, start, end, *fields):
         self._start = start
         self._end = end

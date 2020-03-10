@@ -1,0 +1,5 @@
+- Emphasis:
+    children:
+    - FootReference:
+        position: null
+        target: a
