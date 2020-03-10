@@ -301,9 +301,10 @@ def match_link_image(string, offset, delimiter):
                     )
                     match.type = "Link" if not image else "Image"
                     return match
-    # link definition reference
+    # link definition reference: https://spec.commonmark.org/0.29/#reference-link
     if follows(string, offset, "["):
-        # full link definition reference
+        # full link definition reference: [foo][bar]
+        # https://spec.commonmark.org/0.29/#full-reference-link
         result = match_link_label(string, offset + 1)
         if result:
             match_info, (dest, title) = result
@@ -319,7 +320,8 @@ def match_link_image(string, offset, delimiter):
             return match
         ref = is_link_label(text)
         if ref:
-            # compact link definition reference
+            # collapsed link definition reference: [foo][]
+            # https://spec.commonmark.org/0.29/#collapsed-reference-link
             if follows(string, offset + 1, "]"):
                 dest, title = ref
                 end = offset + 3
@@ -333,7 +335,8 @@ def match_link_image(string, offset, delimiter):
                 match.type = "Link" if not image else "Image"
                 return match
         return None
-    # shortcut link definition reference
+    # shortcut link definition reference: [foo]
+    # https://spec.commonmark.org/0.29/#shortcut-reference-link
     ref = is_link_label(text)
     if ref:
         dest, title = ref
