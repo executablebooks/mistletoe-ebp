@@ -216,6 +216,7 @@ children:
   - 34
   type: Table
 footnotes: {}
+footref_order: []
 front_matter:
   content: 'a: 1
 

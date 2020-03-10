@@ -146,7 +146,7 @@ class AutoLink(SpanToken):
     parse_inner = False
 
     target: str = attr.ib(metadata={"doc": "link target"})
-    mailto: bool = attr.ib(metadata={"doc": "if the link is an email"})
+    mailto: bool = attr.ib(default=False, metadata={"doc": "if the link is an email"})
     children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )

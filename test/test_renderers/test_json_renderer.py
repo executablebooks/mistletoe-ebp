@@ -68,6 +68,7 @@ def test_extra_tokens():
         "front_matter": None,
         "link_definitions": {},
         "footnotes": {},
+        "footref_order": [],
         "children": [
             {
                 "type": "Paragraph",
@@ -81,6 +82,7 @@ def test_extra_tokens():
         "front_matter": None,
         "link_definitions": {},
         "footnotes": {},
+        "footref_order": [],
         "children": [
             {
                 "type": "Paragraph",

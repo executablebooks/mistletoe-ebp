@@ -1,6 +1,7 @@
 Document:
   children: []
   footnotes: {}
+  footref_order: []
   front_matter:
     FrontMatter:
       content: 'a: 1

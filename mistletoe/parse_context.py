@@ -12,46 +12,47 @@ from threading import local
 THREAD = local()
 
 
-class TokenSet(MutableSet):
-    """An ordered set of tokens."""
+class OrderedSet(MutableSet):
+    """An ordered set, optimized for `a in set` tests"""
 
-    def __init__(self, tokens):
-        self._tokens = OrderedDict((t, t.__name__) for t in tokens)
+    def __init__(self, iterable=()):
+        self._items = OrderedDict((t, None) for t in iterable)
 
-    def __contains__(self, token):
-        return token in self._tokens
+    def __contains__(self, item):
+        return item in self._items
 
     def __iter__(self):
-        for token in self._tokens:
-            yield token
+        for item in self._items:
+            yield item
 
     def __len__(self):
-        return len(self._tokens)
+        return len(self._items)
 
-    def add(self, token):
-        self._tokens[token] = token.__name__
+    def add(self, item):
+        if item not in self._items:
+            self._items[item] = None
 
-    def discard(self, token):
-        self._tokens.pop(token, None)
+    def discard(self, item):
+        self._items.pop(item, None)
 
-    def insert(self, index, token):
-        token_list = list(self._tokens.items())
-        token_list.insert(index, (token, token.__name__))
-        self._tokens = OrderedDict(token_list)
+    def insert(self, index, item):
+        item_list = list(self._items.items())
+        item_list.insert(index, (item, None))
+        self._items = OrderedDict(item_list)
 
-    def insert_after(self, token, after_token):
-        assert after_token in self._tokens, after_token
-        indx = list(self._tokens.keys()).index(after_token) + 1
-        token_list = list(self._tokens.items())
-        token_list.insert(indx, (token, token.__name__))
-        self._tokens = OrderedDict(token_list)
+    def insert_after(self, item, after_item):
+        assert after_item in self._items, after_item
+        indx = list(self._items.keys()).index(after_item) + 1
+        token_list = list(self._items.items())
+        token_list.insert(indx, (item, None))
+        self._items = OrderedDict(token_list)
 
-    def insert_before(self, token, before_token):
-        assert before_token in self._tokens
-        indx = list(self._tokens.keys()).index(before_token)
-        token_list = list(self._tokens.items())
-        token_list.insert(indx, (token, token.__name__))
-        self._tokens = OrderedDict(token_list)
+    def insert_before(self, item, before_item):
+        assert before_item in self._items
+        indx = list(self._items.keys()).index(before_item)
+        token_list = list(self._items.items())
+        token_list.insert(indx, (item, None))
+        self._items = OrderedDict(token_list)
 
 
 class ParseContext:
@@ -75,17 +76,17 @@ class ParseContext:
         """
         # tokens used for matching
         if find_blocks is not None:
-            self.block_tokens = TokenSet(tokens_from_classes(find_blocks))
+            self.block_tokens = OrderedSet(tokens_from_classes(find_blocks))
         else:
             from mistletoe.renderers.base import BaseRenderer
 
-            self.block_tokens = TokenSet(BaseRenderer.default_block_tokens)
+            self.block_tokens = OrderedSet(BaseRenderer.default_block_tokens)
         if find_spans is not None:
-            self.span_tokens = TokenSet(tokens_from_classes(find_spans))
+            self.span_tokens = OrderedSet(tokens_from_classes(find_spans))
         else:
             from mistletoe.renderers.base import BaseRenderer
 
-            self.span_tokens = TokenSet(BaseRenderer.default_span_tokens)
+            self.span_tokens = OrderedSet(BaseRenderer.default_span_tokens)
 
         # definition references, collected during parsing
         if link_definitions is None:
@@ -98,6 +99,7 @@ class ParseContext:
             self._foot_definitions = foot_definitions
 
         self.nesting_matches = {}
+        self._foot_references = OrderedSet()
 
     @property
     def link_definitions(self) -> dict:
@@ -107,9 +109,14 @@ class ParseContext:
     def foot_definitions(self) -> dict:
         return self._foot_definitions
 
+    @property
+    def foot_references(self) -> OrderedSet:
+        return self._foot_references
+
     def reset_definitions(self):
         self._link_definitions = {}
         self._foot_definitions = {}
+        self._foot_references = OrderedSet()
 
     def copy(self):
         return deepcopy(self)

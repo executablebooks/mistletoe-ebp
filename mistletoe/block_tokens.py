@@ -55,7 +55,7 @@ class FrontMatter(BlockToken):
     and then the renderers can apply there own error reporting.
 
     Not included in the parsing process, but called by `Document.read`,
-    if `front_matter=True`.
+    if `front_matter=True`, and stored on `Document.front_matter` in the syntax tree.
     """
 
     content: str = attr.ib(
@@ -102,6 +102,16 @@ class Document(BlockToken):
         repr=lambda d: str(len(d)),
         metadata={"doc": "Footnote tokens mapped to their target names"},
     )
+    footref_order: list = attr.ib(
+        factory=list,
+        repr=lambda d: str(len(d)),
+        metadata={
+            "doc": (
+                "A set of footnote targets, "
+                "in the order they are referenced in the document."
+            )
+        },
+    )
     front_matter: Optional[FrontMatter] = attr.ib(
         default=None, metadata={"doc": "Front matter YAML block"}
     )
@@ -144,11 +154,15 @@ class Document(BlockToken):
         children = tokenizer.tokenize_main(
             lines, start_line=start_line, skip_tokens=skip_tokens
         )
+        foot_defs = get_parse_context().foot_definitions
         return cls(
             children=children,
             front_matter=front_matter_token,
             link_definitions=get_parse_context().link_definitions,
-            footnotes=get_parse_context().foot_definitions,
+            footnotes=foot_defs,
+            footref_order=[
+                t for t in get_parse_context().foot_references if t in foot_defs
+            ],
         )
 
 
@@ -598,8 +612,8 @@ class ListItem(BlockToken):
         metadata={"doc": "Whether list items are separated by blank lines"}
     )
     leader: str = attr.ib(metadata={"doc": "The prefix number or bullet point."})
-    prepend = attr.ib(metadata={"doc": ""})
-    next_marker = attr.ib(metadata={"doc": ""})
+    prepend: int = attr.ib(metadata={"doc": ""})
+    next_marker = attr.ib(default=None, metadata={"doc": ""})
     position: Tuple[int, int] = attr.ib(
         metadata={"doc": "Line position in source text (start, end)"}
     )
@@ -732,7 +746,10 @@ class ListItem(BlockToken):
 @autodoc
 @attr.s(slots=True, kw_only=True)
 class LinkDefinition(BlockToken):
-    """LinkDefinition token: `[ref]: url "title"`"""
+    """LinkDefinition token: `[ref]: url "title"`
+
+    These are stores in `Document.link_definitions` in the final syntax tree.
+    """
 
     # TODO this should only store one definition, then they can be stored as a dict
     # in parse_context.list_definitions

@@ -35,7 +35,7 @@ def tokenize_main(
         skip_tokens=skip_tokens,
     )
     if expand_spans:
-        for token in tokens:
+        for token in tokens + list(get_parse_context().foot_definitions.values()):
             for result in list(token.walk(include_self=True)):
                 if isinstance(result.node.children, SpanContainer):
                     result.node.children = result.node.children.expand()

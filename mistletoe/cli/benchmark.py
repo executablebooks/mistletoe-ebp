@@ -6,12 +6,12 @@ import re
 import sys
 from time import perf_counter
 
-from mistletoe import renderers
+from mistletoe import token_sets
 
-extended_block_tokens = renderers.get_extended_block_tokens()
-extended_span_tokens = renderers.get_extended_span_tokens()
-commonmark_block_tokens = renderers.get_commonmark_block_tokens()
-commonmark_span_tokens = renderers.get_commonmark_span_tokens()
+extended_block_tokens = token_sets.get_extended_block_tokens()
+extended_span_tokens = token_sets.get_extended_span_tokens()
+commonmark_block_tokens = token_sets.get_commonmark_block_tokens()
+commonmark_span_tokens = token_sets.get_commonmark_span_tokens()
 
 
 ALL_PACKAGES = (

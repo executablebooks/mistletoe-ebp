@@ -1,6 +1,6 @@
 from collections import namedtuple, OrderedDict
 import json
-from typing import List, Optional, Pattern
+from typing import List, Optional, Pattern, Tuple
 
 import attr
 
@@ -274,12 +274,17 @@ class SpanToken(Token):
     precedence = 5
 
     def __init__(
-        self, *, content: Optional[str] = None, children: Optional[list] = None
+        self,
+        *,
+        content: Optional[str] = None,
+        children: Optional[list] = None,
+        position: Tuple[int, int] = None
     ):
         """Initialise basic span token.
 
         :param content: raw string content of the token
         :param children: list of child tokens
+        :param position: span position within the source text
         """
         if content is not None:
             self.content = content

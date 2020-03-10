@@ -25,15 +25,6 @@ Math
     :show-inheritance:
 
 
-FootReference
-.............
-
-.. autoclass:: mistletoe.span_tokens_ext.FootReference
-    :members: pattern, parse_inner, parse_group
-    :undoc-members:
-    :show-inheritance:
-
-
 FrontMatter
 ...........
 
@@ -69,5 +60,24 @@ TableCell
 .. autoclass:: mistletoe.block_tokens_ext.TableCell
     :members:
     :no-undoc-members:
+    :show-inheritance:
+    :exclude-members: __init__
+
+
+FootReference
+.............
+
+.. autoclass:: mistletoe.span_tokens_ext.FootReference
+    :members: pattern, parse_inner, parse_group
+    :undoc-members:
+    :show-inheritance:
+
+
+Footnote
+.........
+
+.. autoclass:: mistletoe.block_tokens_ext.Footnote
+    :members: label_pattern, start, read
+    :undoc-members:
     :show-inheritance:
     :exclude-members: __init__

@@ -109,6 +109,7 @@ nitpick_ignore = [
     ("py:class", "ForwardRef"),
     ("py:class", "NoneType"),
     ("py:class", "Any"),
+    ("py:class", "Dict"),
     ("py:class", "json.encoder.JSONEncoder"),
 ]
 

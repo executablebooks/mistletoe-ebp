@@ -21,10 +21,16 @@ __all__ = ["TableCell", "TableRow", "Table", "Footnote"]
 class Footnote(BlockToken):
     """Footnote token. ("[^a]: the footnote body")
 
-    As outlined in <https://www.markdownguide.org/extended-syntax/#footnotes>
-    and <https://michelf.ca/projects/php-markdown/extra/#footnotes>
+    As outlined in
+    `markdownguide <https://www.markdownguide.org/extended-syntax/#footnotes>`_
+    and `php-markdown <https://michelf.ca/projects/php-markdown/extra/#footnotes>`_;
+    Footnote definitions can be found anywhere in the document,
+    but footnotes will always be listed in the order they are referenced to in the text
+    (and will not be shown if they are not referenced).
 
-    This should be ordered before `LinkDefinition`
+    Footnotes are stored in the `Document.footnotes` in the final syntax tree.
+
+    This should be ordered for parsing, before the `LinkDefinition` token
     """
 
     target: str = attr.ib(metadata={"doc": "footnote reference target"})
@@ -137,7 +143,9 @@ class Table(BlockToken):
     children: ListType[TableRow] = attr.ib(
         repr=lambda c: str(len(c)), metadata={"doc": "Child tokens list"}
     )
-    header: Optional[TableRow] = attr.ib(metadata={"doc": "The header row"})
+    header: Optional[TableRow] = attr.ib(
+        default=None, metadata={"doc": "The header row"}
+    )
     column_align: list = attr.ib(
         metadata={
             "doc": "align options for columns (left=None (default), center=0, right=1)"

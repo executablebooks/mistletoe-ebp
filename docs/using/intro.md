@@ -64,12 +64,12 @@ the AST; first parsing only tokens that are strictly CommonMark compliant
 then including an extended token set (see {ref}`extended tokens <tokens/extension>`).
 
 ```python
-from mistletoe import Document, HTMLRenderer, renderers
+from mistletoe import Document, HTMLRenderer, token_sets
 
-cmark_block_tokens = renderers.get_commonmark_block_tokens()
-cmark_span_tokens = renderers.get_commonmark_span_tokens()
-extended_block_tokens = renderers.get_extended_block_tokens()
-extended_span_tokens = renderers.get_extended_span_tokens()
+cmark_block_tokens = token_sets.get_commonmark_block_tokens()
+cmark_span_tokens = token_sets.get_commonmark_span_tokens()
+extended_block_tokens = token_sets.get_extended_block_tokens()
+extended_span_tokens = token_sets.get_extended_span_tokens()
 
 with open('foo.md', 'r') as fin:
     rendered1 = mistletoe.markdown(
@@ -149,7 +149,8 @@ and some \textit{italics}
 ## Performance
 
 mistletoe is the fastest CommonMark compliant implementation in Python.
-Try the benchmarks yourself by running:
+Try the benchmarks yourself by installing
+`pip install mistletoe-ebp[benchmark]` and running:
 
 ```sh
 $ mistletoe-bench test/test_samples/syntax.md

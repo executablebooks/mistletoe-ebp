@@ -4,6 +4,7 @@ HTML renderer for mistletoe.
 
 import re
 import sys
+from textwrap import dedent
 from urllib.parse import quote
 
 from mistletoe.renderers.base import BaseRenderer
@@ -17,13 +18,19 @@ else:
 class HTMLRenderer(BaseRenderer):
     """HTML renderer class."""
 
-    def __init__(self, find_blocks=None, find_spans=None):
+    def __init__(
+        self, find_blocks=None, find_spans=None, as_standalone=False, add_css=None
+    ):
         """Initialise the renderer
 
         :param find_blocks: override the default block tokens (classes or class paths)
         :param find_spans: override the default span tokens (classes or class paths)
+        :param as_standalone: return the HTML body within a minmal HTML page
+        :param add_css: if as_standalone=True, CSS to add to the header
         """
         super().__init__(find_blocks=find_blocks, find_spans=find_spans)
+        self.as_standalone = as_standalone
+        self.add_css = add_css
         self._suppress_ptag_stack = [False]
         # html.entities.html5 includes entitydefs not ending with ';',
         # CommonMark seems to hate them, so...
@@ -32,10 +39,36 @@ class HTMLRenderer(BaseRenderer):
             r"&(#[0-9]+;" r"|#[xX][0-9a-fA-F]+;" r"|[^\t\n\f <&#;]{1,32};)"
         )
         html._charref = _charref
+        # TODO when to reset? on every `__enter__` or just in `render_document`?
+        self.footnotes_referenced = []
 
     def __exit__(self, *args):
         super().__exit__(*args)
         html._charref = self._stdlib_charref
+
+    def render_document(self, token):
+
+        self.link_definitions.update(token.link_definitions)
+        self.footnotes_referenced = token.footref_order
+
+        inner = "\n".join([self.render(child) for child in token.children])
+        body = "{}\n".format(inner) if inner else ""
+
+        if token.footref_order:
+            body += '<hr class="footnotes-sep">\n'
+            body += '<section class="footnotes">\n'
+            body += '<ol class="footnotes-list">\n'
+            for index, target in enumerate(token.footref_order, 1):
+                footnote = token.footnotes[target]
+                body += '<li id="fn{}" class="footnote-item">\n'.format(index)
+                body += "\n".join([self.render(child) for child in footnote.children])
+                body += "\n</li>\n"
+            body += "</ol>\n"
+            body += "</section>\n"
+
+        if not self.as_standalone:
+            return body
+        return minimal_html_page(body, css=self.add_css or "")
 
     def render_to_plain(self, token):
         if token.children is not None:
@@ -157,7 +190,7 @@ class HTMLRenderer(BaseRenderer):
         # The primary difficulty seems to be passing down alignment options to
         # reach individual cells.
         template = "<table>\n{inner}</table>"
-        if hasattr(token, "header"):
+        if getattr(token, "header", None) is not None:
             head_template = "<thead>\n{inner}</thead>\n"
             head_inner = self.render_table_row(token.header, is_header=True)
             head_rendered = head_template.format(inner=head_inner)
@@ -200,11 +233,6 @@ class HTMLRenderer(BaseRenderer):
     def render_html_block(token):
         return token.content
 
-    def render_document(self, token):
-        self.link_definitions.update(token.link_definitions)
-        inner = "\n".join([self.render(child) for child in token.children])
-        return "{}\n".format(inner) if inner else ""
-
     @staticmethod
     def escape_html(raw):
         return html.escape(html.unescape(raw)).replace("&#x27;", "'")
@@ -215,3 +243,32 @@ class HTMLRenderer(BaseRenderer):
         Escape urls to prevent code injection craziness. (Hopefully.)
         """
         return html.escape(quote(html.unescape(raw), safe="/#:()*?=%@+,&"))
+
+    def render_foot_reference(self, token):
+        index = self.footnotes_referenced.index(token.target) + 1
+        return '<sup class="footnote-ref"><a href="#fn{0}">[{0}]</a></sup>'.format(
+            index
+        )
+
+
+def minimal_html_page(
+    body: str, css: str = "", title: str = "Standalone HTML", lang: str = "en"
+):
+    """Return a template for a minimal HTML page."""
+    return dedent(
+        """\
+    <!DOCTYPE html>
+    <html lang="{lang}">
+    <head>
+    <meta charset="utf-8">
+    <title>{title}</title>
+    <style>
+    {css}
+    </style>
+    </head>
+    <body>
+    {body}
+    </body>
+    </html>
+    """
+    ).format(title=title, lang=lang, css=css, body=body)

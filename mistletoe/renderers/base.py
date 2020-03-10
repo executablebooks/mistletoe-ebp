@@ -4,7 +4,6 @@ Base class for renderers.
 
 from itertools import chain
 import re
-import sys
 
 from mistletoe import block_tokens, block_tokens_ext, span_tokens, span_tokens_ext
 from mistletoe.parse_context import ParseContext, get_parse_context, set_parse_context
@@ -60,6 +59,7 @@ class BaseRenderer:
         block_tokens.ThematicBreak,
         block_tokens.List,
         block_tokens_ext.Table,
+        block_tokens_ext.Footnote,
         block_tokens.LinkDefinition,
         block_tokens.Paragraph,
     )
@@ -69,6 +69,7 @@ class BaseRenderer:
         span_tokens.HTMLSpan,
         span_tokens.AutoLink,
         span_tokens.CoreTokens,
+        span_tokens_ext.FootReference,
         span_tokens_ext.Strikethrough,
         span_tokens.InlineCode,
         span_tokens.LineBreak,
@@ -126,6 +127,7 @@ class BaseRenderer:
             "LineBreak": self.render_line_break,
             "Document": self.render_document,
             "LinkDefinition": self.render_link_definition,
+            "Footnote": self.render_footnote,
         }
 
     def render(self, token):
@@ -199,25 +201,16 @@ class BaseRenderer:
         """
         return self.render_block_code(token)
 
+    def render_core_tokens(self, token):
+        raise TypeError(
+            "CoreTokens span tokens should not be present in the final syntax tree"
+        )
+
+    def unimplemented_renderer(self, token):
+        raise NotImplementedError("no render method set for {}".format(token))
+
     def __getattr__(self, name):
-        """
-        Provides a default render method for all tokens.
-
-        Any token without a custom render method will simply be rendered by
-        self.render_inner.
-
-        If name does not start with 'render_', raise AttributeError as normal,
-        for less magic during debugging.
-
-        This method would only be called if the attribute requested has not
-        been defined. Defined attributes will not be overridden.
-
-        I still think this is heavy wizardry.
-        Let me know if you would like this method removed.
-        """
-        if not name.startswith("render_"):
-            msg = "{cls} object has no attribute {name}".format(
-                cls=type(self).__name__, name=name
-            )
-            raise AttributeError(msg).with_traceback(sys.exc_info()[2])
-        return self.render_inner
+        """"""
+        if name.startswith("render_"):
+            return self.unimplemented_renderer
+        raise AttributeError(name)

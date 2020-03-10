@@ -14,5 +14,6 @@ Document:
       - 2
       - 3
   footnotes: {}
+  footref_order: []
   front_matter: null
   link_definitions: {}
