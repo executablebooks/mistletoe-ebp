@@ -1,11 +1,11 @@
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import json
 from typing import List, Optional, Pattern
 
 import attr
 
 
-WalkItem = namedtuple("WalkItem", ["node", "parent", "depth"])
+WalkItem = namedtuple("WalkItem", ["node", "parent", "index", "depth"])
 
 
 class Token:
@@ -59,23 +59,34 @@ class Token:
         :yield: A container for an element, its parent and depth
 
         """
+
+        def _get_children(_parent):
+            _children = [(_parent, c, i) for i, c in enumerate(_parent.children or [])]
+            if _parent.name == "Table" and getattr(_parent, "header", None) is not None:
+                _children.append((_parent, _parent.header, 0))
+            if (
+                _parent.name == "Document"
+                and getattr(_parent, "footnotes", None) is not None
+            ):
+                _children.extend(
+                    [
+                        (_parent.footnotes, c, i)
+                        for i, c in enumerate(_parent.footnotes.values())
+                    ]
+                )
+            return _children
+
         current_depth = 0
         if include_self:
-            yield WalkItem(self, None, current_depth)
-        next_children = [(self, c) for c in self.children or []]
-        if self.name == "Table" and getattr(self, "header", None) is not None:
-            # table headers row
-            next_children.append((self, self.header))
+            yield WalkItem(self, None, None, current_depth)
+        next_children = _get_children(self)
         while next_children and (depth is None or current_depth > depth):
             current_depth += 1
             new_children = []
-            for idx, (parent, child) in enumerate(next_children):
+            for idx, (parent, child, index) in enumerate(next_children):
                 if tokens is None or child.name in tokens:
-                    yield WalkItem(child, parent, current_depth)
-                new_children.extend([(child, c) for c in child.children or []])
-                if child.name == "Table" and getattr(child, "header", None) is not None:
-                    # table headers row
-                    new_children.append((child, child.header))
+                    yield WalkItem(child, parent, index, current_depth)
+                new_children.extend(_get_children(child))
 
             next_children = new_children
 
@@ -87,6 +98,8 @@ class TokenEncoder(json.JSONEncoder):
         """Convert tokens to `{token.name: token.to_dict()}`,
         and expand `SpanContainer`.
         """
+        if isinstance(obj, OrderedDict):
+            return dict(obj)
         if isinstance(obj, SpanContainer):
             return list(obj.expand())
         if isinstance(obj, Token):
