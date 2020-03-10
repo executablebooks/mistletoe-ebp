@@ -46,6 +46,13 @@ class TokenSet(MutableSet):
         token_list.insert(indx, (token, token.__name__))
         self._tokens = OrderedDict(token_list)
 
+    def insert_before(self, token, before_token):
+        assert before_token in self._tokens
+        indx = list(self._tokens.keys()).index(before_token)
+        token_list = list(self._tokens.items())
+        token_list.insert(indx, (token, token.__name__))
+        self._tokens = OrderedDict(token_list)
+
 
 class ParseContext:
     def __init__(
@@ -86,7 +93,7 @@ class ParseContext:
         else:
             self._link_definitions = link_definitions
         if foot_definitions is None:
-            self._foot_definitions = {}
+            self._foot_definitions = OrderedDict()
         else:
             self._foot_definitions = foot_definitions
 
