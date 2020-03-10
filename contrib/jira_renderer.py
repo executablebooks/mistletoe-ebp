@@ -22,7 +22,10 @@
 #
 
 import html
+from typing import Optional
+
 from mistletoe import block_tokens
+from mistletoe.parse_context import ParseContext
 from mistletoe.renderers.base import BaseRenderer
 from mistletoe.renderers.html import HTMLRenderer
 
@@ -37,14 +40,24 @@ class JIRARenderer(BaseRenderer):
     default_block_tokens = HTMLRenderer.default_block_tokens
     default_span_tokens = HTMLRenderer.default_span_tokens
 
-    def __init__(self, find_blocks=None, find_spans=None):
+    def __init__(
+        self,
+        parse_context: Optional[ParseContext] = None,
+        as_standalone: bool = False,
+        add_css: str = None,
+    ):
         """Initialise the renderer
 
-        :param find_blocks: override the default block tokens (classes or class paths)
-        :param find_spans: override the default span tokens (classes or class paths)
+        :param parse_context: the parse context stores global parsing variables,
+            such as the block/span tokens to search for,
+            and link/footnote definitions that have been collected.
+            If None, a new context will be instatiated, with the default
+            block/span tokens for this renderer.
+            These will be re-instatiated on ``__enter__``.
+        :type parse_context: mistletoe.parse_context.ParseContext
         """
+        super().__init__(parse_context=parse_context)
         self.listTokens = []
-        super().__init__(find_blocks=find_blocks, find_spans=find_spans)
 
     def render_strong(self, token):
         template = "*{}*"
@@ -196,7 +209,6 @@ class JIRARenderer(BaseRenderer):
         return token.content
 
     def render_document(self, token):
-        self.link_definitions.update(token.link_definitions)
         return self.render_inner(token)
 
 

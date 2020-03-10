@@ -4,9 +4,11 @@ Base class for renderers.
 
 from itertools import chain
 import re
+import sys
+from typing import Optional
 
 from mistletoe import block_tokens, block_tokens_ext, span_tokens, span_tokens_ext
-from mistletoe.parse_context import ParseContext, get_parse_context, set_parse_context
+from mistletoe.parse_context import ParseContext, set_parse_context
 
 
 class BaseRenderer:
@@ -20,13 +22,13 @@ class BaseRenderer:
 
     Custom renderers could ...
 
-    * add additional tokens into the parsing process by passing custom
-      tokens to `super().__init__()`;
+    * set the default tokens searched for during parsing, by overriding
+      ``default_block_tokens`` and/or ``default_span_tokens``
     * add additional render functions by appending to self.render_map;
 
     :Usage:
 
-    Suppose SomeRenderer inherits BaseRenderer, and fin is the input file.
+    Suppose SomeRenderer inherits BaseRenderer, and ``fin`` is the input file.
     The syntax looks something like this::
 
         >>> from mistletoe import Document
@@ -45,8 +47,6 @@ class BaseRenderer:
 
     :param render_map: maps tokens to their corresponding render functions.
     :type render_map: dict
-    :param parse_context: container for the instatiated tokens,
-        and other global parsing variables. These will be re-instatiated on `__enter__`
 
     """
 
@@ -78,16 +78,23 @@ class BaseRenderer:
 
     _parse_name = re.compile(r"([A-Z][a-z]+|[A-Z]+(?![a-z]))")
 
-    def __init__(self, find_blocks=None, find_spans=None):
-        """Initialise the renderer
+    def __init__(self, *, parse_context: Optional[ParseContext] = None):
+        """Initialise the renderer.
 
-        :param find_blocks: override the default block tokens (classes or class paths)
-        :param find_spans: override the default span tokens (classes or class paths)
+        :param parse_context: the parse context stores global parsing variables,
+            such as the block/span tokens to search for,
+            and link/footnote definitions that have been collected.
+            If None, a new context will be instatiated, with the default
+            block/span tokens for this renderer.
+            These will be re-instatiated on ``__enter__``.
+        :type parse_context: mistletoe.parse_context.ParseContext
         """
-        self.parse_context = ParseContext(
-            find_blocks or self.default_block_tokens,
-            find_spans or self.default_span_tokens,
-        )
+        if parse_context is None:
+            parse_context = ParseContext(
+                self.default_block_tokens, self.default_span_tokens
+            )
+
+        self.parse_context = parse_context
         set_parse_context(self.parse_context)
 
         self.render_map = self.get_default_render_map()
@@ -97,8 +104,6 @@ class BaseRenderer:
             if token.__name__ not in self.render_map:
                 render_func = getattr(self, self._cls_to_func(token.__name__))
                 self.render_map[token.__name__] = render_func
-
-        self.link_definitions = {}
 
     def get_default_render_map(self):
         """Return the default map of token names to methods."""
@@ -158,7 +163,8 @@ class BaseRenderer:
 
     def __enter__(self):
         """
-        Make renderer classes into context managers.
+        Make renderer classes into context managers, reinstatiated the
+        originally instatiated ``parse_context``.
         """
         set_parse_context(self.parse_context)
         return self
@@ -167,7 +173,7 @@ class BaseRenderer:
         """
         Make renderer classes into context managers.
         """
-        get_parse_context(reset=True)
+        pass
 
     @classmethod
     def _cls_to_func(cls, cls_name):
@@ -213,4 +219,4 @@ class BaseRenderer:
         """"""
         if name.startswith("render_"):
             return self.unimplemented_renderer
-        raise AttributeError(name)
+        raise AttributeError(name).with_traceback(sys.exc_info()[2])

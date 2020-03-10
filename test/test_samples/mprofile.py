@@ -4,12 +4,10 @@ import pstats
 from pathlib import Path
 
 from mistletoe import markdown, renderers
+from mistletoe.parse_context import ParseContext
 import mistletoe
 
 if __name__ == "__main__":
-
-    extended_block_tokens = renderers.get_extended_block_tokens()
-    extended_span_tokens = renderers.get_extended_span_tokens()
 
     text = Path(__file__).parent.joinpath("syntax.md").read_text()
 
@@ -17,7 +15,11 @@ if __name__ == "__main__":
     pr.enable()
     for _ in range(1000):
         markdown(
-            text, find_blocks=extended_block_tokens, find_spans=extended_span_tokens
+            text,
+            parse_context=ParseContext(
+                find_blocks=renderers.get_extended_block_tokens(),
+                find_spans=renderers.get_extended_span_tokens(),
+            ),
         )
     pr.disable()
     # pr.print_stats()

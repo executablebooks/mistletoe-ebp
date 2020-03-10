@@ -38,6 +38,11 @@ which eventually, it is hoped, will be merged into mistletoe itself.
   to resolve ambiguities during parsing.
   Outputs are predictable and well-defined.
 
+* **Clear API**:
+  Documents can be built and assessed programatically,
+  in an object-orientated manner.
+  See {ref}`intro/api_use` and {ref}`api/main` for details.
+
 * **Extensible**:
   Strikethrough and tables are supported natively,
   and custom block-level and span-level tokens can easily be added.
@@ -79,8 +84,8 @@ caption: Contents
 ---
 using/intro.md
 using/develop.md
-using/contributing.md
 api/index.rst
+using/contributing.md
 ```
 
 [mistune]: https://github.com/lepture/mistune

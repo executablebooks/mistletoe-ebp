@@ -98,8 +98,8 @@ class Scheme(BaseRenderer):
     default_block_tokens = (Program,)
     default_span_tokens = (Expr, Number, String, Variable, Whitespace)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parse_context=None):
+        super().__init__(parse_context=None)
 
         self.env = ChainMap(
             {

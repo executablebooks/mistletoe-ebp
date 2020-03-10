@@ -1,3 +1,5 @@
+.. _api/main:
+
 mistletoe-EPB API
 =================
 

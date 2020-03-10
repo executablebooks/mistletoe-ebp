@@ -1,7 +1,10 @@
 """
 LaTeX renderer for mistletoe.
 """
+from typing import Optional
+
 from mistletoe import block_tokens, block_tokens_ext, span_tokens, span_tokens_ext
+from mistletoe.parse_context import ParseContext
 from mistletoe.renderers.base import BaseRenderer
 
 
@@ -34,14 +37,9 @@ class LaTeXRenderer(BaseRenderer):
         span_tokens.RawText,
     )
 
-    def __init__(self, find_blocks=None, find_spans=None):
-        """Initialise the renderer
-
-        :param find_blocks: override the default block tokens (classes or class paths)
-        :param find_spans: override the default span tokens (classes or class paths)
-        """
+    def __init__(self, *, parse_context: Optional[ParseContext] = None):
         self.packages = {}
-        super().__init__(find_blocks=find_blocks, find_spans=find_spans)
+        super().__init__(parse_context=parse_context)
 
     def render_strong(self, token):
         return "\\textbf{{{}}}".format(self.render_inner(token))
@@ -181,7 +179,6 @@ class LaTeXRenderer(BaseRenderer):
             "{inner}"
             "\\end{{document}}\n"
         )
-        self.link_definitions.update(token.link_definitions)
         return template.format(
             inner=self.render_inner(token), packages=self.render_packages()
         )

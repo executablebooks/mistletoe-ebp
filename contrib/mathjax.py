@@ -41,4 +41,6 @@ class MathJaxRenderer(HTMLRenderer, LaTeXRenderer):
         """
         Append CDN link for MathJax to the end of <body>.
         """
+        # TODO incompatible with as_standalone
+        self.as_standalone = False
         return super().render_document(token) + self.mathjax_src

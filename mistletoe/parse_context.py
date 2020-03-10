@@ -18,6 +18,9 @@ class OrderedSet(MutableSet):
     def __init__(self, iterable=()):
         self._items = OrderedDict((t, None) for t in iterable)
 
+    def __repr__(self):
+        return list(self._items).__repr__()
+
     def __contains__(self, item):
         return item in self._items
 
@@ -56,6 +59,18 @@ class OrderedSet(MutableSet):
 
 
 class ParseContext:
+    """A class to contain context for a single parse.
+
+    :param find_blocks: a list of block tokens to use during the parse. If None,
+        the standard blocks will be used from `BaseRenderer.default_block_token`.
+    :param find_spans: a list of span tokens to use during the parse. If None,
+        the standard blocks will be used from `BaseRenderer.default_span_tokens`.
+    :param link_definitions: a dict of link definitons, obtained from `[def]: link`
+    :param foot_definitions: a dict of footnote definitons,
+        obtained from `[^def]: link` (if Footnote token active)
+    :param nesting_matches: a dict of matches recorded from `find_nested_tokenizer`
+    """
+
     def __init__(
         self,
         find_blocks=None,
@@ -63,17 +78,6 @@ class ParseContext:
         link_definitions=None,
         foot_definitions=None,
     ):
-        """A class to contain context for a single parse.
-
-        :param find_blocks: a list of block tokens to use during the parse. If None,
-            the standard blocks will be used from `BaseRenderer.default_block_token`.
-        :param find_spans: a list of span tokens to use during the parse. If None,
-            the standard blocks will be used from `BaseRenderer.default_span_tokens`.
-        :param link_definitions: a dict of link definitons, obtained from `[def]: link`
-        :param foot_definitions: a dict of footnote definitons,
-            obtained from `[^def]: link` (if Footnote token active)
-        :param nesting_matches: a dict of matches recorded from `find_nested_tokenizer`
-        """
         # tokens used for matching
         if find_blocks is not None:
             self.block_tokens = OrderedSet(tokens_from_classes(find_blocks))
@@ -101,6 +105,15 @@ class ParseContext:
         self.nesting_matches = {}
         self._foot_references = OrderedSet()
 
+    def __repr__(self):
+        return "{0}(blocks={1},spans={2},link_defs={3},footnotes={4})".format(
+            self.__class__.__name__,
+            len(self.block_tokens),
+            len(self.span_tokens),
+            len(self.link_definitions),
+            len(self.foot_definitions),
+        )
+
     @property
     def link_definitions(self) -> dict:
         return self._link_definitions
@@ -123,7 +136,7 @@ class ParseContext:
 
 
 def get_parse_context(reset=False) -> ParseContext:
-    """Return the current `ParseContext`."""
+    """Return the current ``ParseContext`` (one per thread)."""
     global THREAD
     if reset:
         THREAD.context = ParseContext()
@@ -136,7 +149,7 @@ def get_parse_context(reset=False) -> ParseContext:
 
 
 def set_parse_context(parse_context):
-    """Set an existing `ParseContext`."""
+    """Set an existing ``ParseContext`` (one per thread)."""
     global THREAD
     THREAD.context = parse_context
 

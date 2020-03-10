@@ -6,12 +6,16 @@ import re
 import sys
 from time import perf_counter
 
-from mistletoe import token_sets
+from mistletoe import token_sets, parse_context
 
-extended_block_tokens = token_sets.get_extended_block_tokens()
-extended_span_tokens = token_sets.get_extended_span_tokens()
-commonmark_block_tokens = token_sets.get_commonmark_block_tokens()
-commonmark_span_tokens = token_sets.get_commonmark_span_tokens()
+commonmark_context = parse_context.ParseContext(
+    find_blocks=token_sets.get_commonmark_block_tokens(),
+    find_spans=token_sets.get_extended_span_tokens(),
+)
+extended_context = parse_context.ParseContext(
+    find_blocks=token_sets.get_extended_block_tokens(),
+    find_spans=token_sets.get_extended_span_tokens(),
+)
 
 
 ALL_PACKAGES = (
@@ -71,16 +75,12 @@ def run_commonmark(package, text):
 
 @benchmark("mistletoe")
 def run_mistletoe(package, text):
-    return package.markdown(
-        text, find_blocks=commonmark_block_tokens, find_spans=commonmark_span_tokens
-    )
+    return package.markdown(text, parse_context=commonmark_context)
 
 
 @benchmark("mistletoe")
 def run_mistletoe_extra(package, text):
-    return package.markdown(
-        text, find_blocks=extended_block_tokens, find_spans=extended_span_tokens
-    )
+    return package.markdown(text, parse_context=extended_context)
 
 
 @benchmark("panflute")

@@ -45,9 +45,9 @@ with open('foo.md', 'r') as fin:
 
 ```
 
-`mistletoe.markdown()` uses mistletoe's default settings: allowing HTML mixins
-and rendering to HTML. The function also accepts an additional argument
-`renderer`. To produce LaTeX output:
+{py:func}`mistletoe.markdown` defaults to
+using the {py:class}`~mistletoe.renderers.html.HTMLRenderer`,
+but other renderers can be chosen, such as the ones listed in {ref}`renderers/core`. To produce LaTeX output:
 
 ```python
 import mistletoe
@@ -55,37 +55,6 @@ from mistletoe.renderers.latex import LaTeXRenderer
 
 with open('foo.md', 'r') as fin:
     rendered = mistletoe.markdown(fin, LaTeXRenderer)
-```
-
-Finally, here's how you would manually specify tokens sets and a renderer
-for mistletoe. In the following example, we use `HTMLRenderer` to render
-the AST; first parsing only tokens that are strictly CommonMark compliant
-(see {ref}`block tokens <tokens/block>` and {ref}`span tokens <tokens/span>`),
-then including an extended token set (see {ref}`extended tokens <tokens/extension>`).
-
-```python
-from mistletoe import Document, HTMLRenderer, token_sets
-
-cmark_block_tokens = token_sets.get_commonmark_block_tokens()
-cmark_span_tokens = token_sets.get_commonmark_span_tokens()
-extended_block_tokens = token_sets.get_extended_block_tokens()
-extended_span_tokens = token_sets.get_extended_span_tokens()
-
-with open('foo.md', 'r') as fin:
-    rendered1 = mistletoe.markdown(
-        fin, renderer=HTMLRenderer,
-        find_blocks=cmark_block_tokens, find_spans=cmark_span_tokens
-    )
-
-    rendered2 = mistletoe.markdown(
-        fin, renderer=HTMLRenderer,
-        find_blocks=extended_block_tokens, find_spans=extended_span_tokens
-    )
-
-```
-
-```{seealso}
-{ref}`api/utils`
 ```
 
 ### From the command-line
@@ -142,6 +111,133 @@ some \textbf{bold} text
 and some \textit{italics}
 \end{document}
 >>>
+```
+
+### Customise the parse
+
+To exert even greater control over the parsing process,
+renderers can be initialised with an existing {py:class}`~mistletoe.parse_context.ParseContext` instance.
+This class stores global variables that are utilised during the parsing process, such as such as the block/span tokens to search for,
+and link/footnote definitions that have been collected.
+At any one time, one of these objects is set per thread;
+set by {py:func}`~mistletoe.parse_context.set_parse_context` and
+retrieved by {py:func}`~mistletoe.parse_context.get_parse_context`.
+
+In the following example, we use the {py:class}`~mistletoe.renderers.html.HTMLRenderer` to parse a file:
+
+- first parsing only tokens that are strictly CommonMark compliant
+(see {ref}`block tokens <tokens/block>` and {ref}`span tokens <tokens/span>`), then
+- including an extended token set (see {ref}`extended tokens <tokens/extension>`).
+
+```python
+from mistletoe import Document, HTMLRenderer, ParseContext, token_sets
+
+commonmark_context = ParseContext(
+    find_blocks=token_sets.get_commonmark_block_tokens(),
+    find_spans=token_sets.get_commonmark_span_tokens(),
+)
+extended_context = ParseContext(
+    find_blocks=token_sets.get_extended_block_tokens(),
+    find_spans=token_sets.get_extended_span_tokens(),
+)
+
+with open('foo.md', 'r') as fin:
+    rendered1 = mistletoe.markdown(
+        fin, renderer=HTMLRenderer,
+        parse_context=commonmark_context
+    )
+
+    rendered2 = mistletoe.markdown(
+        fin, renderer=HTMLRenderer,
+        parse_context=extended_context
+    )
+
+```
+
+```{seealso}
+{ref}`api/utils`
+```
+
+(intro/api_use)=
+
+### Programmatic Use
+
+To parse the text only to the mistletoe AST, the general entry point is the {py:meth}`mistletoe.block_tokens.Document.read` method
+(athough actually all block tokens have a ``read`` method that can be used directly).
+
+```python
+from mistletoe import Document
+
+text = """
+Here's some *text*
+
+1. a list
+
+> a *quote*"""
+doc = Document.read(text)
+doc
+```
+
+```python
+Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None)
+```
+
+All tokens have a `children` attribute:
+
+```python
+doc.children
+```
+
+```python
+[Paragraph(children=2, position=(2, 2)),
+ List(children=1, loose=False, start_at=1, position=(3, 4)),
+ Quote(children=1, position=(6, 6))]
+```
+
+or you can walk through the entire syntax tree, using the
+{py:meth}`~mistletoe.base_elements.Token.walk` method:
+
+```python
+for item in doc.walk():
+    print(item)
+```
+
+```python
+WalkItem(node=Paragraph(children=2, position=(2, 2)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=0, depth=1)
+WalkItem(node=List(children=1, loose=False, start_at=1, position=(3, 4)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=1, depth=1)
+WalkItem(node=Quote(children=1, position=(6, 6)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=2, depth=1)
+WalkItem(node=RawText(), parent=Paragraph(children=2, position=(2, 2)), index=0, depth=2)
+WalkItem(node=Emphasis(children=1), parent=Paragraph(children=2, position=(2, 2)), index=1, depth=2)
+WalkItem(node=ListItem(children=1, loose=False, leader='1.', prepend=3, next_marker=None, position=(3, 4)), parent=List(children=1, loose=False, start_at=1, position=(3, 4)), index=0, depth=2)
+WalkItem(node=Paragraph(children=2, position=(7, 7)), parent=Quote(children=1, position=(6, 6)), index=0, depth=2)
+WalkItem(node=RawText(), parent=Emphasis(children=1), index=0, depth=3)
+WalkItem(node=Paragraph(children=1, position=(4, 4)), parent=ListItem(children=1, loose=False, leader='1.', prepend=3, next_marker=None, position=(3, 4)), index=0, depth=3)
+WalkItem(node=RawText(), parent=Paragraph(children=2, position=(7, 7)), index=0, depth=3)
+WalkItem(node=Emphasis(children=1), parent=Paragraph(children=2, position=(7, 7)), index=1, depth=3)
+WalkItem(node=RawText(), parent=Paragraph(children=1, position=(4, 4)), index=0, depth=4)
+WalkItem(node=RawText(), parent=Emphasis(children=1), index=0, depth=4)
+```
+
+Finally you could even build your own AST programatically!
+
+```python
+from mistletoe import block_tokens, span_tokens, HTMLRenderer
+
+doc = block_tokens.Document(children=[
+    block_tokens.Paragraph(
+        position=(0, 1),
+        children=[
+            span_tokens.Emphasis(
+                position=(0, 1),
+                children=[span_tokens.RawText("hallo")]
+            )
+    ])
+])
+HTMLRenderer().render(doc)
+```
+
+```html
+<p><em>hallo</em></p>
 ```
 
 (intro/performance)=

@@ -5,8 +5,10 @@ HTML renderer for mistletoe.
 import re
 import sys
 from textwrap import dedent
+from typing import Optional
 from urllib.parse import quote
 
+from mistletoe.parse_context import ParseContext
 from mistletoe.renderers.base import BaseRenderer
 
 if sys.version_info < (3, 4):
@@ -19,16 +21,24 @@ class HTMLRenderer(BaseRenderer):
     """HTML renderer class."""
 
     def __init__(
-        self, find_blocks=None, find_spans=None, as_standalone=False, add_css=None
+        self,
+        parse_context: Optional[ParseContext] = None,
+        as_standalone: bool = False,
+        add_css: str = None,
     ):
         """Initialise the renderer
 
-        :param find_blocks: override the default block tokens (classes or class paths)
-        :param find_spans: override the default span tokens (classes or class paths)
+        :param parse_context: the parse context stores global parsing variables,
+            such as the block/span tokens to search for,
+            and link/footnote definitions that have been collected.
+            If None, a new context will be instatiated, with the default
+            block/span tokens for this renderer.
+            These will be re-instatiated on ``__enter__``.
+        :type parse_context: mistletoe.parse_context.ParseContext
         :param as_standalone: return the HTML body within a minmal HTML page
         :param add_css: if as_standalone=True, CSS to add to the header
         """
-        super().__init__(find_blocks=find_blocks, find_spans=find_spans)
+        super().__init__(parse_context=parse_context)
         self.as_standalone = as_standalone
         self.add_css = add_css
         self._suppress_ptag_stack = [False]
@@ -47,8 +57,6 @@ class HTMLRenderer(BaseRenderer):
         html._charref = self._stdlib_charref
 
     def render_document(self, token):
-
-        self.link_definitions.update(token.link_definitions)
         self.footnotes_referenced = token.footref_order
 
         inner = "\n".join([self.render(child) for child in token.children])

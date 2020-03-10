@@ -85,7 +85,7 @@ class FrontMatter(BlockToken):
 
 
 @autodoc
-@attr.s(slots=True, kw_only=True)
+@attr.s(slots=False, kw_only=True)
 class Document(BlockToken):
     """Document container."""
 
@@ -115,6 +115,8 @@ class Document(BlockToken):
     front_matter: Optional[FrontMatter] = attr.ib(
         default=None, metadata={"doc": "Front matter YAML block"}
     )
+    # TODO add is_nested parameter?
+    # or have a subclass of document specifically for nesting?
 
     @classmethod
     def read(

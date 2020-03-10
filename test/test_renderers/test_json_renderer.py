@@ -1,6 +1,7 @@
 from textwrap import dedent
 
 from mistletoe import Document
+from mistletoe import ParseContext
 from mistletoe.renderers.json import ast_to_json, JsonRenderer
 from mistletoe.renderers.latex import LaTeXRenderer
 
@@ -95,7 +96,9 @@ def test_extra_tokens():
     with JsonRenderer() as render:
         output = render.render(Document.read(["$b$"]), as_string=False)
     assert output == output
-    renderer = JsonRenderer(find_spans=LaTeXRenderer.default_span_tokens)
+    renderer = JsonRenderer(
+        parse_context=ParseContext(find_spans=LaTeXRenderer.default_span_tokens)
+    )
     with renderer as render:
         output = render.render(Document.read(["$b$"]), as_string=False)
     assert output == output_math
