@@ -1,7 +1,7 @@
 """
 Block-level tokenizer for mistletoe.
 """
-from mistletoe.base_elements import SpanContainer, SourceLines
+from mistletoe.base_elements import SourceLines
 from mistletoe.parse_context import get_parse_context
 
 
@@ -32,9 +32,7 @@ def tokenize_main(
     tokens = tokenize_block(lines, token_types=token_types, skip_tokens=skip_tokens)
     if expand_spans:
         for token in tokens + list(get_parse_context().foot_definitions.values()):
-            for result in list(token.walk(include_self=True)):
-                if isinstance(result.node.children, SpanContainer):
-                    result.node.children = result.node.children.expand()
+            token.expand_spans()
     return tokens
 
 
