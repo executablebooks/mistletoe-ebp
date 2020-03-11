@@ -67,8 +67,13 @@ class Footnote(BlockToken):
             position=(start_line, lines.lineno),
         )
         if target not in get_parse_context().foot_definitions:
-            # TODO store/emit warning if duplicate
             get_parse_context().foot_definitions[target] = token
+        else:
+            get_parse_context().logger.warning(
+                "ignoring duplicate footnote definition '{}' at: {}".format(
+                    target, token.position
+                )
+            )
         return token
 
 

@@ -55,6 +55,15 @@ def test_foot_definition(name, source, data_regression):
     )
 
 
+def test_repeated_footnote(caplog):
+    get_parse_context().block_tokens.insert_before(
+        block_tokens_ext.Footnote, block_tokens.LinkDefinition
+    )
+    tokenize_main(["[^1]: value1\n", "[^1]: value2\n"])
+    assert "ignoring duplicate footnote definition" in caplog.text
+    assert len(get_parse_context().foot_definitions) == 1
+
+
 @pytest.mark.parametrize(
     "name,source", [("basic", ["[^1]\n", "\n", "[^1]: a *footnote*\n", "\n", "[^1]\n"])]
 )
