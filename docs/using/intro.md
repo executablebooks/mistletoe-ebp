@@ -45,7 +45,6 @@ import mistletoe
 
 with open('foo.md', 'r') as fin:
     rendered = mistletoe.markdown(fin)
-
 ```
 
 {py:func}`mistletoe.markdown` defaults to
@@ -120,10 +119,11 @@ and some \textit{italics}
 
 To exert even greater control over the parsing process,
 renderers can be initialised with an existing {py:class}`~mistletoe.parse_context.ParseContext` instance.
-This class stores global variables that are utilised during the parsing process, such as such as the block/span tokens to search for,
+This class stores global variables that are utilised during the parsing process,
+such as such as the block/span tokens to search for,
 and link/footnote definitions that have been collected.
 At any one time, one of these objects is set per thread;
-set by {py:func}`~mistletoe.parse_context.set_parse_context` and
+which can be changed by {py:func}`~mistletoe.parse_context.set_parse_context` and
 retrieved by {py:func}`~mistletoe.parse_context.get_parse_context`.
 
 In the following example, we use the {py:class}`~mistletoe.renderers.html.HTMLRenderer` to parse a file:
@@ -169,29 +169,22 @@ To parse the text only to the mistletoe AST, the general entry point is the {py:
 (athough actually all block tokens have a ``read`` method that can be used directly).
 
 ```python
-from mistletoe import Document
-
-text = """
-Here's some *text*
-
-1. a list
-
-> a *quote*"""
-doc = Document.read(text)
-doc
-```
-
-```python
+>> from mistletoe import Document
+>> text = """
+.. Here's some *text*
+..
+.. 1. a list
+..
+.. > a *quote*"""
+>> doc = Document.read(text)
+>> doc
 Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None)
 ```
 
 All tokens have a `children` attribute:
 
 ```python
-doc.children
-```
-
-```python
+>> doc.children
 [Paragraph(children=2, position=(2, 2)),
  List(children=1, loose=False, start_at=1, position=(3, 4)),
  Quote(children=1, position=(6, 6))]
@@ -201,11 +194,8 @@ or you can walk through the entire syntax tree, using the
 {py:meth}`~mistletoe.base_elements.Token.walk` method:
 
 ```python
-for item in doc.walk():
-    print(item)
-```
-
-```python
+>> for item in doc.walk():
+..     print(item)
 WalkItem(node=Paragraph(children=2, position=(2, 2)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=0, depth=1)
 WalkItem(node=List(children=1, loose=False, start_at=1, position=(3, 4)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=1, depth=1)
 WalkItem(node=Quote(children=1, position=(6, 6)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=2, depth=1)
@@ -221,27 +211,67 @@ WalkItem(node=RawText(), parent=Paragraph(children=1, position=(4, 4)), index=0,
 WalkItem(node=RawText(), parent=Emphasis(children=1), index=0, depth=4)
 ```
 
-Finally you could even build your own AST programatically!
+You could even build your own AST programatically!
 
 ```python
-from mistletoe import block_tokens, span_tokens, HTMLRenderer
-
-doc = block_tokens.Document(children=[
-    block_tokens.Paragraph(
-        position=(0, 1),
-        children=[
-            span_tokens.Emphasis(
-                position=(0, 1),
-                children=[span_tokens.RawText("hallo")]
-            )
-    ])
-])
-HTMLRenderer().render(doc)
+>> from mistletoe import block_tokens, span_tokens, HTMLRenderer
+>> doc = block_tokens.Document(children=[
+..    block_tokens.Paragraph(
+..        position=(0, 1),
+..        children=[
+..            span_tokens.Emphasis(
+..                position=(0, 1),
+..                children=[span_tokens.RawText("hallo")]
+..            )
+..    ])
+.. ])
+>> HTMLRenderer().render(doc)
+"<p><em>hallo</em></p>"
 ```
 
-```html
-<p><em>hallo</em></p>
+### The Parse Process
+
+At a lower level, the actual parsing process is split into two stages:
+
+1. The full source text is read into an AST with all the span/inline level text stored
+   as raw text in {py:class}`~mistletoe.base_elements.SpanContainer`.
+   This allows all link definitions and (if included) footnote definitions to be read,
+   before references are processed.
+2. We walk through this intermediary AST and 'expand' the `SpanContainer`
+   to produce all the span tokens; inspecting the global context for available definitions.
+
+This process is illustrated in the following example, using the lower level parse method,
+{py:func}`~mistletoe.block_tokenizer.tokenize_main`:
+
+```python
+>> from mistletoe.block_tokenizer import tokenize_main
+>> paragraph = tokenize_main(["a [text][key]\n", "\n", '[key]: link "target"\n'], expand_spans=False)[0]
+>> paragraph.children
+SpanContainer('a [text][key]')
 ```
+
+```python
+>> from mistletoe.parse_context import get_parse_context
+>> get_parse_context()
+ParseContext(blocks=11,spans=9,link_defs=1,footnotes=0)
+>> get_parse_context().link_definitions
+{'key': ('link', 'target')}
+```
+
+```python
+>> paragraph.children.expand()
+[RawText(), Link(target='link', title='target')]
+```
+
+````{important}
+If directly using {py:func}`~mistletoe.block_tokenizer.tokenize_main`,
+you should (a) ensure all lines are terminated with `\n`, and
+(b) ensure that the global context is reset (if you don't want to use previously read defintions):
+
+```python
+>> get_parse_context(reset=True)
+```
+````
 
 (intro/performance)=
 

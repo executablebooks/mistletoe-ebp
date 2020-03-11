@@ -142,6 +142,9 @@ class SpanContainer:
     def __len__(self):
         return 0
 
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, repr(self.text))
+
 
 class SourceLines:
     """A class for storing source lines and tracking current line index.
