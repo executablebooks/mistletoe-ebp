@@ -5,6 +5,10 @@ from mistletoe.base_elements import SpanContainer, SourceLines
 from mistletoe.parse_context import get_parse_context
 
 
+# TODO we should parse tokenize_main/tokenize_block SourceLines
+# instances directly which would also
+
+
 def tokenize_main(
     iterable,
     token_types=None,
