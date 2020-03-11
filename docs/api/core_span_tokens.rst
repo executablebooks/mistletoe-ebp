@@ -6,6 +6,73 @@ Core Span Tokens
 These span tokens are defined in the
 `CommonMark specification <https://spec.commonmark.org/0.29/>`_.
 
+.. list-table::
+    :header-rows: 1
+    :widths: 10 20 20
+
+    * - Token
+      - Description
+      - Example
+    * - RawText
+      - any text
+      - .. code-block:: md
+
+           any text
+
+    * - EscapeSequence
+      - escaped symbols (to avoid them being interpreted as other syntax elements)
+      - .. code-block:: md
+
+           \*
+
+    * - LineBreak
+      - Soft or hard (ends with spaces or backslash)
+      - .. code-block:: md
+
+           A hard break\
+
+    * - Strong
+      - bold text
+      - .. code-block:: md
+
+           **strong**
+
+    * - Emphasis
+      - italic text
+      - .. code-block:: md
+
+           *emphasis*
+
+    * - InlineCode
+      - literal text
+      - .. code-block:: md
+
+           `a=1`
+
+    * - AutoLink
+      - link that is shown in final output
+      - .. code-block:: md
+
+           <http://www.google.com>
+
+    * - Link
+      - Reference ``LinkDefinitions``
+      - .. code-block:: md
+
+           [text](target "title") or [text][key]
+
+    * - Image
+      - link to an image
+      - .. code-block:: md
+
+           ![alt](src "title")
+
+    * - HTMLSpan
+      - any valid HTML (rendered in HTML output only)
+      - .. code-block:: html
+
+           <p>some text</p>
+
 Core
 ....
 
@@ -13,6 +80,28 @@ This is a special token that runs a nested parse of the inline string
 and extracts nested tokens.
 
 .. autoclass:: mistletoe.span_tokens.CoreTokens
+    :show-inheritance:
+
+RawText
+.......
+
+.. autoclass:: mistletoe.span_tokens.RawText
+    :show-inheritance:
+
+EscapeSequence
+..............
+
+.. autoclass:: mistletoe.span_tokens.EscapeSequence
+    :members: pattern, parse_inner, parse_group
+    :undoc-members:
+    :show-inheritance:
+
+LineBreak
+.........
+
+.. autoclass:: mistletoe.span_tokens.LineBreak
+    :members: pattern, parse_inner, parse_group
+    :undoc-members:
     :show-inheritance:
 
 Strong
@@ -36,12 +125,6 @@ InlineCode
     :show-inheritance:
 
 
-Image
-.....
-
-.. autoclass:: mistletoe.span_tokens.Image
-    :show-inheritance:
-
 Link
 ....
 
@@ -56,26 +139,10 @@ AutoLink
     :undoc-members:
     :show-inheritance:
 
-EscapeSequence
-..............
+Image
+.....
 
-.. autoclass:: mistletoe.span_tokens.EscapeSequence
-    :members: pattern, parse_inner, parse_group
-    :undoc-members:
-    :show-inheritance:
-
-LineBreak
-.........
-
-.. autoclass:: mistletoe.span_tokens.LineBreak
-    :members: pattern, parse_inner, parse_group
-    :undoc-members:
-    :show-inheritance:
-
-RawText
-.......
-
-.. autoclass:: mistletoe.span_tokens.RawText
+.. autoclass:: mistletoe.span_tokens.Image
     :show-inheritance:
 
 HTMLSpan
