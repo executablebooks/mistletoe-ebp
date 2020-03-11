@@ -91,6 +91,12 @@ class Token:
 
             next_children = new_children
 
+    def expand_spans(self):
+        """Walk through children and process any ``SpanContainer``."""
+        for result in self.walk(include_self=True):
+            if isinstance(result.node.children, SpanContainer):
+                result.node.children = result.node.children.expand()
+
 
 class TokenEncoder(json.JSONEncoder):
     """A JSON encoder for mistletoe tokens."""
