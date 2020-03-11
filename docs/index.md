@@ -12,11 +12,9 @@ Parsing Markdown into an abstract syntax tree
 also allows us to swap out renderers for different output formats,
 without touching any of the core components.
 
-Remember to spell mistletoe in lowercase!
-
 ```{note}
 This is a version of [mistletoe] maintained by the [Excutable Book Project (EBP)][ebp-link].
-It tracks the `myst` branch of [ExecutableBookProject/mistletoe](https://github.com/ExecutableBookProject/mistletoe)
+It contains many improvements (see the `myst` branch of [ExecutableBookProject/mistletoe](https://github.com/ExecutableBookProject/mistletoe) for details)
 which eventually, it is hoped, will be merged into mistletoe itself.
 
 [ebp-link]: https://github.com/ExecutableBookProject
@@ -94,8 +92,8 @@ using/contributing.md
 [commonmark-py]: https://github.com/rtfd/CommonMark-py
 [oilshell]: https://www.oilshell.org/blog/2018/02/14.html
 [commonmark]: https://spec.commonmark.org/
-[contrib]: https://github.com/miyuchina/mistletoe/tree/master/contrib
-[scheme]: https://github.com/miyuchina/mistletoe/blob/dev/contrib/scheme.py
+[contrib]: https://github.com/ExecutableBookProject/mistletoe-ebp/tree/master/contrib
+[scheme]: https://github.com/ExecutableBookProject/mistletoe-ebp/blob/dev/contrib/scheme.py
 [example-392]: https://spec.commonmark.org/0.28/#example-392
 [icon]: https://www.freepik.com
 [cc-by]: https://creativecommons.org/licenses/by/3.0/us/

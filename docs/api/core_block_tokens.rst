@@ -14,7 +14,7 @@ These block tokens are defined in the
       - Description
       - Example
 
-    * - ATX Heading
+    * - (ATX)Heading
       - Level 1-6 headings, denoted by number of ``#``
       - .. code-block:: md
 

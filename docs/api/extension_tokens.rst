@@ -22,7 +22,7 @@ but are commonly implemented
            ~~some text~~
 
     * - Math
-      - Dollar `$` enclosed math. Two ``$`` characters wrap multi-line math.
+      - Dollar ``$`` enclosed math. Two ``$`` characters wrap multi-line math.
       - .. code-block:: latex
 
             $a=1$ $b=2$
@@ -42,16 +42,18 @@ but are commonly implemented
     * - - Table
         - TableRow
         - TableCell
-      - Markdown table style, with pipe delimitation.
+      - Markdown table style, with pipe delimitation,
+        and (optional) colon specified alignment.
       - .. code-block:: md
 
-           | a    | b    |
-           | :--- | ---: |
-           | c    | d    |
+           | left | centre | right |
+           | :--- | :----: | ----: |
+           | a    | b      | c     |
 
     * - - Footnote
         - FootReference
-      - A definition for a referencing footnote, that is placed at the bottom of the document.
+      - A definition for a referencing footnote,
+        that will usually be moved to the bottom of the document by a renderer.
       - .. code-block:: md
 
            Something that needs further explanation.[^ref]

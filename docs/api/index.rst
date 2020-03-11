@@ -1,7 +1,7 @@
 .. _api/main:
 
-mistletoe-EPB API
-=================
+Syntax API
+==========
 
 .. toctree::
     :maxdepth: 2

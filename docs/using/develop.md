@@ -1,6 +1,6 @@
 (develop/intro)=
 
-## Developer's Guide
+## Developer Guide
 
 To understand the core tokens that mistletoe parses, take a look at:
 
