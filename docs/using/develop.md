@@ -2,12 +2,6 @@
 
 ## Developer's Guide
 
-[![CI Status][travis-badge]][travis-link]
-[![Coverage][coveralls-badge]][coveralls-link]
-[![Code style: black][black-badge]][black-link]
-[![PyPI][pypi-badge]][pypi-link]
-[![Conda][conda-badge]][conda-link]
-
 To understand the core tokens that mistletoe parses, take a look at:
 
 - {ref}`tokens/base`
@@ -192,15 +186,3 @@ with open('foo.md', 'r') as fin:
     with GithubWikiRenderer() as renderer:
         rendered = renderer.render(Document.read(fin))
 ```
-
-
-[travis-badge]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp.svg?branch=master
-[travis-link]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp
-[coveralls-badge]: https://coveralls.io/repos/github/ExecutableBookProject/mistletoe-ebp/badge.svg?branch=master
-[coveralls-link]: https://coveralls.io/github/ExecutableBookProject/mistletoe-ebp?branch=master
-[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
-[pypi-badge]: https://img.shields.io/pypi/v/mistletoe-ebp.svg
-[pypi-link]: https://pypi.org/project/mistletoe-ebp
-[conda-badge]: https://anaconda.org/conda-forge/mistletoe-ebp/badges/version.svg
-[conda-link]: https://anaconda.org/conda-forge/mistletoe-ebp
-[black-link]: https://github.com/ambv/black

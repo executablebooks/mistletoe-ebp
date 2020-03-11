@@ -4,6 +4,9 @@
 
 ## Installation
 
+[![PyPI][pypi-badge]][pypi-link]
+[![Conda][conda-badge]][conda-link]
+
 mistletoe-ebp is tested for Python 3.5 and above. Install mistletoe within a
 [Conda Environment][conda-env] (recommended):
 
@@ -364,6 +367,10 @@ mistune: 13.645681533998868
 mistletoe: 15.088351159000013
 ```
 
+[pypi-badge]: https://img.shields.io/pypi/v/mistletoe-ebp.svg
+[pypi-link]: https://pypi.org/project/mistletoe-ebp
+[conda-badge]: https://anaconda.org/conda-forge/mistletoe-ebp/badges/version.svg
+[conda-link]: https://anaconda.org/conda-forge/mistletoe-ebp
 [conda-env]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
 [mistune]: https://mistune.readthedocs.io
 [Python-Markdown]: https://Python-Markdown.github.io

@@ -2,6 +2,11 @@
 
 # Contributing
 
+[![CI Status][travis-badge]][travis-link]
+[![Coverage][coveralls-badge]][coveralls-link]
+[![Code style: black][black-badge]][black-link]
+[![Documentation Status][rtd-badge]][rtd-link]
+
 ## Code Style
 
 Code style is tested using [flake8](http://flake8.pycqa.org),
@@ -61,3 +66,12 @@ Merging pull requests: There are three ways of 'merging' pull requests on GitHub
     Examples: PRs that contain multiple commits with individually significant changes; PRs that have commits from different authors (squashing commits would remove attribution)
 - Merge with merge commit: put all commits as they are on the base branch, with a merge commit on top
     Choose for collaborative PRs with many commits. Here, the merge commit provides actual benefits.
+
+[travis-badge]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp.svg?branch=master
+[travis-link]: https://travis-ci.org/ExecutableBookProject/mistletoe-ebp
+[coveralls-badge]: https://coveralls.io/repos/github/ExecutableBookProject/mistletoe-ebp/badge.svg?branch=master
+[coveralls-link]: https://coveralls.io/github/ExecutableBookProject/mistletoe-ebp?branch=master
+[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black-link]: https://github.com/ambv/black
+[rtd-badge]: https://readthedocs.org/projects/mistletoe-ebp/badge/?version=latest
+[rtd-link]: https://mistletoe-ebp.readthedocs.io/en/latest/?badge=latest
