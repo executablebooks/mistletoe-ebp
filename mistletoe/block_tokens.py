@@ -472,6 +472,8 @@ class CodeFence(BlockToken):
     """Code fence. (["```sh\\n", "rm -rf /", ..., "```"])
 
     Boundary between span-level and block-level tokens.
+
+    See <https://spec.commonmark.org/0.29/#fenced-code-blocks>
     """
 
     children: ListType[Token] = attr.ib(
@@ -487,14 +489,18 @@ class CodeFence(BlockToken):
         metadata={"doc": "Line position in source text (start, end)"}
     )
 
-    pattern = re.compile(r"^( {0,3})((?:`|~){3,}) *([^`~\s]*) *([^`~]*)$")
+    # Tildes and backticks cannot be mixed.
+    pattern_tick = re.compile(r"^( {0,3})(`{3,}) *([^`\s]*) *([^`]*)$")
+    pattern_tilde = re.compile(r"^( {0,3})(~{3,}) *([^~\s]*) *([^~]*)$")
     _open_info = None
 
     @classmethod
     def start(cls, line):
-        match_obj = cls.pattern.match(line)
+        match_obj = cls.pattern_tick.match(line)
         if not match_obj:
-            return False
+            match_obj = cls.pattern_tilde.match(line)
+            if not match_obj:
+                return False
         prepend, leader, lang, arguments = match_obj.groups()
         if leader[0] in lang or leader[0] in line[match_obj.end() :]:
             return False

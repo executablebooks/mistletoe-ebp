@@ -10,7 +10,7 @@ from mistletoe import token_sets, parse_context
 
 commonmark_context = parse_context.ParseContext(
     find_blocks=token_sets.get_commonmark_block_tokens(),
-    find_spans=token_sets.get_extended_span_tokens(),
+    find_spans=token_sets.get_commonmark_span_tokens(),
 )
 extended_context = parse_context.ParseContext(
     find_blocks=token_sets.get_extended_block_tokens(),
