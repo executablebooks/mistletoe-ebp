@@ -253,7 +253,7 @@ SpanContainer('a [text][key]')
 ```python
 >> from mistletoe.parse_context import get_parse_context
 >> get_parse_context()
-ParseContext(blocks=11,spans=9,link_defs=1,footnotes=0)
+ParseContext(block_cls=11,span_cls=9,link_defs=1,footnotes=0)
 >> get_parse_context().link_definitions
 {'key': ('link', 'target')}
 ```

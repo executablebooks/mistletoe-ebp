@@ -106,7 +106,7 @@ class ParseContext:
         self._foot_references = OrderedSet()
 
     def __repr__(self):
-        return "{0}(blocks={1},spans={2},link_defs={3},footnotes={4})".format(
+        return "{0}(block_cls={1},span_cls={2},link_defs={3},footnotes={4})".format(
             self.__class__.__name__,
             len(self.block_tokens),
             len(self.span_tokens),
