@@ -2,7 +2,7 @@
 Built-in block-level token classes.
 """
 import re
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 from typing import List as ListType
 
 import attr
@@ -71,7 +71,7 @@ class FrontMatter(BlockToken):
         return False
 
     @classmethod
-    def read(cls, lines):
+    def read(cls, lines: SourceLines):
         start_line = lines.lineno + 1
 
         next(lines)  # skip first ``---``
@@ -124,16 +124,14 @@ class Document(BlockToken):
     @classmethod
     def read(
         cls,
-        lines,
-        start_line: int = 0,
+        lines: Union[str, ListType[str], SourceLines],
         reset_definitions: bool = True,
         skip_tokens: list = ("LinkDefinition", "Footnote"),
         front_matter: bool = False,
     ):
         """Read a document
 
-        :param lines:  Lines or string to parse
-        :param start_line: The initial line (used for nested parsing)
+        :param lines: Lines to parse
         :param reset_definitions: remove any previously stored definitions
             in the global context (see ``ParseContext.reset_definitions()``).
         :param skip_tokens: do not store these ``token.name`` in the syntax tree.
@@ -144,7 +142,8 @@ class Document(BlockToken):
         if reset_definitions:
             get_parse_context().reset_definitions()
 
-        lines = SourceLines(lines, start_line=start_line, standardize_ends=True)
+        if not isinstance(lines, SourceLines):
+            lines = SourceLines(lines, standardize_ends=True)
 
         # TODO can we do this in a way where we are checking
         # FrontMatter in get_parse_context().block_tokens?
