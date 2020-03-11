@@ -71,6 +71,10 @@ class ParseContext:
     :param nesting_matches: a dict of matches recorded from `find_nested_tokenizer`
     """
 
+    # TODO allow the initialisaion of a global logger
+    # where we can report any errors/warnings such as duplicate
+    # link/footnote defintions
+
     def __init__(
         self,
         find_blocks=None,

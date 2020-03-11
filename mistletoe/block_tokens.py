@@ -140,6 +140,8 @@ class Document(BlockToken):
         """
         if isinstance(lines, str):
             lines = lines.splitlines(keepends=True)
+
+        # TODO what if windows style `\r` delimited?
         lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
         if reset_definitions:
             get_parse_context().reset_definitions()
