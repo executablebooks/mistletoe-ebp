@@ -7,9 +7,13 @@ from collections import OrderedDict
 from collections.abc import MutableSet
 from copy import deepcopy
 from importlib import import_module
+import logging
 from threading import local
+from typing import Optional
 
 THREAD = local()
+
+LOGGER = logging.getLogger(__name__)
 
 
 class OrderedSet(MutableSet):
@@ -71,16 +75,13 @@ class ParseContext:
     :param nesting_matches: a dict of matches recorded from `find_nested_tokenizer`
     """
 
-    # TODO allow the initialisaion of a global logger
-    # where we can report any errors/warnings such as duplicate
-    # link/footnote defintions
-
     def __init__(
         self,
         find_blocks=None,
         find_spans=None,
         link_definitions=None,
         foot_definitions=None,
+        logger: Optional[logging.Logger] = None,
     ):
         # tokens used for matching
         if find_blocks is not None:
@@ -109,6 +110,10 @@ class ParseContext:
         self.nesting_matches = {}
         self._foot_references = OrderedSet()
 
+        if logger is None:
+            logger = LOGGER
+        self._logger = logger
+
     def __repr__(self):
         return "{0}(block_cls={1},span_cls={2},link_defs={3},footnotes={4})".format(
             self.__class__.__name__,
@@ -129,6 +134,14 @@ class ParseContext:
     @property
     def foot_references(self) -> OrderedSet:
         return self._foot_references
+
+    @property
+    def logger(self) -> logging.Logger:
+        return self._logger
+
+    @logger.setter
+    def logger(self, logger: logging.Logger):
+        self._logger = logger
 
     def reset_definitions(self):
         self._link_definitions = {}

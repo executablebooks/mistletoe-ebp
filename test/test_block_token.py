@@ -216,6 +216,12 @@ def test_doc_read_store_link_defs(name, source, data_regression):
     )
 
 
+def test_repeated_link_defs(caplog):
+    tokenize_main(["[a]: value1\n", "[a]: value2\n"])
+    assert "ignoring duplicate link definition" in caplog.text
+    assert len(get_parse_context().link_definitions) == 1
+
+
 def test_table_parse_align():
     assert block_tokens_ext.Table.parse_align(":------") is None
     assert block_tokens_ext.Table.parse_align(":-----:") == 0

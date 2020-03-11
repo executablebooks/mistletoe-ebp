@@ -116,5 +116,4 @@ nitpick_ignore = [
 
 def setup(app):
     """Add functions to the Sphinx setup."""
-    # TODO run apidoc
     # app.connect("builder-inited", run_apidoc)

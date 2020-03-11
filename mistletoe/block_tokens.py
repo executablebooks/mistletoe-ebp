@@ -795,12 +795,9 @@ class LinkDefinition(BlockToken):
                 break
             offset, match = match_info
             matches.append(match)
-        cls.append_link_definitions(matches)
-        return (
-            cls(position=(start_line, lines.lineno), definitions=matches)
-            if matches
-            else None
-        )
+        position = (start_line, lines.lineno)
+        cls.append_link_definitions(matches, position)
+        return cls(position=position, definitions=matches) if matches else None
 
     @classmethod
     def match_reference(cls, lines, string, offset):
@@ -923,15 +920,20 @@ class LinkDefinition(BlockToken):
         return None
 
     @staticmethod
-    def append_link_definitions(matches):
+    def append_link_definitions(matches, position):
         for key, dest, title in matches:
             key = normalize_label(key)
             dest = span_tokens.EscapeSequence.strip(dest.strip())
             title = span_tokens.EscapeSequence.strip(title)
             link_definitions = get_parse_context().link_definitions
             if key not in link_definitions:
-                # TODO store/emit warning if duplicate
                 link_definitions[key] = dest, title
+            else:
+                get_parse_context().logger.warning(
+                    "ignoring duplicate link definition '{}' at: {}".format(
+                        key, position
+                    )
+                )
 
     @staticmethod
     def backtrack(lines, string, offset):
