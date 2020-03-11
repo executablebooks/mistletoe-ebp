@@ -73,6 +73,9 @@ def test_html_block(name, source, data_regression):
     ],
 )
 def test_fenced_code(name, source, data_regression):
+    from mistletoe.base_elements import SourceLines
+
+    print(SourceLines(source).lines)
     data_regression.check(
         serialize_tokens(tokenize_main(source), as_dict=True),
         basename=f"test_fenced_code_{name}",

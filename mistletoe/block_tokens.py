@@ -17,7 +17,7 @@ from mistletoe.nested_tokenizer import (
     normalize_label,
 )
 from mistletoe.parse_context import get_parse_context
-from mistletoe.base_elements import Token, BlockToken, SpanContainer
+from mistletoe.base_elements import Token, BlockToken, SpanContainer, SourceLines
 from mistletoe.attr_doc import autodoc
 
 
@@ -67,21 +67,24 @@ class FrontMatter(BlockToken):
 
     @classmethod
     def start(cls, line: str) -> bool:
+        # handled by Document
         return False
 
     @classmethod
     def read(cls, lines):
-        assert lines and lines[0].startswith("---")
-        end_line = None
-        for i, line in enumerate(lines[1:]):
-            if line.startswith("---"):
-                end_line = i + 2
-                break
-        # TODO raise/report error if closing block not found
-        if end_line is None:
-            end_line = len(lines)
+        start_line = lines.lineno + 1
 
-        return cls(content="".join(lines[1 : end_line - 1]), position=(0, end_line))
+        next(lines)  # skip first ``---``
+        line_buffer = []
+        next_line = lines.peek()
+        while not (next_line is None or next_line.startswith("---")):
+            line_buffer.append(next(lines))
+            next_line = lines.peek()
+        if next_line is not None:
+            next(lines)  # move pasr closing ``---``
+        # TODO raise/report error if closing block not found?
+
+        return cls(content="".join(line_buffer), position=(start_line, lines.lineno))
 
 
 @autodoc
@@ -138,26 +141,19 @@ class Document(BlockToken):
         :param front_matter: search for an initial YAML block front matter block
             (note this is not strictly CommonMark compliant)
         """
-        if isinstance(lines, str):
-            lines = lines.splitlines(keepends=True)
-
-        # TODO what if windows style `\r` delimited?
-        lines = [line if line.endswith("\n") else "{}\n".format(line) for line in lines]
         if reset_definitions:
             get_parse_context().reset_definitions()
+
+        lines = SourceLines(lines, start_line=start_line, standardize_ends=True)
 
         # TODO can we do this in a way where we are checking
         # FrontMatter in get_parse_context().block_tokens?
         # then it would be easier to add/remove it in the renderers
         front_matter_token = None
-        if front_matter and lines and lines[0].startswith("---"):
+        if front_matter and lines.peek() and lines.peek().startswith("---"):
             front_matter_token = FrontMatter.read(lines)
-            start_line += front_matter_token.position[1]
-            lines = lines[front_matter_token.position[1] :]
 
-        children = tokenizer.tokenize_main(
-            lines, start_line=start_line, skip_tokens=skip_tokens
-        )
+        children = tokenizer.tokenize_main(lines=lines, skip_tokens=skip_tokens)
         foot_defs = get_parse_context().foot_definitions
         return cls(
             children=children,
@@ -307,7 +303,9 @@ class Quote(BlockToken):
         # in quotes can be recognized before span-level tokenizing.
         Paragraph.parse_setext = False
         try:
-            child_tokens = tokenizer.tokenize_block(line_buffer, start_line=start_line)
+            child_tokens = tokenizer.tokenize_block(
+                SourceLines(line_buffer, start_line=start_line)
+            )
         finally:
             Paragraph.parse_setext = True
         return cls(children=child_tokens, position=(start_line, lines.lineno))
@@ -690,7 +688,7 @@ class ListItem(BlockToken):
         next_line = lines.peek()
         if empty_first_line and next_line is not None and next_line.strip() == "":
             child_tokens = tokenizer.tokenize_block(
-                [next(lines)], start_line=lines.lineno
+                SourceLines([next(lines)], start_line=lines.lineno)
             )
             next_line = lines.peek()
             if next_line is not None:
@@ -745,7 +743,9 @@ class ListItem(BlockToken):
             newline = newline + 1 if next_line.strip() == "" else 0
             next_line = lines.peek()
 
-        child_tokens = tokenizer.tokenize_block(line_buffer, start_line=start_line)
+        child_tokens = tokenizer.tokenize_block(
+            SourceLines(line_buffer, start_line=start_line)
+        )
 
         return cls(
             children=child_tokens,

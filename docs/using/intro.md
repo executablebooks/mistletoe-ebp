@@ -244,8 +244,9 @@ This process is illustrated in the following example, using the lower level pars
 {py:func}`~mistletoe.block_tokenizer.tokenize_main`:
 
 ```python
->> from mistletoe.block_tokenizer import tokenize_main
->> paragraph = tokenize_main(["a [text][key]\n", "\n", '[key]: link "target"\n'], expand_spans=False)[0]
+>> from mistletoe.block_tokenizer import tokenize_main, SourceLines
+>> lines = SourceLines('a [text][key]\n\n[key]: link "target"', standardize_ends=True)
+>> paragraph = tokenize_main(lines, expand_spans=False)[0]
 >> paragraph.children
 SpanContainer('a [text][key]')
 ```
@@ -265,8 +266,8 @@ ParseContext(block_cls=11,span_cls=9,link_defs=1,footnotes=0)
 
 ````{important}
 If directly using {py:func}`~mistletoe.block_tokenizer.tokenize_main`,
-you should (a) ensure all lines are terminated with `\n`, and
-(b) ensure that the global context is reset (if you don't want to use previously read defintions):
+you should ensure that the global context is reset,
+if you don't want to use previously read defintions:
 
 ```python
 >> get_parse_context(reset=True)

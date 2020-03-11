@@ -1,6 +1,7 @@
 from collections import namedtuple, OrderedDict
 import json
-from typing import List, Optional, Pattern, Tuple
+import re
+from typing import List, Optional, Pattern, Tuple, Union
 
 import attr
 
@@ -150,14 +151,34 @@ class SourceLines:
     """A class for storing source lines and tracking current line index.
 
     :param lines: the source lines
-    :param start_line: the position of the lines with the full source text.
+    :param start_line: the position of the initial line within the full source text.
+    :param standardize_ends: standardize all lines to end with ``\\n``
+    :param metadata: any metadata associated with the lines
     """
 
-    def __init__(self, lines: List[str], start_line=0):
-        self.lines = lines if isinstance(lines, list) else list(lines)
+    line_end_pattern = re.compile(".*(\n|\r)$")
+
+    def __init__(
+        self,
+        lines: Union[str, List[str]],
+        start_line: int = 0,
+        standardize_ends: bool = False,
+        metadata: Optional[dict] = None,
+    ):
+
+        if isinstance(lines, str):
+            lines = lines.splitlines(keepends=True)
+        if standardize_ends:
+            lines = [
+                "{}\n".format(l[:-1] if self.line_end_pattern.match(l) else l)
+                for l in lines
+            ]
+
+        self.lines = lines
         self._index = -1
         self._anchor = 0
         self.start_line = start_line
+        self.metadata = metadata or {}
 
     @property
     def lineno(self):

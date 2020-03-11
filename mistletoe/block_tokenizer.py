@@ -5,20 +5,15 @@ from mistletoe.base_elements import SpanContainer, SourceLines
 from mistletoe.parse_context import get_parse_context
 
 
-# TODO we should parse tokenize_main/tokenize_block SourceLines
-# instances directly which would also
-
-
 def tokenize_main(
-    iterable,
+    lines: SourceLines,
     token_types=None,
-    start_line: int = 0,
     expand_spans: bool = True,
     skip_tokens: list = ("LinkDefinition", "Footnote"),
 ):
     """Searches for token_types in an iterable.
 
-    :param iterable: list of strings (each line must end with a newline `\\n`!).
+    :param lines: the source lines
     :param token_types: override block-level tokens set in global context
     :param start_line: the source line number corresponding to `iterable[0]`
     :param expand_spans: After the initial parse the span text is not yet tokenized,
@@ -30,14 +25,11 @@ def tokenize_main(
 
     :returns: list of block-level token instances.
     """
+    if not isinstance(lines, SourceLines):
+        lines = SourceLines(lines)
     if token_types is None:
         token_types = get_parse_context().block_tokens
-    tokens = tokenize_block(
-        iterable,
-        token_types=token_types,
-        start_line=start_line,
-        skip_tokens=skip_tokens,
-    )
+    tokens = tokenize_block(lines, token_types=token_types, skip_tokens=skip_tokens)
     if expand_spans:
         for token in tokens + list(get_parse_context().foot_definitions.values()):
             for result in list(token.walk(include_self=True)):
@@ -47,12 +39,12 @@ def tokenize_main(
 
 
 def tokenize_block(
-    iterable, token_types=None, start_line=0, skip_tokens=("LinkDefinition", "Footnote")
+    lines: SourceLines, token_types=None, skip_tokens=("LinkDefinition", "Footnote")
 ):
     """Returns a list of parsed tokens."""
+    assert isinstance(lines, SourceLines), "lines must be `SourceLines` instance"
     if token_types is None:
         token_types = get_parse_context().block_tokens
-    lines = SourceLines(iterable, start_line)
     parsed_tokens = ParseBuffer()
     line = lines.peek()
     while line is not None:
