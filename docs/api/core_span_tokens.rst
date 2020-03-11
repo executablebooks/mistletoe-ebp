@@ -14,7 +14,7 @@ These span tokens are defined in the
       - Description
       - Example
     * - RawText
-      - any text
+      - any inline text
       - .. code-block:: md
 
            any text
@@ -53,13 +53,15 @@ These span tokens are defined in the
       - link that is shown in final output
       - .. code-block:: md
 
-           <http://www.google.com>
+           <https://www.google.com>
 
     * - Link
-      - Reference ``LinkDefinitions``
+      - Reference a target or :py:class:`~mistletoe.block_tokens.LinkDefinition`
       - .. code-block:: md
 
-           [text](target "title") or [text][key]
+           [text](target "title") or
+           [text][key] or
+           [key]
 
     * - Image
       - link to an image

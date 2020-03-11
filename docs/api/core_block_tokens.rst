@@ -28,13 +28,13 @@ These block tokens are defined in the
            ======
 
     * - Paragraph
-      - General inline text
+      - General block of text
       - .. code-block:: md
 
            any *text*
 
     * - Quote
-      - quoted text
+      - quoted block of text
       - .. code-block:: md
 
            > this is a quote
@@ -42,16 +42,17 @@ These block tokens are defined in the
     * - BlockCode
       - indented text (4 spaces or a tab)
       - .. code-block:: md
+           :name: blockcode
 
-           included as literal *text*
+               included as literal
 
     * - CodeFence
       - enclosed in 3 or more backticks with an optional language name
       - .. code-block:: md
 
-           .. code-block:: python
-
-              print('this is python')
+           ```python
+           print('this is python')
+           ```
 
     * - ThematicBreak
       - Creates a horizontal line in the output
@@ -64,7 +65,7 @@ These block tokens are defined in the
       - .. code-block:: md
 
            - item
-           - nested item
+             - nested item
            1. numbered item
 
     * - LinkDefinition
