@@ -8,21 +8,27 @@
                 content: foo
                 position: null
             position:
-            - 1
-            - 1
+              data: {}
+              line_end: 1
+              line_start: 1
+              uri: null
         leader: '-'
         loose: false
         next_marker:
         - 2
         - '*'
         position:
-        - 0
-        - 1
+          data: {}
+          line_end: 1
+          line_start: 0
+          uri: null
         prepend: 2
     loose: false
     position:
-    - 0
-    - 1
+      data: {}
+      line_end: 1
+      line_start: 0
+      uri: null
     start_at: null
 - List:
     children:
@@ -34,21 +40,27 @@
                 content: bar
                 position: null
             position:
-            - 2
-            - 2
+              data: {}
+              line_end: 2
+              line_start: 2
+              uri: null
         leader: '*'
         loose: false
         next_marker:
         - 3
         - '1.'
         position:
-        - 1
-        - 2
+          data: {}
+          line_end: 2
+          line_start: 1
+          uri: null
         prepend: 2
     loose: false
     position:
-    - 1
-    - 2
+      data: {}
+      line_end: 2
+      line_start: 1
+      uri: null
     start_at: null
 - List:
     children:
@@ -60,21 +72,27 @@
                 content: baz
                 position: null
             position:
-            - 3
-            - 3
+              data: {}
+              line_end: 3
+              line_start: 3
+              uri: null
         leader: '1.'
         loose: false
         next_marker:
         - 3
         - 2)
         position:
-        - 2
-        - 3
+          data: {}
+          line_end: 3
+          line_start: 2
+          uri: null
         prepend: 3
     loose: false
     position:
-    - 2
-    - 3
+      data: {}
+      line_end: 3
+      line_start: 2
+      uri: null
     start_at: 1
 - List:
     children:
@@ -86,17 +104,23 @@
                 content: spam
                 position: null
             position:
-            - 4
-            - 4
+              data: {}
+              line_end: 4
+              line_start: 4
+              uri: null
         leader: 2)
         loose: false
         next_marker: null
         position:
-        - 3
-        - 4
+          data: {}
+          line_end: 4
+          line_start: 3
+          uri: null
         prepend: 3
     loose: false
     position:
-    - 3
-    - 4
+      data: {}
+      line_end: 4
+      line_start: 3
+      uri: null
     start_at: 2

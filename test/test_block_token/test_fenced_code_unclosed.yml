@@ -6,5 +6,7 @@
         position: null
     language: ''
     position:
-    - 1
-    - 2
+      data: {}
+      line_end: 2
+      line_start: 1
+      uri: null

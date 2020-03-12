@@ -8,8 +8,10 @@
                 content: foo
                 position: null
             position:
-            - 1
-            - 1
+              data: {}
+              line_end: 1
+              line_start: 1
+              uri: null
         - List:
             children:
             - ListItem:
@@ -20,8 +22,10 @@
                         content: bar
                         position: null
                     position:
-                    - 2
-                    - 2
+                      data: {}
+                      line_end: 2
+                      line_start: 2
+                      uri: null
                 - List:
                     children:
                     - ListItem:
@@ -32,41 +36,55 @@
                                 content: baz
                                 position: null
                             position:
-                            - 3
-                            - 3
+                              data: {}
+                              line_end: 3
+                              line_start: 3
+                              uri: null
                         leader: '-'
                         loose: false
                         next_marker: null
                         position:
-                        - 2
-                        - 3
+                          data: {}
+                          line_end: 3
+                          line_start: 2
+                          uri: null
                         prepend: 2
                     loose: false
                     position:
-                    - 2
-                    - 3
+                      data: {}
+                      line_end: 3
+                      line_start: 2
+                      uri: null
                     start_at: null
                 leader: '-'
                 loose: false
                 next_marker: null
                 position:
-                - 1
-                - 3
+                  data: {}
+                  line_end: 3
+                  line_start: 1
+                  uri: null
                 prepend: 2
             loose: false
             position:
-            - 1
-            - 3
+              data: {}
+              line_end: 3
+              line_start: 1
+              uri: null
             start_at: null
         leader: '-'
         loose: false
         next_marker: null
         position:
-        - 0
-        - 3
+          data: {}
+          line_end: 3
+          line_start: 0
+          uri: null
         prepend: 2
     loose: false
     position:
-    - 0
-    - 3
+      data: {}
+      line_end: 3
+      line_start: 0
+      uri: null
     start_at: null

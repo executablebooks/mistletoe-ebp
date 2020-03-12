@@ -1,5 +1,7 @@
 - HTMLBlock:
     content: <p>a</p>
     position:
-    - 0
-    - 1
+      data: {}
+      line_end: 1
+      line_start: 0
+      uri: null

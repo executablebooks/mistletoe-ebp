@@ -8,6 +8,8 @@ Document:
 
         '
       position:
-      - 1
-      - 3
+        data: {}
+        line_end: 3
+        line_start: 1
+        uri: null
   link_definitions: {}

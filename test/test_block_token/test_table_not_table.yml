@@ -11,5 +11,7 @@
         content: foo | bar
         position: null
     position:
-    - 1
-    - 2
+      data: {}
+      line_end: 2
+      line_start: 1
+      uri: null

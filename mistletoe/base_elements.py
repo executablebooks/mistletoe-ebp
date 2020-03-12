@@ -4,6 +4,7 @@ import re
 from typing import List, Optional, Pattern, Tuple, Union
 
 import attr
+from mistletoe.attr_doc import autodoc
 
 
 WalkItem = namedtuple("WalkItem", ["node", "parent", "index", "depth"])
@@ -18,6 +19,8 @@ class Token:
             return None
         if name == "content":
             return ""
+        if name == "position":
+            return None
         raise AttributeError(name)
 
     @property
@@ -41,9 +44,12 @@ class Token:
     def to_dict(self) -> dict:
         """Convert instatiated attributes to a dict"""
         try:
-            return attr.asdict(self, recurse=False)
+            dct = attr.asdict(self, recurse=False)
         except attr.exceptions.NotAnAttrsClassError:
-            return self.__dict__
+            dct = self.__dict__
+        if isinstance(dct.get("position", None), Position):
+            dct["position"] = attr.asdict(dct["position"])
+        return dct
 
     def walk(
         self,
@@ -169,6 +175,7 @@ class SourceLines:
         lines: Union[str, List[str]],
         start_line: int = 0,
         standardize_ends: bool = False,
+        uri: Optional[str] = None,
         metadata: Optional[dict] = None,
     ):
 
@@ -181,6 +188,7 @@ class SourceLines:
             ]
 
         self.lines = lines
+        self.uri = uri
         self._index = -1
         self._anchor = 0
         self.start_line = start_line
@@ -229,6 +237,46 @@ class SourceLines:
         """Step back the line index by 1."""
         if self._index != -1:
             self._index -= 1
+
+
+@autodoc
+@attr.s(slots=True, kw_only=True)
+class Position:
+    """Dataclass to store positional data of tokens, in relation to the source text."""
+
+    line_start: int = attr.ib(metadata={"doc": "Initial line"})
+    line_end: int = attr.ib(default=None, metadata={"doc": "Final line"})
+    uri: str = attr.ib(default=None, metadata={"doc": "The document"})
+    data: dict = attr.ib(factory=dict, metadata={"doc": "Any additional data"})
+
+    @classmethod
+    def from_source_lines(cls, lines: SourceLines, start_line=None) -> "Position":
+        """Create an instance from a ``SourceLines`` instance.
+
+        By default, the line is taken from ``lines.lineno``
+
+        :param start_line: the index of the start line, if different to ``lines.lineno``
+        """
+        if start_line is None:
+            return cls(line_start=lines.lineno, uri=lines.uri, data=lines.metadata)
+        return cls(
+            line_start=start_line,
+            line_end=lines.lineno,
+            uri=lines.uri,
+            data=lines.metadata,
+        )
+
+    def __repr__(self):
+        args = ""
+        if self.line_end is None:
+            args += "lines=({0},{1})".format(self.line_start, self.line_end)
+        else:
+            args += "line={0}".format(self.line_start)
+        if self.uri is not None:
+            args += ",uri={0}".format(self.uri)
+        if self.data is not None:
+            args += ",data={0}".format(self.data)
+        return "{0}({1})".format(self.__class__.__name__, args)
 
 
 class BlockToken(Token):

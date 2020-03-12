@@ -7,8 +7,10 @@ Document:
           position: null
       level: 1
       position:
-      - 1
-      - 1
+        data: {}
+        line_end: null
+        line_start: 1
+        uri: null
   - Paragraph:
       children:
       - RawText:
@@ -32,8 +34,10 @@ Document:
               position: null
           position: null
       position:
-      - 3
-      - 5
+        data: {}
+        line_end: 5
+        line_start: 3
+        uri: null
   footnotes: {}
   footref_order: []
   front_matter: null

@@ -7,17 +7,23 @@ TableRow:
           content: cell 1
           position: null
       position:
-      - 0
-      - 0
+        data: {}
+        line_end: null
+        line_start: 0
+        uri: null
   - TableCell:
       align: null
       children: []
       position:
-      - 0
-      - 0
+        data: {}
+        line_end: null
+        line_start: 0
+        uri: null
   position:
-  - 0
-  - 0
+    data: {}
+    line_end: null
+    line_start: 0
+    uri: null
   row_align:
   - null
   - null

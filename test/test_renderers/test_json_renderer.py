@@ -64,7 +64,7 @@ def test_extra_tokens():
     """Extra tokens should persist between multiple calls of the same renderer,
     but be reset if initiating a new renderer.
     """
-    output = {
+    output_nomath = {
         "type": "Document",
         "front_matter": None,
         "link_definitions": {},
@@ -73,8 +73,8 @@ def test_extra_tokens():
         "children": [
             {
                 "type": "Paragraph",
-                "children": [{"type": "RawText", "content": "$b$"}],
-                "position": (1, 1),
+                "children": [{"type": "RawText", "content": "$b$", "position": None}],
+                "position": {"line_start": 1, "line_end": 1, "uri": None, "data": {}},
             }
         ],
     }
@@ -88,14 +88,15 @@ def test_extra_tokens():
             {
                 "type": "Paragraph",
                 "children": [{"type": "Math", "content": "$b$"}],
-                "position": (1, 1),
+                "position": {"line_start": 1, "line_end": 1, "uri": None, "data": {}},
             }
         ],
     }
 
     with JsonRenderer() as render:
         output = render.render(Document.read(["$b$"]), as_string=False)
-    assert output == output
+    print(output)
+    assert output == output_nomath
     renderer = JsonRenderer(
         parse_context=ParseContext(find_spans=LaTeXRenderer.default_span_tokens)
     )
@@ -107,4 +108,4 @@ def test_extra_tokens():
     assert output == output_math
     with JsonRenderer() as render:
         output = render.render(Document.read(["$b$"]), as_string=False)
-    assert output == output
+    assert output == output_nomath

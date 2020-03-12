@@ -20,8 +20,10 @@ Document:
           content: lines
           position: null
       position:
-      - 1
-      - 3
+        data: {}
+        line_end: 3
+        line_start: 1
+        uri: null
   footnotes: {}
   footref_order: []
   front_matter: null
