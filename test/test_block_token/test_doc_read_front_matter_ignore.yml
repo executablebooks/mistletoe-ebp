@@ -2,8 +2,10 @@ Document:
   children:
   - ThematicBreak:
       position:
-      - 1
-      - 1
+        data: {}
+        line_end: null
+        line_start: 1
+        uri: null
   - SetextHeading:
       children:
       - RawText:
@@ -11,8 +13,10 @@ Document:
           position: null
       level: 2
       position:
-      - 2
-      - 3
+        data: {}
+        line_end: 3
+        line_start: 2
+        uri: null
   footnotes: {}
   footref_order: []
   front_matter: null

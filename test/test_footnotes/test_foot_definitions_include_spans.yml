@@ -8,8 +8,10 @@ footnotes:
               content: a
               position: null
       position:
-      - 1
-      - 1
+        data: {}
+        line_end: 1
+        line_start: 1
+        uri: null
       target: abcd
 link_definitions: {}
 tree: []

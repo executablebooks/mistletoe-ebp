@@ -8,19 +8,25 @@
                 content: foo
                 position: null
             position:
-            - 1
-            - 1
+              data: {}
+              line_end: 1
+              line_start: 1
+              uri: null
         leader: '-'
         loose: false
         next_marker: null
         position:
-        - 0
-        - 1
+          data: {}
+          line_end: 1
+          line_start: 0
+          uri: null
         prepend: 2
     loose: false
     position:
-    - 0
-    - 1
+      data: {}
+      line_end: 1
+      line_start: 0
+      uri: null
     start_at: null
 - Heading:
     children:
@@ -29,5 +35,7 @@
         position: null
     level: 1
     position:
-    - 3
-    - 3
+      data: {}
+      line_end: null
+      line_start: 3
+      uri: null

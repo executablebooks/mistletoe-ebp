@@ -4,8 +4,10 @@
         content: foo
         position: null
     position:
-    - 1
-    - 1
+      data: {}
+      line_end: 1
+      line_start: 1
+      uri: null
 - Heading:
     children:
     - RawText:
@@ -13,13 +15,17 @@
         position: null
     level: 1
     position:
-    - 2
-    - 2
+      data: {}
+      line_end: null
+      line_start: 2
+      uri: null
 - Paragraph:
     children:
     - RawText:
         content: bar
         position: null
     position:
-    - 3
-    - 3
+      data: {}
+      line_end: 3
+      line_start: 3
+      uri: null

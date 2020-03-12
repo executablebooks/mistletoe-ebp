@@ -6,8 +6,10 @@ footnotes:
           content: value1
           position: null
       position:
-      - 1
-      - 1
+        data: {}
+        line_end: 1
+        line_start: 1
+        uri: null
       target: '1'
 link_definitions:
   '2':

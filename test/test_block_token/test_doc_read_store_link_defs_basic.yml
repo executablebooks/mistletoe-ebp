@@ -9,8 +9,10 @@ Document:
         - value2
         - ''
       position:
-      - 1
-      - 2
+        data: {}
+        line_end: 2
+        line_start: 1
+        uri: null
   footnotes: {}
   footref_order: []
   front_matter: null

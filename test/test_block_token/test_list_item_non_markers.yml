@@ -27,8 +27,12 @@
             content: 1234567890. item x
             position: null
         position:
-        - 2
-        - 5
+          data: {}
+          line_end: 5
+          line_start: 2
+          uri: null
     position:
-    - 1
-    - 4
+      data: {}
+      line_end: 4
+      line_start: 1
+      uri: null
