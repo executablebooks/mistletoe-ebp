@@ -5,7 +5,5 @@
         position: null
     level: 2
     position:
-      data: {}
-      line_end: 2
-      line_start: 1
-      uri: null
+    - 1
+    - 2

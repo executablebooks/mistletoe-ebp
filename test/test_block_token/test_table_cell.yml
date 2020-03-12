@@ -5,7 +5,5 @@ TableCell:
       content: cell 2
       position: null
   position:
-    data: {}
-    line_end: null
-    line_start: 0
-    uri: null
+  - 0
+  - 0

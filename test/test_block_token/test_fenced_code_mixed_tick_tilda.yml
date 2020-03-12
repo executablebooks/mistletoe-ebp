@@ -12,7 +12,5 @@
         position: null
     language: markdown
     position:
-      data: {}
-      line_end: 5
-      line_start: 1
-      uri: null
+    - 1
+    - 5

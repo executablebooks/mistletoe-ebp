@@ -8,27 +8,21 @@
                 content: foo
                 position: null
             position:
-              data: {}
-              line_end: 1
-              line_start: 1
-              uri: null
+            - 1
+            - 1
         leader: '-'
         loose: false
         next_marker:
         - 5
         - '*'
         position:
-          data: {}
-          line_end: 1
-          line_start: 0
-          uri: null
+        - 0
+        - 1
         prepend: 2
     loose: false
     position:
-      data: {}
-      line_end: 1
-      line_start: 0
-      uri: null
+    - 0
+    - 1
     start_at: null
 - List:
     children:
@@ -40,27 +34,21 @@
                 content: bar
                 position: null
             position:
-              data: {}
-              line_end: 2
-              line_start: 2
-              uri: null
+            - 2
+            - 2
         leader: '*'
         loose: false
         next_marker:
         - 3
         - +
         position:
-          data: {}
-          line_end: 2
-          line_start: 1
-          uri: null
+        - 1
+        - 2
         prepend: 5
     loose: false
     position:
-      data: {}
-      line_end: 2
-      line_start: 1
-      uri: null
+    - 1
+    - 2
     start_at: null
 - List:
     children:
@@ -72,27 +60,21 @@
                 content: baz
                 position: null
             position:
-              data: {}
-              line_end: 3
-              line_start: 3
-              uri: null
+            - 3
+            - 3
         leader: +
         loose: false
         next_marker:
         - 3
         - '1.'
         position:
-          data: {}
-          line_end: 3
-          line_start: 2
-          uri: null
+        - 2
+        - 3
         prepend: 3
     loose: false
     position:
-      data: {}
-      line_end: 3
-      line_start: 2
-      uri: null
+    - 2
+    - 3
     start_at: null
 - List:
     children:
@@ -104,27 +86,21 @@
                 content: item 1
                 position: null
             position:
-              data: {}
-              line_end: 4
-              line_start: 4
-              uri: null
+            - 4
+            - 4
         leader: '1.'
         loose: false
         next_marker:
         - 3
         - 2)
         position:
-          data: {}
-          line_end: 4
-          line_start: 3
-          uri: null
+        - 3
+        - 4
         prepend: 3
     loose: false
     position:
-      data: {}
-      line_end: 4
-      line_start: 3
-      uri: null
+    - 3
+    - 4
     start_at: 1
 - List:
     children:
@@ -136,27 +112,21 @@
                 content: item 2
                 position: null
             position:
-              data: {}
-              line_end: 5
-              line_start: 5
-              uri: null
+            - 5
+            - 5
         leader: 2)
         loose: false
         next_marker:
         - 11
         - '123456789.'
         position:
-          data: {}
-          line_end: 5
-          line_start: 4
-          uri: null
+        - 4
+        - 5
         prepend: 3
     loose: false
     position:
-      data: {}
-      line_end: 5
-      line_start: 4
-      uri: null
+    - 4
+    - 5
     start_at: 2
 - List:
     children:
@@ -168,23 +138,17 @@
                 content: item x
                 position: null
             position:
-              data: {}
-              line_end: 6
-              line_start: 6
-              uri: null
+            - 6
+            - 6
         leader: '123456789.'
         loose: false
         next_marker: null
         position:
-          data: {}
-          line_end: 6
-          line_start: 5
-          uri: null
+        - 5
+        - 6
         prepend: 11
     loose: false
     position:
-      data: {}
-      line_end: 6
-      line_start: 5
-      uri: null
+    - 5
+    - 6
     start_at: 123456789

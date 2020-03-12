@@ -15,10 +15,8 @@
                 content: bar
                 position: null
             position:
-              data: {}
-              line_end: 2
-              line_start: 1
-              uri: null
+            - 1
+            - 2
         - BlockCode:
             children:
             - RawText:
@@ -28,23 +26,17 @@
                 position: null
             language: ''
             position:
-              data: {}
-              line_end: 4
-              line_start: 3
-              uri: null
+            - 3
+            - 4
         leader: '-'
         loose: true
         next_marker: null
         position:
-          data: {}
-          line_end: 4
-          line_start: 0
-          uri: null
+        - 0
+        - 4
         prepend: 6
     loose: true
     position:
-      data: {}
-      line_end: 4
-      line_start: 0
-      uri: null
+    - 0
+    - 4
     start_at: null

@@ -12,17 +12,13 @@
         position: null
     level: 2
     position:
-      data: {}
-      line_end: 3
-      line_start: 1
-      uri: null
+    - 1
+    - 3
 - Paragraph:
     children:
     - RawText:
         content: foobar
         position: null
     position:
-      data: {}
-      line_end: 5
-      line_start: 5
-      uri: null
+    - 5
+    - 5

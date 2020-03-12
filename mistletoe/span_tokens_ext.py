@@ -1,11 +1,11 @@
 """Extended span tokens, that are not part of the CommonMark spec."""
 import re
-from typing import Pattern
+from typing import Pattern, Tuple
 
 import attr
 
 from mistletoe.attr_doc import autodoc
-from mistletoe.base_elements import Position, SpanToken
+from mistletoe.base_elements import SpanToken
 from mistletoe.parse_context import get_parse_context
 
 __all__ = ("Math", "Strikethrough", "FootReference")
@@ -64,8 +64,10 @@ class FootReference(SpanToken):
     parse_group = 0
 
     target: str = attr.ib(metadata={"doc": "footnote reference target"})
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod

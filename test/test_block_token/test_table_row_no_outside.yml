@@ -7,10 +7,8 @@ TableRow:
           content: cell 1
           position: null
       position:
-        data: {}
-        line_end: null
-        line_start: 0
-        uri: null
+      - 0
+      - 0
   - TableCell:
       align: null
       children:
@@ -18,14 +16,10 @@ TableRow:
           content: cell 2
           position: null
       position:
-        data: {}
-        line_end: null
-        line_start: 0
-        uri: null
+      - 0
+      - 0
   position:
-    data: {}
-    line_end: null
-    line_start: 0
-    uri: null
+  - 0
+  - 0
   row_align:
   - null

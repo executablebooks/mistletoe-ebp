@@ -6,17 +6,13 @@
         position: null
     language: ''
     position:
-      data: {}
-      line_end: 3
-      line_start: 1
-      uri: null
+    - 1
+    - 3
 - Paragraph:
     children:
     - RawText:
         content: paragraph
         position: null
     position:
-      data: {}
-      line_end: 4
-      line_start: 4
-      uri: null
+    - 4
+    - 4

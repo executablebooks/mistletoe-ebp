@@ -5,10 +5,8 @@ children:
     type: RawText
   level: 1
   position:
-    data: {}
-    line_end: 6
-    line_start: 5
-    uri: null
+  - 5
+  - 6
   type: SetextHeading
 - children:
   - content: Atx Header
@@ -16,10 +14,8 @@ children:
     type: RawText
   level: 1
   position:
-    data: {}
-    line_end: null
-    line_start: 8
-    uri: null
+  - 8
+  - 8
   type: Heading
 - children:
   - children:
@@ -37,10 +33,8 @@ children:
     position: null
     type: RawText
   position:
-    data: {}
-    line_end: 11
-    line_start: 10
-    uri: null
+  - 10
+  - 11
   type: Paragraph
 - children:
   - children:
@@ -49,10 +43,8 @@ children:
         position: null
         type: RawText
       position:
-        data: {}
-        line_end: 13
-        line_start: 13
-        uri: null
+      - 13
+      - 13
       type: Paragraph
     leader: '-'
     loose: false
@@ -60,18 +52,14 @@ children:
     - 3
     - '1.'
     position:
-      data: {}
-      line_end: 14
-      line_start: 12
-      uri: null
+    - 12
+    - 14
     prepend: 2
     type: ListItem
   loose: false
   position:
-    data: {}
-    line_end: 14
-    line_start: 12
-    uri: null
+  - 12
+  - 14
   start_at: null
   type: List
 - children:
@@ -81,27 +69,21 @@ children:
         position: null
         type: RawText
       position:
-        data: {}
-        line_end: 15
-        line_start: 15
-        uri: null
+      - 15
+      - 15
       type: Paragraph
     leader: '1.'
     loose: false
     next_marker: null
     position:
-      data: {}
-      line_end: 15
-      line_start: 14
-      uri: null
+    - 14
+    - 15
     prepend: 3
     type: ListItem
   loose: false
   position:
-    data: {}
-    line_end: 15
-    line_start: 14
-    uri: null
+  - 14
+  - 15
   start_at: 1
   type: List
 - children:
@@ -115,16 +97,12 @@ children:
         type: RawText
       type: Emphasis
     position:
-      data: {}
-      line_end: 18
-      line_start: 18
-      uri: null
+    - 18
+    - 18
     type: Paragraph
   position:
-    data: {}
-    line_end: 17
-    line_start: 17
-    uri: null
+  - 17
+  - 17
   type: Quote
 - children:
   - children:
@@ -136,20 +114,16 @@ children:
     title: xyz
     type: Link
   position:
-    data: {}
-    line_end: 19
-    line_start: 19
-    uri: null
+  - 19
+  - 19
   type: Paragraph
 - definitions:
   - - ref
     - abc
     - xyz
   position:
-    data: {}
-    line_end: 21
-    line_start: 21
-    uri: null
+  - 21
+  - 21
   type: LinkDefinition
 - arguments: ''
   children:
@@ -160,10 +134,8 @@ children:
     type: RawText
   language: python
   position:
-    data: {}
-    line_end: 25
-    line_start: 23
-    uri: null
+  - 23
+  - 25
   type: CodeFence
 - children:
   - content: 'block
@@ -175,16 +147,12 @@ children:
     type: RawText
   language: ''
   position:
-    data: {}
-    line_end: 29
-    line_start: 26
-    uri: null
+  - 26
+  - 29
   type: BlockCode
 - position:
-    data: {}
-    line_end: null
-    line_start: 30
-    uri: null
+  - 30
+  - 30
   type: ThematicBreak
 - children:
   - children:
@@ -194,10 +162,8 @@ children:
         position: null
         type: RawText
       position:
-        data: {}
-        line_end: null
-        line_start: 34
-        uri: null
+      - 34
+      - 34
       type: TableCell
     - align: 1
       children:
@@ -205,16 +171,12 @@ children:
         position: null
         type: RawText
       position:
-        data: {}
-        line_end: null
-        line_start: 34
-        uri: null
+      - 34
+      - 34
       type: TableCell
     position:
-      data: {}
-      line_end: null
-      line_start: 34
-      uri: null
+    - 34
+    - 34
     row_align:
     - null
     - 1
@@ -230,10 +192,8 @@ children:
         position: null
         type: RawText
       position:
-        data: {}
-        line_end: null
-        line_start: 32
-        uri: null
+      - 32
+      - 32
       type: TableCell
     - align: 1
       children:
@@ -241,25 +201,19 @@ children:
         position: null
         type: RawText
       position:
-        data: {}
-        line_end: null
-        line_start: 32
-        uri: null
+      - 32
+      - 32
       type: TableCell
     position:
-      data: {}
-      line_end: null
-      line_start: 32
-      uri: null
+    - 32
+    - 32
     row_align:
     - null
     - 1
     type: TableRow
   position:
-    data: {}
-    line_end: 34
-    line_start: 32
-    uri: null
+  - 32
+  - 34
   type: Table
 footnotes: {}
 footref_order: []
@@ -268,10 +222,8 @@ front_matter:
 
     '
   position:
-    data: {}
-    line_end: 3
-    line_start: 1
-    uri: null
+  - 1
+  - 3
   type: FrontMatter
 link_definitions:
   ref:

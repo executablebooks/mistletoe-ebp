@@ -9,10 +9,8 @@
                 content: Header
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 3
-              uri: null
+            - 3
+            - 3
         - TableCell:
             align: 0
             children:
@@ -20,10 +18,8 @@
                 content: Title
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 3
-              uri: null
+            - 3
+            - 3
         - TableCell:
             align: 1
             children:
@@ -31,15 +27,11 @@
                 content: Here's this
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 3
-              uri: null
+            - 3
+            - 3
         position:
-          data: {}
-          line_end: null
-          line_start: 3
-          uri: null
+        - 3
+        - 3
         row_align:
         - null
         - 0
@@ -53,10 +45,8 @@
                 content: Paragraph
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 4
-              uri: null
+            - 4
+            - 4
         - TableCell:
             align: 0
             children:
@@ -64,10 +54,8 @@
                 content: Text
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 4
-              uri: null
+            - 4
+            - 4
         - TableCell:
             align: 1
             children:
@@ -75,15 +63,11 @@
                 content: And more
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 4
-              uri: null
+            - 4
+            - 4
         position:
-          data: {}
-          line_end: null
-          line_start: 4
-          uri: null
+        - 4
+        - 4
         row_align:
         - null
         - 0
@@ -102,10 +86,8 @@
                 content: Syntax
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 1
-              uri: null
+            - 1
+            - 1
         - TableCell:
             align: 0
             children:
@@ -113,10 +95,8 @@
                 content: Description
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 1
-              uri: null
+            - 1
+            - 1
         - TableCell:
             align: 1
             children:
@@ -124,21 +104,15 @@
                 content: Test Text
                 position: null
             position:
-              data: {}
-              line_end: null
-              line_start: 1
-              uri: null
+            - 1
+            - 1
         position:
-          data: {}
-          line_end: null
-          line_start: 1
-          uri: null
+        - 1
+        - 1
         row_align:
         - null
         - 0
         - 1
     position:
-      data: {}
-      line_end: 4
-      line_start: 1
-      uri: null
+    - 1
+    - 4

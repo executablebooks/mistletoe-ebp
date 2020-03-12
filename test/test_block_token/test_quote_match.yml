@@ -13,12 +13,8 @@
             content: line 2
             position: null
         position:
-          data: {}
-          line_end: 3
-          line_start: 2
-          uri: null
+        - 2
+        - 3
     position:
-      data: {}
-      line_end: 2
-      line_start: 1
-      uri: null
+    - 1
+    - 2

@@ -4,10 +4,8 @@
         content: this
         position: null
     position:
-      data: {}
-      line_end: 1
-      line_start: 1
-      uri: null
+    - 1
+    - 1
 - CodeFence:
     arguments: ''
     children:
@@ -18,17 +16,13 @@
         position: null
     language: ''
     position:
-      data: {}
-      line_end: 4
-      line_start: 2
-      uri: null
+    - 2
+    - 4
 - Paragraph:
     children:
     - RawText:
         content: code
         position: null
     position:
-      data: {}
-      line_end: 5
-      line_start: 5
-      uri: null
+    - 5
+    - 5

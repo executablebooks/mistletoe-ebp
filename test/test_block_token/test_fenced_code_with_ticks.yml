@@ -10,7 +10,5 @@
         position: null
     language: sh
     position:
-      data: {}
-      line_end: 4
-      line_start: 1
-      uri: null
+    - 1
+    - 4

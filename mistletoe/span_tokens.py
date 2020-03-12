@@ -2,12 +2,12 @@
 Built-in span-level token classes.
 """
 import re
-from typing import Pattern
+from typing import Pattern, Tuple
 
 import attr
 
 from mistletoe import nested_tokenizer
-from mistletoe.base_elements import Position, SpanToken
+from mistletoe.base_elements import SpanToken
 from mistletoe.parse_context import get_parse_context
 from mistletoe.attr_doc import autodoc
 
@@ -69,8 +69,10 @@ class InlineCode(SpanToken):
     children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod
@@ -96,8 +98,10 @@ class Image(SpanToken):
     children: list = attr.ib(
         factory=list, repr=False, metadata={"doc": "alternative text."}
     )
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod
@@ -115,8 +119,10 @@ class Link(SpanToken):
     target: str = attr.ib(metadata={"doc": "link target"})
     title: str = attr.ib(default=None, metadata={"doc": "link title"})
     children: list = attr.ib(factory=list, repr=False, metadata={"doc": "link text."})
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod
@@ -144,8 +150,10 @@ class AutoLink(SpanToken):
     children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod
@@ -174,8 +182,10 @@ class EscapeSequence(SpanToken):
     children: list = attr.ib(
         repr=False, metadata={"doc": "a single RawText node for alternative text."}
     )
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod
@@ -200,8 +210,10 @@ class LineBreak(SpanToken):
 
     content: bool = attr.ib(default="", repr=False, metadata={"doc": "raw content."})
     soft: bool = attr.ib(metadata={"doc": "if the break is soft or hard."})
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod
@@ -223,8 +235,10 @@ class RawText(SpanToken):
     content: bool = attr.ib(
         repr=False, metadata={"doc": "raw string content of the token"}
     )
-    position: Position = attr.ib(
-        default=None, repr=False, metadata={"doc": "Line position in source text"}
+    position: Tuple[int, int] = attr.ib(
+        default=None,
+        repr=False,
+        metadata={"doc": "Line position in source text (start, end)"},
     )
 
     @classmethod

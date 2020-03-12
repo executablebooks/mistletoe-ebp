@@ -9,7 +9,5 @@
         position: null
     language: ''
     position:
-      data: {}
-      line_end: 2
-      line_start: 0
-      uri: null
+    - 0
+    - 2

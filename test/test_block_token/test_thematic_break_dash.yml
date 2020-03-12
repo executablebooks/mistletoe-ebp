@@ -1,6 +1,4 @@
 - ThematicBreak:
     position:
-      data: {}
-      line_end: null
-      line_start: 1
-      uri: null
+    - 1
+    - 1
