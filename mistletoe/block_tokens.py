@@ -89,8 +89,11 @@ class FrontMatter(BlockToken):
             line_buffer.append(next(lines))
             next_line = lines.peek()
         if next_line is not None:
-            next(lines)  # move pasr closing ``---``
-        # TODO raise/report error if closing block not found?
+            next(lines)  # move past closing ``---``
+        else:
+            get_parse_context().logger.warning(
+                "No closing --- was found for initial metadata block."
+            )
 
         return cls(content="".join(line_buffer), position=(start_line, lines.lineno))
 
