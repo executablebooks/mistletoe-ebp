@@ -58,12 +58,20 @@ class FrontMatter(BlockToken):
     if `front_matter=True`, and stored on `Document.front_matter` in the syntax tree.
     """
 
-    content: str = attr.ib(
+    content: Union[str, dict] = attr.ib(
         repr=False, metadata={"doc": "Source text (should be valid YAML)"}
     )
     position: Tuple[int, int] = attr.ib(
         metadata={"doc": "Line position in source text (start, end)"}
     )
+
+    def get_data(self) -> dict:
+        """Return the de-serialized front matter data (requires pyyaml)."""
+        if isinstance(self.content, str):
+            import yaml
+
+            return yaml.safe_load(self.content) or {}
+        return self.content
 
     @classmethod
     def start(cls, line: str) -> bool:
