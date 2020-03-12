@@ -240,7 +240,7 @@ class SourceLines:
 
 
 @autodoc
-@attr.s(slots=True, kw_only=True)
+@attr.s(slots=True, kw_only=True, repr=False)
 class Position:
     """Dataclass to store positional data of tokens, in relation to the source text."""
 
@@ -268,13 +268,13 @@ class Position:
 
     def __repr__(self):
         args = ""
-        if self.line_end is None:
-            args += "lines=({0},{1})".format(self.line_start, self.line_end)
+        if self.line_end is not None:
+            args += "lines=[{0}:{1}]".format(self.line_start, self.line_end)
         else:
             args += "line={0}".format(self.line_start)
         if self.uri is not None:
             args += ",uri={0}".format(self.uri)
-        if self.data is not None:
+        if self.data:
             args += ",data={0}".format(self.data)
         return "{0}({1})".format(self.__class__.__name__, args)
 

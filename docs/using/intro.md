@@ -185,9 +185,9 @@ All tokens have a `children` attribute:
 
 ```python
 >> doc.children
-[Paragraph(children=2, position=(2, 2)),
- List(children=1, loose=False, start_at=1, position=(3, 4)),
- Quote(children=1, position=(6, 6))]
+[Paragraph(children=2, position=Position(lines=[2:2])),
+ List(children=1, loose=False, start_at=1, position=Position(lines=[3:4])),
+ Quote(children=1, position=Position(lines=[6:6]))]
 ```
 
 or you can walk through the entire syntax tree, using the
@@ -196,18 +196,18 @@ or you can walk through the entire syntax tree, using the
 ```python
 >> for item in doc.walk():
 ..     print(item)
-WalkItem(node=Paragraph(children=2, position=(2, 2)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=0, depth=1)
-WalkItem(node=List(children=1, loose=False, start_at=1, position=(3, 4)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=1, depth=1)
-WalkItem(node=Quote(children=1, position=(6, 6)), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=2, depth=1)
-WalkItem(node=RawText(), parent=Paragraph(children=2, position=(2, 2)), index=0, depth=2)
-WalkItem(node=Emphasis(children=1), parent=Paragraph(children=2, position=(2, 2)), index=1, depth=2)
-WalkItem(node=ListItem(children=1, loose=False, leader='1.', prepend=3, next_marker=None, position=(3, 4)), parent=List(children=1, loose=False, start_at=1, position=(3, 4)), index=0, depth=2)
-WalkItem(node=Paragraph(children=2, position=(7, 7)), parent=Quote(children=1, position=(6, 6)), index=0, depth=2)
+WalkItem(node=Paragraph(children=2, position=Position(lines=[2:2])), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=0, depth=1)
+WalkItem(node=List(children=1, loose=False, start_at=1, position=Position(lines=[3:4])), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=1, depth=1)
+WalkItem(node=Quote(children=1, position=Position(lines=[6:6])), parent=Document(children=3, link_definitions=0, footnotes=0, footref_order=0, front_matter=None), index=2, depth=1)
+WalkItem(node=RawText(), parent=Paragraph(children=2, position=Position(lines=[2:2])), index=0, depth=2)
+WalkItem(node=Emphasis(children=1), parent=Paragraph(children=2, position=Position(lines=[2:2])), index=1, depth=2)
+WalkItem(node=ListItem(children=1, loose=False, leader='1.', prepend=3, next_marker=None, position=Position(lines=[3:4])), parent=List(children=1, loose=False, start_at=1, position=Position(lines=[3:4])), index=0, depth=2)
+WalkItem(node=Paragraph(children=2, position=Position(lines=[7:7])), parent=Quote(children=1, position=Position(lines=[6:6])), index=0, depth=2)
 WalkItem(node=RawText(), parent=Emphasis(children=1), index=0, depth=3)
-WalkItem(node=Paragraph(children=1, position=(4, 4)), parent=ListItem(children=1, loose=False, leader='1.', prepend=3, next_marker=None, position=(3, 4)), index=0, depth=3)
-WalkItem(node=RawText(), parent=Paragraph(children=2, position=(7, 7)), index=0, depth=3)
-WalkItem(node=Emphasis(children=1), parent=Paragraph(children=2, position=(7, 7)), index=1, depth=3)
-WalkItem(node=RawText(), parent=Paragraph(children=1, position=(4, 4)), index=0, depth=4)
+WalkItem(node=Paragraph(children=1, position=Position(lines=[4:4])), parent=ListItem(children=1, loose=False, leader='1.', prepend=3, next_marker=None, position=Position(lines=[3:4])), index=0, depth=3)
+WalkItem(node=RawText(), parent=Paragraph(children=2, position=Position(lines=[7:7])), index=0, depth=3)
+WalkItem(node=Emphasis(children=1), parent=Paragraph(children=2, position=Position(lines=[7:7])), index=1, depth=3)
+WalkItem(node=RawText(), parent=Paragraph(children=1, position=Position(lines=[4:4])), index=0, depth=4)
 WalkItem(node=RawText(), parent=Emphasis(children=1), index=0, depth=4)
 ```
 
@@ -217,10 +217,8 @@ You could even build your own AST programatically!
 >> from mistletoe import block_tokens, span_tokens, HTMLRenderer
 >> doc = block_tokens.Document(children=[
 ..    block_tokens.Paragraph(
-..        position=(0, 1),
 ..        children=[
 ..            span_tokens.Emphasis(
-..                position=(0, 1),
 ..                children=[span_tokens.RawText("hallo")]
 ..            )
 ..    ])
