@@ -104,8 +104,9 @@ class FrontMatter(BlockToken):
         position = Position.from_source_lines(lines, start_line=start_line)
         if log_warning:
             get_parse_context().logger.warning(
-                "No closing `---` was found for initial metadata block: "
-                "{}".format(position)
+                "{} No closing `---` was found for initial metadata block".format(
+                    position.make_loc_str()
+                )
             )
 
         return cls(content="".join(line_buffer), position=position)
@@ -968,8 +969,8 @@ class LinkDefinition(BlockToken):
                 link_definitions[key] = dest, title
             else:
                 get_parse_context().logger.warning(
-                    "ignoring duplicate link definition '{}' at: {}\n".format(
-                        key, position
+                    "{} ignoring duplicate link definition '{}'".format(
+                        position.make_loc_str(), key
                     )
                 )
 

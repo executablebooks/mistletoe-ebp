@@ -266,6 +266,15 @@ class Position:
             data=lines.metadata,
         )
 
+    def make_loc_str(self) -> str:
+        """Create a location string ``<uri>:<line_start>:<line_end>``"""
+        string = "{0}:{1}:{2}".format(
+            self.uri or "", self.line_start, self.line_end or ""
+        )
+        if self.data:
+            string += " {}".format(self.data)
+        return string
+
     def __repr__(self):
         args = ""
         if self.line_end is not None:

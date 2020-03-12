@@ -75,8 +75,8 @@ class Footnote(BlockToken):
             get_parse_context().foot_definitions[target] = token
         else:
             get_parse_context().logger.warning(
-                "ignoring duplicate footnote definition '{}' at: {}".format(
-                    target, position
+                "{} ignoring duplicate footnote definition '{}'".format(
+                    position.make_loc_str(), target
                 )
             )
         return token
