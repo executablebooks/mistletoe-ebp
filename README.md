@@ -1,5 +1,7 @@
 # mistletoe-ebp
 
+**IMPORTANT**: This package is now archived in favour of [markdown-it-py](https://github.com/executablebooks/markdown-it-py).
+
 [![CI Status][travis-badge]][travis-link]
 [![Coverage][coveralls-badge]][coveralls-link]
 [![Documentation Status][rtd-badge]][rtd-link]
