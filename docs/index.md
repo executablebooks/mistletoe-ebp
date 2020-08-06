@@ -2,6 +2,10 @@
 
 # mistletoe-ebp
 
+```{important}
+This package is now archived in favour of [markdown-it-py](https://github.com/executablebooks/markdown-it-py).
+```
+
 mistletoe is a Markdown parser in pure Python,
 designed to be fast, spec-compliant and fully customizable.
 
